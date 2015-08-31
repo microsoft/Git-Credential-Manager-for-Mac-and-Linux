@@ -1,0 +1,4 @@
+# first line is a comment to avoid the byte-order-marker causing the first line to be ignored
+.idea/
+target/
+*.iml
