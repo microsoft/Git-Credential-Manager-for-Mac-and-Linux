@@ -1,4 +1,4 @@
-package com.microsoft.alm.java;
+package com.microsoft.alm.java.git_credential_helper.cli;
 
 /**
  * Hello world!
