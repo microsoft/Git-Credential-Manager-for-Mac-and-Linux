@@ -1,8 +1,8 @@
 package com.microsoft.alm.java.git_credential_helper.cli;
 
 import com.microsoft.alm.java.git_credential_helper.helpers.Debug;
+import com.microsoft.alm.java.git_credential_helper.helpers.NotImplementedException;
 import com.microsoft.alm.java.git_credential_helper.helpers.Trace;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.Map;
 import java.util.TreeMap;

@@ -1,6 +1,6 @@
 package com.microsoft.alm.java.git_credential_helper.authentication;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import com.microsoft.alm.java.git_credential_helper.helpers.NotImplementedException;
 
 final class Global
 {

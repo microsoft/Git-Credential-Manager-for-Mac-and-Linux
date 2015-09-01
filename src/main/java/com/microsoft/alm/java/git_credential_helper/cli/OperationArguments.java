@@ -1,7 +1,7 @@
 package com.microsoft.alm.java.git_credential_helper.cli;
 
 import com.microsoft.alm.java.git_credential_helper.authentication.Credential;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import com.microsoft.alm.java.git_credential_helper.helpers.NotImplementedException;
 
 import java.io.BufferedReader;
 import java.net.URI;
