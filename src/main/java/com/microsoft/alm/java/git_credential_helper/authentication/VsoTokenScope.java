@@ -2,6 +2,7 @@ package com.microsoft.alm.java.git_credential_helper.authentication;
 
 import com.microsoft.alm.java.git_credential_helper.helpers.NotImplementedException;
 import com.microsoft.alm.java.git_credential_helper.helpers.ScopeSet;
+import com.microsoft.alm.java.git_credential_helper.helpers.StringHelper;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -9,7 +10,7 @@ import java.util.List;
 
 public class VsoTokenScope extends TokenScope
 {
-    public static final VsoTokenScope None = new VsoTokenScope("");
+    public static final VsoTokenScope None = new VsoTokenScope(StringHelper.Empty);
     /**
      * Grants the ability to access build artifacts, including build results, definitions, and
      * requests, and the ability to receive notifications about build events via service hooks.

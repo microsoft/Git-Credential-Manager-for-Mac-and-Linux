@@ -1,13 +1,14 @@
 package com.microsoft.alm.java.git_credential_helper.authentication;
 
 import com.microsoft.alm.java.git_credential_helper.helpers.NotImplementedException;
+import com.microsoft.alm.java.git_credential_helper.helpers.StringHelper;
 
 /**
  * Credential for user authentication.
  */
 public final class Credential extends Secret // TODO: implements IEquatable<Credential>
 {
-    public static final Credential Empty = new Credential("", "");
+    public static final Credential Empty = new Credential(StringHelper.Empty, StringHelper.Empty);
 
     /**
      * Creates a credential object with a username and password pair.
@@ -26,7 +27,7 @@ public final class Credential extends Secret // TODO: implements IEquatable<Cred
      */
     public Credential(final String username)
     {
-        this(username, "");
+        this(username, StringHelper.Empty);
     }
 
     /**
