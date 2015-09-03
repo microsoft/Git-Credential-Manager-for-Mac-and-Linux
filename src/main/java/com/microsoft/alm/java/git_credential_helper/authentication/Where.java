@@ -1,5 +1,6 @@
 package com.microsoft.alm.java.git_credential_helper.authentication;
 
+import com.microsoft.alm.java.git_credential_helper.helpers.Func;
 import com.microsoft.alm.java.git_credential_helper.helpers.NotImplementedException;
 import com.microsoft.alm.java.git_credential_helper.helpers.ObjectExtensions;
 import com.microsoft.alm.java.git_credential_helper.helpers.StringHelper;
@@ -25,29 +26,52 @@ public class Where
             final String envpath = ObjectExtensions.coalesce(System.getenv("PATH"), StringHelper.Empty);
 
             final String pathSeparator = System.getProperty("path.separator");
-            final String[] exts = pathext.split(pathSeparator);
-            final String[] paths = envpath.split(pathSeparator);
-
-            for (int i = 0; i < paths.length; i++)
+            final Func<String, Boolean> existenceChecker = new Func<String, Boolean>()
             {
-                if (StringHelper.isNullOrWhiteSpace(paths[i]))
-                    continue;
-
-                for (int j = 0; j < exts.length; j++)
+                @Override public Boolean call(final String s)
                 {
-                    // we need to consider the case without an extension,
-                    // so skip the null or empty check that was in the C# version
-
-                    final String value = String.format("%1$s/%2$s%3$s", paths[i], name, exts[j]);
-                    if (new File(value).exists())
-                    {
-                        path.set(value);
-                        return true;
-                    }
+                    return new File(s).exists();
                 }
+            };
+            if (app(name, path, pathext, envpath, pathSeparator, existenceChecker))
+            {
+                return true;
             }
         }
         path.set(null);
+        return false;
+    }
+
+    static boolean app(
+            final String name,
+            final AtomicReference<String> path,
+            final String pathext,
+            final String envpath,
+            final String pathSeparator,
+            final Func<String, Boolean> existenceChecker)
+    {
+        final String[] exts = pathext.split(pathSeparator);
+        final String[] paths = envpath.split(pathSeparator);
+
+        for (int i = 0; i < paths.length; i++)
+        {
+            if (StringHelper.isNullOrWhiteSpace(paths[i]))
+                continue;
+
+            for (int j = 0; j < exts.length; j++)
+            {
+                // we need to consider the case without an extension,
+                // so skip the null or empty check that was in the C# version
+
+                final String value = String.format("%1$s/%2$s%3$s", paths[i], name, exts[j]);
+                final Boolean result = existenceChecker.call(value);
+                if (result != null && (boolean)result)
+                {
+                    path.set(value);
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
