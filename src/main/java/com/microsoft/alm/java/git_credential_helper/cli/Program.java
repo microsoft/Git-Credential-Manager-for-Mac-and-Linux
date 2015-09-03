@@ -6,6 +6,7 @@ import com.microsoft.alm.java.git_credential_helper.helpers.Trace;
 
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.Callable;
 
 public class Program
 {
@@ -22,7 +23,7 @@ public class Program
             }
 
             // list of arg => method associations (case-insensitive)
-            final Map<String, Runnable> actions = new TreeMap<String, Runnable>(String.CASE_INSENSITIVE_ORDER);
+            final Map<String, Callable<Void>> actions = new TreeMap<String, Callable<Void>>(String.CASE_INSENSITIVE_ORDER);
             actions.put("approve", Store);
             actions.put("erase", Erase);
             actions.put("fill", Get);
@@ -35,7 +36,7 @@ public class Program
             {
                 if (actions.containsKey(arg))
                 {
-                    actions.get(arg).run();
+                    actions.get(arg).call();
                 }
             }
         }
@@ -89,12 +90,13 @@ public class Program
         System.out.println("       helper = manager");
     }
 
-    private static final Runnable Erase = new Runnable()
+    private static final Callable<Void> Erase = new Callable<Void>()
     {
         @Override
-        public void run()
+        public Void call()
         {
             erase();
+            return null;
         }
     };
     private static void erase()
@@ -102,12 +104,13 @@ public class Program
         throw new NotImplementedException();
     }
 
-    private static final Runnable Get = new Runnable()
+    private static final Callable<Void> Get = new Callable<Void>()
     {
         @Override
-        public void run()
+        public Void call()
         {
             get();
+            return null;
         }
     };
     private static void get()
@@ -115,12 +118,13 @@ public class Program
         throw new NotImplementedException();
     }
 
-    private static final Runnable Store = new Runnable()
+    private static final Callable<Void> Store = new Callable<Void>()
     {
         @Override
-        public void run()
+        public Void call()
         {
             store();
+            return null;
         }
     };
     private static void store()
@@ -128,12 +132,13 @@ public class Program
         throw new NotImplementedException();
     }
 
-    private static final Runnable PrintVersion = new Runnable()
+    private static final Callable<Void> PrintVersion = new Callable<Void>()
     {
         @Override
-        public void run()
+        public Void call()
         {
             printVersion();
+            return null;
         }
     };
     private static void printVersion()
