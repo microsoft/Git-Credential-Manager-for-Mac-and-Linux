@@ -29,4 +29,34 @@ public class StringHelperTest
         Assert.assertFalse(StringHelper.isNullOrWhiteSpace("isNullOrWhiteSpace "));
         Assert.assertFalse(StringHelper.isNullOrWhiteSpace(" isNullOrWhiteSpace "));
     }
+
+    @Test public void join_typical()
+    {
+        final String[] a = {"a", "b", "c"};
+
+        final String actual = StringHelper.join(",", a, 0, a.length);
+
+        Assert.assertEquals("a,b,c", actual);
+    }
+
+    @Test public void join_returnsStringEmptyIfCountZero()
+    {
+        final String[] a = {"a", "b", "c"};
+
+        Assert.assertEquals(StringHelper.Empty, StringHelper.join(",", a, 0, 0));
+    }
+
+    @Test public void join_returnsStringEmptyIfValueHasNoElements()
+    {
+        final String[] emptyArray = {};
+
+        Assert.assertEquals(StringHelper.Empty, StringHelper.join(",", emptyArray, 0, 0));
+    }
+
+    @Test public void join_returnsStringEmptyIfSeparatorAndAllElementsAreEmpty()
+    {
+        final String[] arrayOfEmpty = {StringHelper.Empty, StringHelper.Empty, StringHelper.Empty};
+
+        Assert.assertEquals(StringHelper.Empty, StringHelper.join(StringHelper.Empty, arrayOfEmpty, 0, 3));
+    }
 }
