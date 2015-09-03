@@ -13,6 +13,18 @@ public class Path
         return file.getPath();
     }
 
+    public static boolean directoryExists(final String path)
+    {
+        final File file = new File(path);
+        return file.exists() && file.isDirectory();
+    }
+
+    public static boolean fileExists(final String path)
+    {
+        final File file = new File(path);
+        return file.exists() && file.isFile();
+    }
+
     public static String getDirectoryName(final String path)
     {
         final File file = new File(path);
