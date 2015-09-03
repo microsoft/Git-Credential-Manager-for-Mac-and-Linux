@@ -92,8 +92,7 @@ public class Program
 
     private static final Callable<Void> Erase = new Callable<Void>()
     {
-        @Override
-        public Void call()
+        @Override public Void call()
         {
             erase();
             return null;
@@ -106,8 +105,7 @@ public class Program
 
     private static final Callable<Void> Get = new Callable<Void>()
     {
-        @Override
-        public Void call()
+        @Override public Void call()
         {
             get();
             return null;
@@ -120,8 +118,7 @@ public class Program
 
     private static final Callable<Void> Store = new Callable<Void>()
     {
-        @Override
-        public Void call()
+        @Override public Void call()
         {
             store();
             return null;
@@ -134,8 +131,7 @@ public class Program
 
     private static final Callable<Void> PrintVersion = new Callable<Void>()
     {
-        @Override
-        public Void call()
+        @Override public Void call()
         {
             printVersion();
             return null;
