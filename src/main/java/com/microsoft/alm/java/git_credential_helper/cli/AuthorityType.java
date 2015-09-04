@@ -23,6 +23,10 @@ enum AuthorityType
      */
     AzureDirectory,
     /**
+     * GitHub authentication
+     */
+    GitHub,
+    /**
      * Operating system / network integrated authentication layer.
      */
     Integrated,
