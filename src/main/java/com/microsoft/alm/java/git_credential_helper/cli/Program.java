@@ -1,15 +1,21 @@
 package com.microsoft.alm.java.git_credential_helper.cli;
 
+import com.microsoft.alm.java.git_credential_helper.authentication.BaseAuthentication;
+import com.microsoft.alm.java.git_credential_helper.authentication.Configuration;
 import com.microsoft.alm.java.git_credential_helper.helpers.Debug;
 import com.microsoft.alm.java.git_credential_helper.helpers.NotImplementedException;
 import com.microsoft.alm.java.git_credential_helper.helpers.Trace;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class Program
 {
+    private static final String ConfigPrefix = "credential";
+
     public static void main(final String[] args)
     {
         try
@@ -140,6 +146,98 @@ public class Program
     private static void printVersion()
     {
         throw new NotImplementedException();
+    }
+
+    private static BaseAuthentication createAuthentication(final OperationArguments operationArguments)
+    {
+        throw new NotImplementedException();
+    }
+
+    private static void loadOperationArguments(final OperationArguments operationArguments) throws IOException
+    {
+        Debug.Assert(operationArguments != null, "The operationsArguments parameter is null.");
+
+        Trace.writeLine("Program::loadOperationArguments");
+
+        final Configuration config = new Configuration();
+        final AtomicReference<Configuration.Entry> entryRef = new AtomicReference<Configuration.Entry>();
+
+        if (config.tryGetEntry(ConfigPrefix, operationArguments.TargetUri, "authority", entryRef))
+        {
+            Trace.writeLine("   authority = " + entryRef.get().Value);
+
+            if ("MSA".equalsIgnoreCase(entryRef.get().Value)
+                    || "Microsoft".equalsIgnoreCase(entryRef.get().Value)
+                    || "MicrosoftAccount".equalsIgnoreCase(entryRef.get().Value)
+                    || "Live".equalsIgnoreCase(entryRef.get().Value)
+                    || "LiveConnect".equalsIgnoreCase(entryRef.get().Value)
+                    || "LiveID".equalsIgnoreCase(entryRef.get().Value))
+            {
+                operationArguments.Authority = AuthorityType.MicrosoftAccount;
+            }
+            else if ("AAD".equalsIgnoreCase(entryRef.get().Value)
+                    || "Azure".equalsIgnoreCase(entryRef.get().Value)
+                    || "AzureDirectory".equalsIgnoreCase(entryRef.get().Value))
+            {
+                operationArguments.Authority = AuthorityType.AzureDirectory;
+            }
+            else if ("Integrated".equalsIgnoreCase(entryRef.get().Value)
+                    || "NTLM".equalsIgnoreCase(entryRef.get().Value)
+                    || "Kerberos".equalsIgnoreCase(entryRef.get().Value)
+                    || "SSO".equalsIgnoreCase(entryRef.get().Value))
+            {
+                operationArguments.Authority = AuthorityType.Integrated;
+            }
+            else
+            {
+                operationArguments.Authority = AuthorityType.Basic;
+            }
+        }
+
+        if (config.tryGetEntry(ConfigPrefix, operationArguments.TargetUri, "interactive", entryRef))
+        {
+            Trace.writeLine("   interactive = " + entryRef.get().Value);
+
+            if ("always".equalsIgnoreCase(entryRef.get().Value)
+                    || "true".equalsIgnoreCase(entryRef.get().Value)
+                    || "force".equalsIgnoreCase(entryRef.get().Value))
+            {
+                operationArguments.Interactivity = Interactivity.Always;
+            }
+            else if ("never".equalsIgnoreCase(entryRef.get().Value)
+                    || "false".equalsIgnoreCase(entryRef.get().Value))
+            {
+                operationArguments.Interactivity = Interactivity.Never;
+            }
+        }
+
+        if (config.tryGetEntry(ConfigPrefix, operationArguments.TargetUri, "validate", entryRef))
+        {
+            Trace.writeLine("   validate = " + entryRef.get().Value);
+
+            if ("true".equalsIgnoreCase(entryRef.get().Value))
+            {
+                operationArguments.ValidateCredentials = true;
+            }
+            else if ("false".equalsIgnoreCase(entryRef.get().Value))
+            {
+                operationArguments.ValidateCredentials = false;
+            }
+        }
+
+        if (config.tryGetEntry(ConfigPrefix, operationArguments.TargetUri, "writelog", entryRef))
+        {
+            Trace.writeLine("   writelog = " + entryRef.get().Value);
+
+            if ("true".equalsIgnoreCase(entryRef.get().Value))
+            {
+                operationArguments.WriteLog = true;
+            }
+            else if ("false".equalsIgnoreCase(entryRef.get().Value))
+            {
+                operationArguments.WriteLog = false;
+            }
+        }
     }
 
     private static void logEvent(final String message, final Object eventType)
