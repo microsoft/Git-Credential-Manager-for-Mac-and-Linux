@@ -35,7 +35,7 @@ class AzureAuthority implements IAzureAuthority
         throw new NotImplementedException();
     }
 
-    // TODO: private final VsoAdalTokenCache _adalTokenCache;
+    private final VsoAdalTokenCache _adalTokenCache;
 
     protected String authorityHostUrl;
     /**
