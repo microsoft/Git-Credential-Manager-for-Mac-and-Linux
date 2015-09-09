@@ -5,6 +5,32 @@ import org.junit.Test;
 
 public class StringHelperTest
 {
+    @Test public void endsWithIgnoreCase_positive()
+    {
+        Assert.assertTrue(StringHelper.endsWithIgnoreCase("Session", "Session"));
+        Assert.assertTrue(StringHelper.endsWithIgnoreCase("Session", ""));
+        Assert.assertTrue(StringHelper.endsWithIgnoreCase("Session", "SiOn"));
+    }
+
+    @Test public void endsWithIgnoreCase_negative()
+    {
+        Assert.assertFalse(StringHelper.endsWithIgnoreCase("Session", "SiO"));
+        Assert.assertFalse(StringHelper.endsWithIgnoreCase("Session", "LongerThanSession"));
+        Assert.assertFalse(StringHelper.endsWithIgnoreCase("Session", "noisseS"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void endsWithIgnoreCase_firstNull()
+    {
+        Assert.assertTrue(StringHelper.endsWithIgnoreCase(null, "SiO"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void endsWithIgnoreCase_secondNull()
+    {
+        Assert.assertTrue(StringHelper.endsWithIgnoreCase("Session", null));
+    }
+
     @Test public void isNullOrWhiteSpace_null()
     {
         Assert.assertTrue(StringHelper.isNullOrWhiteSpace(null));
