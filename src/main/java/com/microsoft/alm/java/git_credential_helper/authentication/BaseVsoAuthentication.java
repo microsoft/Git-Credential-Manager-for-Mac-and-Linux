@@ -59,7 +59,6 @@ public abstract class BaseVsoAuthentication extends BaseAuthentication
      */
     public final VsoTokenScope TokenScope;
 
-    // TODO: final TokenCache VsoAdalTokenCache;
     final ITokenStore VsoIdeTokenCache;
 
     ICredentialStore PersonalAccessTokenStore;
