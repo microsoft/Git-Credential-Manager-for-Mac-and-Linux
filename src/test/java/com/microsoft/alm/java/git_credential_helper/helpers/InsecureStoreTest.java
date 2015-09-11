@@ -1,5 +1,7 @@
 package com.microsoft.alm.java.git_credential_helper.helpers;
 
+import com.microsoft.alm.java.git_credential_helper.authentication.Token;
+import com.microsoft.alm.java.git_credential_helper.authentication.TokenType;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -13,14 +15,17 @@ public class InsecureStoreTest
     @Test public void serialization_instanceToXmlToInstance()
     {
         final InsecureStore input = new InsecureStore();
+        final Token inputBravo = new Token("42", TokenType.Test);
         input.Tokens.put("alpha", null);
-        input.Tokens.put("bravo", null);
+        input.Tokens.put("bravo", inputBravo);
         input.Credentials.put("charlie", null);
 
         final InsecureStore actual = clone(input);
 
         Assert.assertEquals(2, actual.Tokens.size());
         Assert.assertTrue(actual.Tokens.containsKey("alpha"));
+        final Token actualBravo = actual.Tokens.get("bravo");
+        Assert.assertEquals("42", actualBravo.Value);
         Assert.assertFalse(actual.Tokens.containsKey("charlie"));
 
         Assert.assertEquals(1, actual.Credentials.size());
