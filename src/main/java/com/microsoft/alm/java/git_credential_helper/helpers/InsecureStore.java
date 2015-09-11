@@ -4,8 +4,12 @@ import com.microsoft.alm.java.git_credential_helper.authentication.Credential;
 import com.microsoft.alm.java.git_credential_helper.authentication.Token;
 import org.apache.commons.io.IOUtils;
 
-import java.beans.XMLDecoder;
-import java.beans.XMLEncoder;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -15,12 +19,13 @@ import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 
+@XmlRootElement
 public class InsecureStore implements ISecureStore
 {
     private final File backingFile;
 
-    public Map<String, Token> Tokens = new HashMap<String, Token>();
-    public Map<String, Credential> Credentials = new HashMap<String, Credential>();
+    @XmlElement final Map<String, Token> Tokens = new HashMap<String, Token>();
+    @XmlElement final Map<String, Credential> Credentials = new HashMap<String, Credential>();
 
     /**
      * Creates an instance that only keeps the values in memory, never touching a file.
@@ -50,8 +55,12 @@ public class InsecureStore implements ISecureStore
             {
                 fis = new FileInputStream(backingFile);
                 final InsecureStore clone = fromXml(fis);
-                this.Tokens = clone.Tokens;
-                this.Credentials = clone.Credentials;
+
+                this.Tokens.clear();
+                this.Tokens.putAll(clone.Tokens);
+
+                this.Credentials.clear();
+                this.Credentials.putAll(clone.Credentials);
             }
             catch (FileNotFoundException e)
             {
@@ -86,17 +95,32 @@ public class InsecureStore implements ISecureStore
 
     public static InsecureStore fromXml(final InputStream source)
     {
-        final XMLDecoder decoder = new XMLDecoder(source);
-        final InsecureStore result = (InsecureStore) decoder.readObject();
-        decoder.close();
-        return result;
+        try
+        {
+            final JAXBContext context = JAXBContext.newInstance(InsecureStore.class);
+            final Unmarshaller unmarshaller = context.createUnmarshaller();
+            final InsecureStore result = (InsecureStore) unmarshaller.unmarshal(source);
+            return result;
+        }
+        catch (final JAXBException e)
+        {
+            throw new Error(e);
+        }
     }
 
     public void toXml(final PrintStream destination)
     {
-        final XMLEncoder encoder = new XMLEncoder(destination);
-        encoder.writeObject(this);
-        encoder.close();
+        try
+        {
+            final JAXBContext context = JAXBContext.newInstance(InsecureStore.class);
+            final Marshaller marshaller = context.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            marshaller.marshal(this, destination);
+        }
+        catch (final JAXBException e)
+        {
+            throw new Error(e);
+        }
     }
 
     @Override
