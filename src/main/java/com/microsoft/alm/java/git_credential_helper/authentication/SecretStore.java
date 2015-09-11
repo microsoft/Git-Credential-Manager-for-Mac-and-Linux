@@ -1,5 +1,6 @@
 package com.microsoft.alm.java.git_credential_helper.authentication;
 
+import com.microsoft.alm.java.git_credential_helper.helpers.ISecureStore;
 import com.microsoft.alm.java.git_credential_helper.helpers.NotImplementedException;
 
 import java.net.URI;
@@ -12,17 +13,19 @@ import java.util.concurrent.atomic.AtomicReference;
 public final class SecretStore extends BaseSecureStore implements ICredentialStore, ITokenStore
 {
     /**
-     * Creates a new {@SecretStore} backed by the operating system keychain /
+     * Creates a new {@link SecretStore} backed by the specified keychain /
      * secrets vault.
      *
+     * @param backingStore    The {@link ISecureStore} implementation to use for actually storing secrets.
      * @param namespace       The namespace of the secrets written and read by this store.
      * @param credentialCache (optional) Write-through, read-first cache. Default cache is used if a custom cache is
      *                        not provided.
      * @param tokenCache      (optional) Write-through, read-first cache. Default cache is used if a custom cache is
      *                        not provided.
      */
-    public SecretStore(final String namespace, final ICredentialStore credentialCache, final ITokenStore tokenCache)
+    public SecretStore(final ISecureStore backingStore, final String namespace, final ICredentialStore credentialCache, final ITokenStore tokenCache)
     {
+        super(backingStore);
         throw new NotImplementedException();
     }
 
