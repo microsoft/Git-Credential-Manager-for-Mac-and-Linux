@@ -102,4 +102,13 @@ public class StringHelper
         final String result = new String(bytes, UTF8);
         return result;
     }
+
+    /**
+     * Equivalent to .NET's Encoding.UTF8.GetString(byte[], int, int)
+     */
+    public static String UTF8GetString(final byte[] bytes, final int index, final int count)
+    {
+        final String result = new String(bytes, index, count, UTF8);
+        return result;
+    }
 }
