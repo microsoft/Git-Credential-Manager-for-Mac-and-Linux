@@ -1,7 +1,11 @@
 package com.microsoft.alm.java.git_credential_helper.helpers;
 
+import java.nio.charset.Charset;
+
 public class StringHelper
 {
+    private static final Charset UTF8 = Charset.forName("UTF-8");
+
     public static final String Empty = "";
 
     public static boolean endsWithIgnoreCase(final String haystack, final String needle)
@@ -79,5 +83,23 @@ public class StringHelper
         }
 
         return result.toString();
+    }
+
+    /**
+     * Equivalent to .NET's Encoding.UTF8.GetBytes(String)
+     */
+    public static byte[] UTF8GetBytes(final String value)
+    {
+        final byte[] result = value.getBytes(UTF8);
+        return result;
+    }
+
+    /**
+     * Equivalent to .NET's Encoding.UTF8.GetString(byte[])
+     */
+    public static String UTF8GetString(final byte[] bytes)
+    {
+        final String result = new String(bytes, UTF8);
+        return result;
     }
 }
