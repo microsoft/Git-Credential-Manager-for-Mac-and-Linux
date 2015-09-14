@@ -3,7 +3,6 @@ package com.microsoft.alm.java.git_credential_helper.helpers;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.UUID;
 
