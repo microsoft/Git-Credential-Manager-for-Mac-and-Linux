@@ -113,12 +113,20 @@ final class OperationArguments
         builder.append("path=")
                 .append(ObjectExtensions.coalesce(this.Path, StringHelper.Empty))
                 .append("\n");
-        builder.append("username=")
-                .append(ObjectExtensions.coalesce(this.userName, StringHelper.Empty))
-                .append("\n");
-        builder.append("password=")
-                .append(ObjectExtensions.coalesce(this.password, StringHelper.Empty))
-                .append("\n");
+        // only write out username if we know it
+        if (this.userName != null)
+        {
+            builder.append("username=")
+                    .append(this.userName)
+                    .append("\n");
+        }
+        // only write out password if we know it
+        if (this.password != null)
+        {
+            builder.append("password=")
+                    .append(this.password)
+                    .append("\n");
+        }
 
         return builder.toString();
     }
