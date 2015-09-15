@@ -1,6 +1,8 @@
 package com.microsoft.alm.java.git_credential_helper.authentication;
 
-import com.microsoft.alm.java.git_credential_helper.helpers.NotImplementedException;
+import com.microsoft.alm.java.git_credential_helper.helpers.Debug;
+import com.microsoft.alm.java.git_credential_helper.helpers.StringHelper;
+import com.microsoft.alm.java.git_credential_helper.helpers.Trace;
 
 import java.net.URI;
 import java.util.Map;
@@ -18,7 +20,9 @@ final class SecretCache implements ICredentialStore, ITokenStore
 
     public SecretCache(final String namespace)
     {
-        throw new NotImplementedException();
+        Debug.Assert(!StringHelper.isNullOrWhiteSpace(namespace), "The namespace parameter is null or invalid");
+
+        _namespace = namespace;
     }
 
     private final String _namespace;
@@ -30,7 +34,19 @@ final class SecretCache implements ICredentialStore, ITokenStore
      */
     public void deleteCredentials(final URI targetUri)
     {
-        throw new NotImplementedException();
+        BaseSecureStore.validateTargetUri(targetUri);
+
+        Trace.writeLine("SecretCache::deleteCredentials");
+
+        final String targetName = this.getTargetName(targetUri);
+
+        synchronized (_cache)
+        {
+            if (_cache.containsKey(targetName) && _cache.get(targetName) instanceof Credential)
+            {
+                _cache.remove(targetName);
+            }
+        }
     }
 
     /**
@@ -40,7 +56,19 @@ final class SecretCache implements ICredentialStore, ITokenStore
      */
     public void deleteToken(final URI targetUri)
     {
-        throw new NotImplementedException();
+        BaseSecureStore.validateTargetUri(targetUri);
+
+        Trace.writeLine("SecretCache::deleteToken");
+
+        final String targetName = this.getTargetName(targetUri);
+
+        synchronized (_cache)
+        {
+            if (_cache.containsKey(targetName) && _cache.get(targetName) instanceof Token)
+            {
+                _cache.remove(targetName);
+            }
+        }
     }
 
     /**
@@ -52,7 +80,25 @@ final class SecretCache implements ICredentialStore, ITokenStore
      */
     public boolean readCredentials(final URI targetUri, final AtomicReference<Credential> credentials)
     {
-        throw new NotImplementedException();
+        BaseSecureStore.validateTargetUri(targetUri);
+
+        Trace.writeLine("SecretCache::readCredentials");
+
+        final String targetName = this.getTargetName(targetUri);
+
+        synchronized (_cache)
+        {
+            if (_cache.containsKey(targetName) && _cache.get(targetName) instanceof Credential)
+            {
+                credentials.set((Credential) _cache.get(targetName));
+            }
+            else
+            {
+                credentials.set(null);
+            }
+        }
+
+        return credentials.get() != null;
     }
 
     /**
@@ -64,7 +110,25 @@ final class SecretCache implements ICredentialStore, ITokenStore
      */
     public boolean readToken(final URI targetUri, final AtomicReference<Token> token)
     {
-        throw new NotImplementedException();
+        BaseSecureStore.validateTargetUri(targetUri);
+
+        Trace.writeLine("SecretCache::readToken");
+
+        final String targetName = this.getTargetName(targetUri);
+
+        synchronized (_cache)
+        {
+            if (_cache.containsKey(targetName) && _cache.get(targetName) instanceof Token)
+            {
+                token.set((Token) _cache.get(targetName));
+            }
+            else
+            {
+                token.set(null);
+            }
+        }
+
+        return token.get() != null;
     }
 
     /**
@@ -75,7 +139,17 @@ final class SecretCache implements ICredentialStore, ITokenStore
      */
     public void writeCredentials(final URI targetUri, final Credential credentials)
     {
-        throw new NotImplementedException();
+        BaseSecureStore.validateTargetUri(targetUri);
+        Credential.validate(credentials);
+
+        Trace.writeLine("SecretCache::writeCredentials");
+
+        final String targetName = this.getTargetName(targetUri);
+
+        synchronized (_cache)
+        {
+            _cache.put(targetName, credentials);
+        }
     }
 
     /**
@@ -86,11 +160,35 @@ final class SecretCache implements ICredentialStore, ITokenStore
      */
     public void writeToken(final URI targetUri, final Token token)
     {
-        throw new NotImplementedException();
+        BaseSecureStore.validateTargetUri(targetUri);
+        Token.validate(token);
+
+        Trace.writeLine("SecretCache::writeToken");
+
+        final String targetName = this.getTargetName(targetUri);
+
+        synchronized (_cache)
+        {
+            _cache.put(targetName, token);
+        }
     }
 
     private String getTargetName(final URI targetUri)
     {
-        throw new NotImplementedException();
+        final String PrimaryNameFormat = "%1$s:%2$s://%3$s";
+
+        Debug.Assert(targetUri != null && targetUri.isAbsolute(), "The targetUri parameter is null or invalid");
+
+        Trace.writeLine("SecretCache::getTargetName");
+
+        // trim any trailing slashes and/or whitespace for compat with git-credential-winstore
+        final String trimmedHostUrl = StringHelper.trimEnd(StringHelper.trimEnd(targetUri.getHost(), '/', '\\'));
+
+
+        String targetName = String.format(PrimaryNameFormat, _namespace, targetUri.getScheme(), trimmedHostUrl);
+
+        Trace.writeLine("   target name = " + targetName);
+
+        return targetName;
     }
 }
