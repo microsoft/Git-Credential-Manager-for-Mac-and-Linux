@@ -3,6 +3,7 @@ package com.microsoft.alm.java.git_credential_helper.authentication;
 import com.microsoft.alm.java.git_credential_helper.helpers.Debug;
 import com.microsoft.alm.java.git_credential_helper.helpers.ISecureStore;
 import com.microsoft.alm.java.git_credential_helper.helpers.NotImplementedException;
+import com.microsoft.alm.java.git_credential_helper.helpers.ObjectExtensions;
 import com.microsoft.alm.java.git_credential_helper.helpers.StringHelper;
 import com.microsoft.alm.java.git_credential_helper.helpers.Trace;
 
@@ -15,7 +16,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public final class SecretStore extends BaseSecureStore implements ICredentialStore, ITokenStore
 {
-    public SecretStore(final ISecureStore backingStore, final String namespace) { this(backingStore, namespace, null, null); }
+    public SecretStore(final ISecureStore backingStore, final String namespace) { this(backingStore, namespace, null, null, null); }
 
     /**
      * Creates a new {@link SecretStore} backed by the specified keychain /
@@ -28,20 +29,24 @@ public final class SecretStore extends BaseSecureStore implements ICredentialSto
      * @param tokenCache      (optional) Write-through, read-first cache. Default cache is used if a custom cache is
      *                        not provided.
      */
-    public SecretStore(final ISecureStore backingStore, final String namespace, final ICredentialStore credentialCache, final ITokenStore tokenCache)
+    public SecretStore(final ISecureStore backingStore, final String namespace, final ICredentialStore credentialCache, final ITokenStore tokenCache, final Secret.IUriNameConversion getTargetName)
     {
         super(backingStore);
         if (StringHelper.isNullOrWhiteSpace(namespace) || StringHelper.indexOfAny(namespace, IllegalCharacters) != -1)
             throw new IllegalArgumentException("The `namespace` parameter is null or invalid.");
 
+        _getTargetName = ObjectExtensions.coalesce(getTargetName, Secret.DefaultUriNameConversion);
+
         _namespace = namespace;
-        _credentialCache = credentialCache != null ? credentialCache : new SecretCache(namespace);
-        _tokenCache = tokenCache != null ? tokenCache : new SecretCache(namespace);
+        _credentialCache = credentialCache != null ? credentialCache : new SecretCache(namespace, _getTargetName);
+        _tokenCache = tokenCache != null ? tokenCache : new SecretCache(namespace, _getTargetName);
     }
 
     private String _namespace;
     private ICredentialStore _credentialCache;
     private ITokenStore _tokenCache;
+
+    private final Secret.IUriNameConversion _getTargetName;
 
     /**
      * Deletes credentials for target URI from the credential store
@@ -167,25 +172,11 @@ public final class SecretStore extends BaseSecureStore implements ICredentialSto
 
     @Override protected String getTargetName(final URI targetUri)
     {
-        final String tokenNameFormat = "%1$s:%2$s://%3$s";
 
         Debug.Assert(targetUri != null, "The targetUri parameter is null");
 
         Trace.writeLine("SecretStore::getTargetName");
 
-        // trim any trailing slashes and/or whitespace for compat with git-credential-winstore
-        final String trimmedHostUrl = StringHelper.trimEnd(StringHelper.trimEnd(targetUri.getHost(), '/', '\\'));
-
-
-        String targetName = String.format(tokenNameFormat, _namespace, targetUri.getScheme(), trimmedHostUrl);
-
-        if (targetUri.getPort() != -1)
-        {
-            targetName += ":" + targetUri.getPort();
-        }
-
-        Trace.writeLine("   target name = " + targetName);
-
-        return targetName;
+        return _getTargetName.convert(targetUri, _namespace);
     }
 }

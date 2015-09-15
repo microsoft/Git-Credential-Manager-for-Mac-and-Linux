@@ -1,6 +1,7 @@
 package com.microsoft.alm.java.git_credential_helper.authentication;
 
 import com.microsoft.alm.java.git_credential_helper.helpers.Debug;
+import com.microsoft.alm.java.git_credential_helper.helpers.ObjectExtensions;
 import com.microsoft.alm.java.git_credential_helper.helpers.StringHelper;
 import com.microsoft.alm.java.git_credential_helper.helpers.Trace;
 
@@ -18,14 +19,18 @@ final class SecretCache implements ICredentialStore, ITokenStore
 
     private static final Map<String, Secret> _cache;
 
-    public SecretCache(final String namespace)
+    public SecretCache(final String namespace) { this(namespace,  null); }
+
+    public SecretCache(final String namespace, final Secret.IUriNameConversion getTargetName)
     {
         Debug.Assert(!StringHelper.isNullOrWhiteSpace(namespace), "The namespace parameter is null or invalid");
 
         _namespace = namespace;
+        _getTargetName = ObjectExtensions.coalesce(getTargetName, Secret.DefaultUriNameConversion);
     }
 
     private final String _namespace;
+    private final Secret.IUriNameConversion _getTargetName;
 
     /**
      * Deletes a credential from the cache.
@@ -173,22 +178,18 @@ final class SecretCache implements ICredentialStore, ITokenStore
         }
     }
 
+    /**
+     * Formats a TargetName string based on the TargetUri based on the format started by git-credential-winstore
+     *
+     * @param targetUri uri of the target
+     * @return Properly formatted TargetName string
+     */
     private String getTargetName(final URI targetUri)
     {
-        final String PrimaryNameFormat = "%1$s:%2$s://%3$s";
+        Debug.Assert(targetUri != null, "The targetUri parameter is null");
 
-        Debug.Assert(targetUri != null && targetUri.isAbsolute(), "The targetUri parameter is null or invalid");
+        Trace.writeLine("SecretCache::_getTargetName");
 
-        Trace.writeLine("SecretCache::getTargetName");
-
-        // trim any trailing slashes and/or whitespace for compat with git-credential-winstore
-        final String trimmedHostUrl = StringHelper.trimEnd(StringHelper.trimEnd(targetUri.getHost(), '/', '\\'));
-
-
-        String targetName = String.format(PrimaryNameFormat, _namespace, targetUri.getScheme(), trimmedHostUrl);
-
-        Trace.writeLine("   target name = " + targetName);
-
-        return targetName;
+        return _getTargetName.convert(targetUri, _namespace);
     }
 }
