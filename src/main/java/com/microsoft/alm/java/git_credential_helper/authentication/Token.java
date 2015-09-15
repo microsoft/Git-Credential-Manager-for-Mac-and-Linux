@@ -225,6 +225,17 @@ public class Token extends Secret // TODO: implements IEquatable<Token>
         return byteReference.get() != null;
     }
 
+    private static final int PasswordMaxLength = 2047;
+    static void validate(final Token token)
+    {
+        if (token == null)
+            throw new IllegalArgumentException("The `token` parameter is null or invalid.");
+        if (StringHelper.isNullOrWhiteSpace(token.Value))
+            throw new IllegalArgumentException("The value of the `token` cannot be null or empty.");
+        if (token.Value.length() > PasswordMaxLength)
+            throw new IllegalArgumentException(String.format("The value of the `token` cannot be longer than %1$d characters.", PasswordMaxLength));
+    }
+
     /**
      * Compares two tokens for equality.
      *

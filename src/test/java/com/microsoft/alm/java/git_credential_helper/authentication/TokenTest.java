@@ -85,4 +85,18 @@ public class TokenTest
         final String actualHex = BitConverter.toString(actualBytes);
         Assert.assertEquals(expectedHex, actualHex);
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void validate_tooLong()
+    {
+        final int numberOfCharacters = 2048;
+        final StringBuilder sb = new StringBuilder(numberOfCharacters);
+        for (int c = 0; c < numberOfCharacters; c++)
+        {
+            sb.append('0');
+        }
+        final Token token = new Token(sb.toString(), TokenType.Test);
+
+        Token.validate(token);
+    }
 }
