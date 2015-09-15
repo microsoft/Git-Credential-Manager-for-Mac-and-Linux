@@ -15,6 +15,8 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public final class SecretStore extends BaseSecureStore implements ICredentialStore, ITokenStore
 {
+    public SecretStore(final ISecureStore backingStore, final String namespace) { this(backingStore, namespace, null, null); }
+
     /**
      * Creates a new {@link SecretStore} backed by the specified keychain /
      * secrets vault.
