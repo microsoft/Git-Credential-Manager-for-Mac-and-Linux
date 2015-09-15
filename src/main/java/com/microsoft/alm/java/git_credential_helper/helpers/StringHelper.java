@@ -111,16 +111,18 @@ public class StringHelper
      * Removes all trailing occurrences of a set of characters specified in an array from s.
      *
      * @param s         The string to trim from.
-     * @param trimChars An array of Unicode characters to remove.
+     * @param trimChars An array of Unicode characters to remove, or null.
      * @return          The string that remains after all occurrences of the characters in the
-     *                  trimChars parameter are removed from the end of the current string.
+     *                  trimChars parameter are removed from the end of s.
+     *                  If trimChars is null or an empty array,
+     *                  Unicode white-space characters are removed instead.
      *                  If no characters can be trimmed from s, the method returns s.
      */
     public static String trimEnd(final String s, final char... trimChars)
     {
         int len = s.length();
         if (trimChars == null || trimChars.length == 0)
-            throw new NotImplementedException();
+            return trimEnd(s);
         while (len > 0)
         {
             final char current = s.charAt(len - 1);
@@ -134,6 +136,19 @@ public class StringHelper
                 }
             }
             if (!found)
+                break;
+            len--;
+        }
+        return (len < s.length()) ? s.substring(0, len) : s;
+    }
+
+    public static String trimEnd(final String s)
+    {
+        int len = s.length();
+        while (len > 0)
+        {
+            final char current = s.charAt(len - 1);
+            if (!Character.isWhitespace(current))
                 break;
             len--;
         }

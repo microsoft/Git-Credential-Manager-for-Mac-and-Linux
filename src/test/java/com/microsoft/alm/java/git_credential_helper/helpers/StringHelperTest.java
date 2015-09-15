@@ -95,12 +95,26 @@ public class StringHelperTest
     @Test public void trimEnd_edgeCases()
     {
         Assert.assertEquals("", StringHelper.trimEnd("", ' ', '\t'));
+        Assert.assertEquals("", StringHelper.trimEnd(" ", ' ', '\t'));
         Assert.assertEquals("a", StringHelper.trimEnd("a", ' '));
         Assert.assertEquals("a", StringHelper.trimEnd("a", ' ', '\t'));
         Assert.assertEquals("a", StringHelper.trimEnd("a ", ' '));
         Assert.assertEquals("a", StringHelper.trimEnd("a ", ' ', '\t'));
         Assert.assertEquals("a", StringHelper.trimEnd("a\t", ' ', '\t'));
         Assert.assertEquals("a", StringHelper.trimEnd("a \t", ' ', '\t'));
-        Assert.assertEquals("", StringHelper.trimEnd(" ", ' ', '\t'));
+        Assert.assertEquals(" trimEnd \n", StringHelper.trimEnd(" trimEnd \n\t", ' ', '\t'));
+        Assert.assertEquals(" trimEnd", StringHelper.trimEnd(" trimEnd ", ' ', '\t'));
+    }
+
+    @Test public void trimEnd_defaultWhitespace()
+    {
+        Assert.assertEquals("trimEnd", StringHelper.trimEnd("trimEnd"));
+        Assert.assertEquals("trimEnd", StringHelper.trimEnd("trimEnd "));
+        Assert.assertEquals("trimEnd", StringHelper.trimEnd("trimEnd ", null));
+        Assert.assertEquals("trimEnd", StringHelper.trimEnd("trimEnd ", new char[]{}));
+        Assert.assertEquals(" trimEnd", StringHelper.trimEnd(" trimEnd"));
+        Assert.assertEquals(" trimEnd", StringHelper.trimEnd(" trimEnd "));
+        Assert.assertEquals("", StringHelper.trimEnd(""));
+        Assert.assertEquals("", StringHelper.trimEnd(" "));
     }
 }
