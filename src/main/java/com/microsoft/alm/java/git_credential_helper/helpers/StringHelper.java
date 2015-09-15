@@ -32,6 +32,28 @@ public class StringHelper
         return haystack.regionMatches(true, toffset, needle, 0, nl);
     }
 
+    /**
+     * Reports the zero-based index of the first occurrence in s
+     * of any character in a specified array of Unicode characters.
+     *
+     * @param s     The string to search.
+     * @param anyOf A Unicode character array containing one or more characters to seek.
+     * @return      The zero-based index position of the first occurrence in s
+     *              where any character in anyOf was found; -1 if no character in anyOf was found.
+     */
+    public static int indexOfAny(final String s, final char[] anyOf)
+    {
+        for (final char c : anyOf)
+        {
+            final int i = s.indexOf(c);
+            if (i != -1)
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     public static boolean isNullOrEmpty(final String s)
     {
         return null == s || (s.length() == 0);
