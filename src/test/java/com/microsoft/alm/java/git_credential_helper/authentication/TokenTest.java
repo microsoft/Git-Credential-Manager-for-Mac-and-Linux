@@ -2,14 +2,74 @@ package com.microsoft.alm.java.git_credential_helper.authentication;
 
 import com.microsoft.alm.java.git_credential_helper.helpers.BitConverter;
 import com.microsoft.alm.java.git_credential_helper.helpers.Guid;
+import com.microsoft.alm.java.git_credential_helper.helpers.InsecureStore;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class TokenTest
 {
+    private static final String TokenString = "The Azure AD Authentication Library (ADAL) for .NET enables client application developers to easily authenticate users to cloud or on-premises Active Directory (AD), and then obtain access tokens for securing API calls. ADAL for .NET has many features that make authentication easier for developers, such as asynchronous support, a configurable token cache that stores access tokens and refresh tokens, automatic token refresh when an access token expires and a refresh token is available, and more. By handling most of the complexity, ADAL can help a developer focus on business logic in their application and easily secure resources without being an expert on security.";
+
+    @Test
+    public void tokenStoreUrl() throws URISyntaxException
+    {
+        tokenStoreTest(new SecretStore(new InsecureStore(), "test-token"), "http://dummy.url/for/testing", TokenString);
+    }
+    @Test
+    public void tokenStoreUrlWithParams() throws URISyntaxException
+    {
+        tokenStoreTest(new SecretStore(new InsecureStore(), "test-token"), "http://dummy.url/for/testing?with=params", TokenString);
+    }
+    @Test
+    public void tokenStoreUnc() throws URISyntaxException
+    {
+        tokenStoreTest(new SecretStore(new InsecureStore(), "test-token"), "file://unc/share/test", TokenString);
+    }
+    @Test
+    public void tokenCacheUrl() throws URISyntaxException
+    {
+        tokenStoreTest(new SecretCache("test-token"), "http://dummy.url/for/testing", TokenString);
+    }
+    @Test
+    public void tokenCacheUrlWithParams() throws URISyntaxException
+    {
+        tokenStoreTest(new SecretCache("test-token"), "http://dummy.url/for/testing?with=params", TokenString);
+    }
+    @Test
+    public void tokenCacheUnc() throws URISyntaxException
+    {
+        tokenStoreTest(new SecretCache("test-token"), "file://unc/share/test", TokenString);
+    }
+
+    private void tokenStoreTest(final ITokenStore tokenStore, final String url, final String token) throws URISyntaxException
+    {
+        URI uri = new URI(url);
+
+        Token writeToken = new Token(token, TokenType.Test);
+        AtomicReference<Token> readToken = new AtomicReference<Token>();
+
+        tokenStore.writeToken(uri, writeToken);
+
+        if (tokenStore.readToken(uri, readToken))
+        {
+            Assert.assertEquals("Token values did not match between written and read", writeToken.Value, readToken.get().Value);
+            Assert.assertEquals("Token types did not match between written and read", writeToken.Type, readToken.get().Type);
+        }
+        else
+        {
+            Assert.fail("Failed to read token");
+        }
+
+        tokenStore.deleteToken(uri);
+
+        Assert.assertFalse("Deleted token was read back", tokenStore.readToken(uri, readToken));
+    }
+
     @Test public void deserialize_newFormat()
     {
         byte[] input =
