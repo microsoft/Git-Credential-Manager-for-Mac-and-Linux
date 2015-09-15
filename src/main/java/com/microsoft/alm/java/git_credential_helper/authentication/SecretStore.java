@@ -175,7 +175,12 @@ public final class SecretStore extends BaseSecureStore implements ICredentialSto
         final String trimmedHostUrl = StringHelper.trimEnd(StringHelper.trimEnd(targetUri.getHost(), '/', '\\'));
 
 
-        final String targetName = String.format(tokenNameFormat, _namespace, targetUri.getScheme(), trimmedHostUrl);
+        String targetName = String.format(tokenNameFormat, _namespace, targetUri.getScheme(), trimmedHostUrl);
+
+        if (targetUri.getPort() != -1)
+        {
+            targetName += ":" + targetUri.getPort();
+        }
 
         Trace.writeLine("   target name = " + targetName);
 
