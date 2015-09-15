@@ -85,4 +85,22 @@ public class StringHelperTest
 
         Assert.assertEquals(StringHelper.Empty, StringHelper.join(StringHelper.Empty, arrayOfEmpty, 0, 3));
     }
+
+    @Test public void trimEnd_documentationExample()
+    {
+        final String actual = StringHelper.trimEnd("123abc456xyz789", '1', '2', '3', '4', '5', '6', '7', '8', '9');
+        Assert.assertEquals("123abc456xyz", actual);
+    }
+
+    @Test public void trimEnd_edgeCases()
+    {
+        Assert.assertEquals("", StringHelper.trimEnd("", ' ', '\t'));
+        Assert.assertEquals("a", StringHelper.trimEnd("a", ' '));
+        Assert.assertEquals("a", StringHelper.trimEnd("a", ' ', '\t'));
+        Assert.assertEquals("a", StringHelper.trimEnd("a ", ' '));
+        Assert.assertEquals("a", StringHelper.trimEnd("a ", ' ', '\t'));
+        Assert.assertEquals("a", StringHelper.trimEnd("a\t", ' ', '\t'));
+        Assert.assertEquals("a", StringHelper.trimEnd("a \t", ' ', '\t'));
+        Assert.assertEquals("", StringHelper.trimEnd(" ", ' ', '\t'));
+    }
 }

@@ -108,6 +108,39 @@ public class StringHelper
     }
 
     /**
+     * Removes all trailing occurrences of a set of characters specified in an array from s.
+     *
+     * @param s         The string to trim from.
+     * @param trimChars An array of Unicode characters to remove.
+     * @return          The string that remains after all occurrences of the characters in the
+     *                  trimChars parameter are removed from the end of the current string.
+     *                  If no characters can be trimmed from s, the method returns s.
+     */
+    public static String trimEnd(final String s, final char... trimChars)
+    {
+        int len = s.length();
+        if (trimChars == null || trimChars.length == 0)
+            throw new NotImplementedException();
+        while (len > 0)
+        {
+            final char current = s.charAt(len - 1);
+            boolean found = false;
+            for (final char c : trimChars)
+            {
+                if (current == c)
+                {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+                break;
+            len--;
+        }
+        return (len < s.length()) ? s.substring(0, len) : s;
+    }
+
+    /**
      * Equivalent to .NET's Encoding.UTF8.GetBytes(String)
      */
     public static byte[] UTF8GetBytes(final String value)
