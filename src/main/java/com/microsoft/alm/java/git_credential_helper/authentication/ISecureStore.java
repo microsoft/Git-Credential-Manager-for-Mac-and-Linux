@@ -1,7 +1,4 @@
-package com.microsoft.alm.java.git_credential_helper.helpers;
-
-import com.microsoft.alm.java.git_credential_helper.authentication.Credential;
-import com.microsoft.alm.java.git_credential_helper.authentication.Token;
+package com.microsoft.alm.java.git_credential_helper.authentication;
 
 public interface ISecureStore
 {

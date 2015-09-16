@@ -2,7 +2,7 @@ package com.microsoft.alm.java.git_credential_helper.cli;
 
 import com.microsoft.alm.java.git_credential_helper.authentication.Configuration;
 import com.microsoft.alm.java.git_credential_helper.authentication.IAuthentication;
-import com.microsoft.alm.java.git_credential_helper.helpers.ISecureStore;
+import com.microsoft.alm.java.git_credential_helper.authentication.ISecureStore;
 
 public interface IComponentFactory
 {
