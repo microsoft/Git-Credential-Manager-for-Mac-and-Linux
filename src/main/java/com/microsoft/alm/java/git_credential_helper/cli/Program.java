@@ -38,6 +38,29 @@ public class Program
     private final PrintStream standardOut;
     private final IComponentFactory componentFactory;
 
+    // http://stackoverflow.com/a/6773868/
+    static String getVersion()
+    {
+        if (_version == null)
+        {
+            _version = Program.class.getPackage().getImplementationVersion();
+        }
+        return _version;
+    }
+
+    private static String _version;
+
+    static String getTitle()
+    {
+        if (_title == null)
+        {
+            _title = Program.class.getPackage().getImplementationTitle();
+        }
+        return _title;
+    }
+
+    private static String _title;
+
     public static void main(final String[] args)
     {
         try
@@ -219,7 +242,9 @@ public class Program
     };
     private void printVersion()
     {
-        throw new NotImplementedException();
+        Trace.writeLine("Program::printVersion");
+
+        standardOut.println(String.format("%1$s version %2$s", getTitle(), getVersion()));
     }
 
     private void initialize(
