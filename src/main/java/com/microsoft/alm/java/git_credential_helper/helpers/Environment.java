@@ -26,6 +26,8 @@ public class Environment
         }
     }
 
+    public static final String NewLine = System.getProperty("line.separator");
+
     public enum SpecialFolder
     {
         Desktop,
