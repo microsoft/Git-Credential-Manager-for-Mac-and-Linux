@@ -1,10 +1,17 @@
 package com.microsoft.alm.java.git_credential_helper.cli;
 
 import com.microsoft.alm.java.git_credential_helper.authentication.BaseAuthentication;
+import com.microsoft.alm.java.git_credential_helper.authentication.BaseVsoAuthentication;
+import com.microsoft.alm.java.git_credential_helper.authentication.BasicAuthentication;
 import com.microsoft.alm.java.git_credential_helper.authentication.Configuration;
 import com.microsoft.alm.java.git_credential_helper.authentication.IAuthentication;
 import com.microsoft.alm.java.git_credential_helper.authentication.ISecureStore;
+import com.microsoft.alm.java.git_credential_helper.authentication.SecretStore;
+import com.microsoft.alm.java.git_credential_helper.authentication.VsoAadAuthentication;
+import com.microsoft.alm.java.git_credential_helper.authentication.VsoMsaAuthentication;
+import com.microsoft.alm.java.git_credential_helper.authentication.VsoTokenScope;
 import com.microsoft.alm.java.git_credential_helper.helpers.Debug;
+import com.microsoft.alm.java.git_credential_helper.helpers.Guid;
 import com.microsoft.alm.java.git_credential_helper.helpers.InsecureStore;
 import com.microsoft.alm.java.git_credential_helper.helpers.NotImplementedException;
 import com.microsoft.alm.java.git_credential_helper.helpers.Trace;
@@ -14,12 +21,15 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Program
 {
     private static final String ConfigPrefix = "credential";
+    private static final String SecretsNamespace = "git";
+    private static final VsoTokenScope VsoCredentialScope = VsoTokenScope.CodeWrite;
 
     private final InputStream standardIn;
     private final PrintStream standardOut;
@@ -189,7 +199,79 @@ public class Program
 
     private static IAuthentication createAuthentication(final OperationArguments operationArguments, final ISecureStore secureStore)
     {
-        throw new NotImplementedException();
+        Debug.Assert(operationArguments != null, "The operationArguments is null");
+
+        Trace.writeLine("Program::createAuthentication");
+
+        final SecretStore secrets = new SecretStore(secureStore, SecretsNamespace);
+        final AtomicReference<IAuthentication> authorityRef = new AtomicReference<IAuthentication>();
+
+        if (operationArguments.Authority == AuthorityType.Auto)
+        {
+            Trace.writeLine("   detecting authority type");
+
+            // detect the authority
+            if (BaseVsoAuthentication.getAuthentication(operationArguments.TargetUri,
+                    VsoCredentialScope,
+                    secrets,
+                    null,
+                    authorityRef)
+                    /* TODO: add GitHub support
+                    || GithubAuthentication.GetAuthentication(operationArguments.TargetUri,
+                    GithubCredentialScope,
+                    secrets,
+                    authorityRef)*/)
+            {
+                // set the authority type based on the returned value
+                if (authorityRef.get() instanceof VsoMsaAuthentication)
+                {
+                    operationArguments.Authority = AuthorityType.MicrosoftAccount;
+                }
+                else if (authorityRef.get() instanceof VsoAadAuthentication)
+                {
+                    operationArguments.Authority = AuthorityType.AzureDirectory;
+                }
+                /* TODO: add GitHub support
+                else if (authorityRef instanceof GithubAuthentication)
+                {
+                    operationArguments.Authority = AuthorityType.GitHub;
+                }
+                */
+            }
+
+            operationArguments.Authority = AuthorityType.Basic;
+        }
+
+        switch (operationArguments.Authority)
+        {
+            case AzureDirectory:
+                Trace.writeLine("   authority is Azure Directory");
+
+                UUID tenantId = Guid.Empty;
+                // return the allocated authority or a generic AAD backed VSO authentication object
+                return authorityRef.get() != null ? authorityRef.get() : new VsoAadAuthentication(Guid.Empty, VsoCredentialScope, secrets, null);
+
+            case Basic:
+            default:
+                Trace.writeLine("   authority is basic");
+
+                // return a generic username + password authentication object
+                return authorityRef.get() != null ? authorityRef.get() : new BasicAuthentication(secrets);
+
+            /* TODO: add GitHub support
+            case GitHub:
+                Trace.writeLine("    authority it GitHub");
+
+                // return a GitHub authentication object
+                return new GithubAuthentication(GithubCredentialScope, secrets);
+
+            */
+            case MicrosoftAccount:
+                Trace.writeLine("   authority is Microsoft Live");
+
+                // return the allocated authority or a generic MSA backed VSO authentication object
+                return authorityRef.get() != null ? authorityRef.get() : new VsoMsaAuthentication(VsoCredentialScope, secrets, null);
+        }
     }
 
     private static void loadOperationArguments(final OperationArguments operationArguments, final Configuration config) throws IOException
