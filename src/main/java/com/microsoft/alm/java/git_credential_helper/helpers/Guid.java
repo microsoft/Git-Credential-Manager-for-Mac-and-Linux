@@ -3,6 +3,7 @@ package com.microsoft.alm.java.git_credential_helper.helpers;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class Guid
 {
@@ -42,5 +43,18 @@ public class Guid
         bytes.putLong(value.getLeastSignificantBits());
 
         return bytes.array();
+    }
+
+    public static boolean tryParse(final String input, final AtomicReference<UUID> result)
+    {
+        try
+        {
+            result.set(UUID.fromString(input));
+            return true;
+        }
+        catch (final IllegalArgumentException ignored)
+        {
+            return false;
+        }
     }
 }
