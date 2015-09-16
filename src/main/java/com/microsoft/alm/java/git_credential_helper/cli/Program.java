@@ -9,19 +9,24 @@ import com.microsoft.alm.java.git_credential_helper.authentication.SecretStore;
 import com.microsoft.alm.java.git_credential_helper.authentication.VsoAadAuthentication;
 import com.microsoft.alm.java.git_credential_helper.authentication.VsoMsaAuthentication;
 import com.microsoft.alm.java.git_credential_helper.authentication.VsoTokenScope;
+import com.microsoft.alm.java.git_credential_helper.authentication.Where;
 import com.microsoft.alm.java.git_credential_helper.helpers.Debug;
+import com.microsoft.alm.java.git_credential_helper.helpers.Environment;
 import com.microsoft.alm.java.git_credential_helper.helpers.Guid;
 import com.microsoft.alm.java.git_credential_helper.helpers.InsecureStore;
 import com.microsoft.alm.java.git_credential_helper.helpers.NotImplementedException;
+import com.microsoft.alm.java.git_credential_helper.helpers.Path;
 import com.microsoft.alm.java.git_credential_helper.helpers.Trace;
 import org.apache.commons.io.IOUtils;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.URISyntaxException;
+import java.util.Calendar;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
@@ -466,9 +471,52 @@ public class Program
         //Trace.WriteLine("   " + eventType + "event written");
     }
 
-    private static void enableTraceLogging(final OperationArguments operationArguments)
+    private static void enableTraceLogging(final OperationArguments operationArguments) throws IOException
     {
-        throw new NotImplementedException();
+        final int LogFileMaxLength = 8 * 1024 * 1024; // 8 MB
+
+        Trace.writeLine("Program::EnableTraceLogging");
+
+        if (operationArguments.WriteLog)
+        {
+            Trace.writeLine("   trace logging enabled");
+
+            final AtomicReference<String> gitConfigPath = new AtomicReference<String>();
+            if (Where.gitLocalConfig(gitConfigPath))
+            {
+                Trace.writeLine("   git local config found at " + gitConfigPath.get());
+
+                final String dotGitPath = Path.getDirectoryName(gitConfigPath.get());
+                final String logFilePath = Path.combine(dotGitPath, Path.changeExtension(ConfigPrefix, ".log"));
+                final String logFileName = operationArguments.TargetUri.toString();
+
+                final File logFileInfo = new File(logFilePath);
+                if (logFileInfo.exists() && logFileInfo.length() > LogFileMaxLength)
+                {
+                    for (int i = 1; i < Integer.MAX_VALUE; i++)
+                    {
+                        final String moveName = String.format("%1$s%2$03d.log", ConfigPrefix, i);
+                        final String movePath = Path.combine(dotGitPath, moveName);
+                        final File moveFile = new File(movePath);
+
+                        if (!moveFile.isFile())
+                        {
+                            logFileInfo.renameTo(moveFile);
+                            break;
+                        }
+                    }
+                }
+
+                Trace.writeLine("   trace log destination is " + logFilePath);
+
+                final PrintStream listener = new PrintStream(logFilePath);
+                Trace.getListeners().add(listener);
+                // write a small header to help with identifying new log entries
+                listener.println(Environment.NewLine);
+                listener.println(String.format("Log Start (%1$tFT%1$tT%1$tZ)", Calendar.getInstance()));
+                listener.println(String.format("%1$s version %2$s", getTitle(), getVersion()));
+            }
+        }
     }
 
     private static void enableDebugTrace()
