@@ -170,13 +170,12 @@ public class Program
         throw new NotImplementedException();
     }
 
-    private static void loadOperationArguments(final OperationArguments operationArguments) throws IOException
+    private static void loadOperationArguments(final OperationArguments operationArguments, final Configuration config) throws IOException
     {
         Debug.Assert(operationArguments != null, "The operationsArguments parameter is null.");
 
         Trace.writeLine("Program::loadOperationArguments");
 
-        final Configuration config = new Configuration();
         final AtomicReference<Configuration.Entry> entryRef = new AtomicReference<Configuration.Entry>();
 
         if (config.tryGetEntry(ConfigPrefix, operationArguments.TargetUri, "authority", entryRef))
