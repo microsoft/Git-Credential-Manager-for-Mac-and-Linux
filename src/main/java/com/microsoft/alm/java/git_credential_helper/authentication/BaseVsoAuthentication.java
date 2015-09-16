@@ -233,7 +233,7 @@ public abstract class BaseVsoAuthentication extends BaseAuthentication
             final VsoTokenScope scope,
             final ICredentialStore personalAccessTokenStore,
             final ITokenStore adaRefreshTokenStore,
-            final AtomicReference<BaseAuthentication> authentication)
+            final AtomicReference<IAuthentication> authentication)
     {
         Trace.writeLine("BaseVsoAuthentication::getAuthentication");
 

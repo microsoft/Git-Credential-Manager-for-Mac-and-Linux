@@ -2,6 +2,7 @@ package com.microsoft.alm.java.git_credential_helper.cli;
 
 import com.microsoft.alm.java.git_credential_helper.authentication.BaseAuthentication;
 import com.microsoft.alm.java.git_credential_helper.authentication.Configuration;
+import com.microsoft.alm.java.git_credential_helper.authentication.IAuthentication;
 import com.microsoft.alm.java.git_credential_helper.helpers.Debug;
 import com.microsoft.alm.java.git_credential_helper.helpers.NotImplementedException;
 import com.microsoft.alm.java.git_credential_helper.helpers.Trace;
@@ -165,7 +166,7 @@ public class Program
         throw new NotImplementedException();
     }
 
-    private static BaseAuthentication createAuthentication(final OperationArguments operationArguments)
+    private static IAuthentication createAuthentication(final OperationArguments operationArguments)
     {
         throw new NotImplementedException();
     }
