@@ -1,7 +1,18 @@
 package com.microsoft.alm.java.git_credential_helper.authentication;
 
+import com.microsoft.alm.java.git_credential_helper.helpers.Guid;
 import com.microsoft.alm.java.git_credential_helper.helpers.NotImplementedException;
+import com.microsoft.alm.java.git_credential_helper.helpers.StringHelper;
+import com.microsoft.alm.java.git_credential_helper.helpers.Trace;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpHead;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.UUID;
 import java.util.concurrent.Future;
@@ -144,13 +155,66 @@ public abstract class BaseVsoAuthentication extends BaseAuthentication
     /**
      * Detects the backing authority of the end-point.
      *
-     * @param target   The resource which the authority protects.
-     * @param tenantId The identity of the authority tenant; null otherwise.
+     * @param targetUri The resource which the authority protects.
+     * @param tenantId  The identity of the authority tenant; null otherwise.
      * @return True if the authority is Visual Studio Online; false otherwise.
      */
-    public static boolean detectAuthority(final URI target, final AtomicReference<UUID> tenantId)
+    public static boolean detectAuthority(final URI targetUri, final AtomicReference<UUID> tenantId)
     {
-        throw new NotImplementedException();
+        final String VsoBaseUrlHost = "visualstudio.com";
+        final String VsoResourceTenantHeader = "X-VSS-ResourceTenant";
+
+        Trace.writeLine("BaseVsoAuthentication::detectAuthority");
+
+        tenantId.set(Guid.Empty);
+
+        if (StringHelper.endsWithIgnoreCase(targetUri.getHost(), VsoBaseUrlHost))
+        {
+            Trace.writeLine("   detected visualstudio.com, checking AAD vs MSA");
+
+            String tenant = null;
+
+
+            final CloseableHttpClient httpClient = HttpClients.custom()
+                    .setUserAgent(Global.getUserAgent())
+                    .disableRedirectHandling()
+                    .build();
+            try
+            {
+                // build a request that we expect to fail, do not allow redirect to sign in url
+                final HttpHead request = new HttpHead(targetUri);
+                final ResponseHandler<String> responseHandler = new ResponseHandler<String>()
+                {
+                    @Override public String handleResponse(final HttpResponse response) throws IOException
+                    {
+                        // if the response exists and we have headers, parse them
+                        if (response != null && response.containsHeader(VsoResourceTenantHeader))
+                        {
+                            Trace.writeLine("   server has responded");
+                            final Header header = response.getFirstHeader(VsoResourceTenantHeader);
+                            return header.getValue();
+                        }
+                        return null;
+                    }
+                };
+                tenant = httpClient.execute(request, responseHandler);
+
+                return !StringHelper.isNullOrWhiteSpace(tenant)
+                        && Guid.tryParse(tenant, tenantId);
+            }
+            catch (final IOException ignored)
+            {
+            }
+            finally
+            {
+                IOUtils.closeQuietly(httpClient);
+            }
+        }
+
+        Trace.writeLine("   failed detection");
+
+        // if all else fails, fallback to basic authentication
+        return false;
     }
 
     /**
@@ -171,6 +235,29 @@ public abstract class BaseVsoAuthentication extends BaseAuthentication
             final ITokenStore adaRefreshTokenStore,
             final AtomicReference<BaseAuthentication> authentication)
     {
-        throw new NotImplementedException();
+        Trace.writeLine("BaseVsoAuthentication::getAuthentication");
+
+        final AtomicReference<UUID> tenantId = new AtomicReference<UUID>();
+        if (detectAuthority(targetUri, tenantId))
+        {
+            // empty Guid is MSA, anything else is AAD
+            if (tenantId.get() == Guid.Empty)
+            {
+                Trace.writeLine("   MSA authority detected");
+                authentication.set(new VsoMsaAuthentication(scope, personalAccessTokenStore, adaRefreshTokenStore));
+            }
+            else
+            {
+                Trace.writeLine("   AAD authority for tenant '" + tenantId + "' detected");
+                authentication.set(new VsoAadAuthentication(tenantId.get(), scope, personalAccessTokenStore, adaRefreshTokenStore));
+                ((BaseVsoAuthentication)authentication.get()).TenantId = tenantId.get();
+            }
+        }
+        else
+        {
+            authentication.set(null);
+        }
+
+        return authentication.get() != null;
     }
 }
