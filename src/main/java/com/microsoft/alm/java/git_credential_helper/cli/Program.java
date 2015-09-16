@@ -3,7 +3,9 @@ package com.microsoft.alm.java.git_credential_helper.cli;
 import com.microsoft.alm.java.git_credential_helper.authentication.BaseAuthentication;
 import com.microsoft.alm.java.git_credential_helper.authentication.Configuration;
 import com.microsoft.alm.java.git_credential_helper.authentication.IAuthentication;
+import com.microsoft.alm.java.git_credential_helper.authentication.ISecureStore;
 import com.microsoft.alm.java.git_credential_helper.helpers.Debug;
+import com.microsoft.alm.java.git_credential_helper.helpers.InsecureStore;
 import com.microsoft.alm.java.git_credential_helper.helpers.NotImplementedException;
 import com.microsoft.alm.java.git_credential_helper.helpers.Trace;
 
@@ -21,13 +23,31 @@ public class Program
 
     private final InputStream standardIn;
     private final PrintStream standardOut;
+    private final IComponentFactory componentFactory;
 
     public static void main(final String[] args)
     {
         try
         {
             enableDebugTrace();
-            final Program program = new Program(System.in, System.out);
+            final Program program = new Program(System.in, System.out, new IComponentFactory()
+            {
+                @Override public IAuthentication createAuthentication(final OperationArguments operationArguments, final ISecureStore secureStore)
+                {
+                    return Program.createAuthentication(operationArguments, secureStore);
+                }
+
+                @Override public Configuration createConfiguration() throws IOException
+                {
+                    return new Configuration();
+                }
+
+                @Override public ISecureStore createSecureStore()
+                {
+                    // TODO: detect the operating system/capabilities and create the appropriate instance
+                    return new InsecureStore();
+                }
+            });
 
             program.innerMain(args);
         }
@@ -68,10 +88,11 @@ public class Program
         }
     }
 
-    public Program(final InputStream standardIn, final PrintStream standardOut)
+    public Program(final InputStream standardIn, final PrintStream standardOut, final IComponentFactory componentFactory)
     {
         this.standardIn = standardIn;
         this.standardOut = standardOut;
+        this.componentFactory = componentFactory;
     }
 
     private void printHelpMessage()
@@ -166,7 +187,7 @@ public class Program
         throw new NotImplementedException();
     }
 
-    private static IAuthentication createAuthentication(final OperationArguments operationArguments)
+    private static IAuthentication createAuthentication(final OperationArguments operationArguments, final ISecureStore secureStore)
     {
         throw new NotImplementedException();
     }
