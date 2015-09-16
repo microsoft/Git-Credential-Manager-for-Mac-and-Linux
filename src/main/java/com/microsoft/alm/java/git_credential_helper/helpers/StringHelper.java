@@ -71,6 +71,21 @@ public class StringHelper
      * @param separator  The string to use as a separator.
      *                   separator is included in the returned string only if value has more than one element.
      * @param value      An array that contains the elements to concatenate.
+     * @return           A string that consists of the strings in value delimited by the separator string.
+     *                   If value is an empty array, the method returns {@link StringHelper#Empty}.
+     */
+    public static String join(final String separator, final String[] value)
+    {
+        return join(separator, value, 0, separator.length() - 1);
+    }
+
+    /**
+     * Concatenates the specified elements of a string array,
+     * using the specified separator between each element.
+     *
+     * @param separator  The string to use as a separator.
+     *                   separator is included in the returned string only if value has more than one element.
+     * @param value      An array that contains the elements to concatenate.
      * @param startIndex The first element in value to use.
      * @param count      The number of elements of value to use.
      * @return           A string that consists of the strings in value delimited by the separator string.
