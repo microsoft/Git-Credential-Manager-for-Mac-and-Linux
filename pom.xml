@@ -7,7 +7,7 @@
   <version>1.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>git-credential-helper</name>
+  <name>Microsoft Git Credential Manager for Java</name>
   <url>http://maven.apache.org</url>
 
   <properties>
