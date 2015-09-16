@@ -1,6 +1,5 @@
 package com.microsoft.alm.java.git_credential_helper.cli;
 
-import com.microsoft.alm.java.git_credential_helper.authentication.BaseAuthentication;
 import com.microsoft.alm.java.git_credential_helper.authentication.BaseVsoAuthentication;
 import com.microsoft.alm.java.git_credential_helper.authentication.BasicAuthentication;
 import com.microsoft.alm.java.git_credential_helper.authentication.Configuration;
@@ -15,10 +14,14 @@ import com.microsoft.alm.java.git_credential_helper.helpers.Guid;
 import com.microsoft.alm.java.git_credential_helper.helpers.InsecureStore;
 import com.microsoft.alm.java.git_credential_helper.helpers.NotImplementedException;
 import com.microsoft.alm.java.git_credential_helper.helpers.Trace;
+import org.apache.commons.io.IOUtils;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
@@ -147,39 +150,61 @@ public class Program
 
     private final Callable<Void> Erase = new Callable<Void>()
     {
-        @Override public Void call()
+        @Override public Void call() throws IOException, URISyntaxException
         {
             erase();
             return null;
         }
     };
-    private void erase()
+    private void erase() throws IOException, URISyntaxException
+    {
+        final AtomicReference<OperationArguments> operationArgumentsRef = new AtomicReference<OperationArguments>();
+        final AtomicReference<IAuthentication> authenticationRef = new AtomicReference<IAuthentication>();
+        initialize("erase", operationArgumentsRef, authenticationRef);
+        erase(operationArgumentsRef.get(), authenticationRef.get());
+    }
+    public static void erase(final OperationArguments operationArguments, final IAuthentication authentication)
     {
         throw new NotImplementedException();
     }
 
     private final Callable<Void> Get = new Callable<Void>()
     {
-        @Override public Void call()
+        @Override public Void call() throws IOException, URISyntaxException
         {
             get();
             return null;
         }
     };
-    private void get()
+    private void get() throws IOException, URISyntaxException
+    {
+        final AtomicReference<OperationArguments> operationArgumentsRef = new AtomicReference<OperationArguments>();
+        final AtomicReference<IAuthentication> authenticationRef = new AtomicReference<IAuthentication>();
+        initialize("get", operationArgumentsRef, authenticationRef);
+        final String result = get(operationArgumentsRef.get(), authenticationRef.get());
+        standardOut.print(result);
+    }
+    public static String get(final OperationArguments operationArguments, final IAuthentication authentication)
     {
         throw new NotImplementedException();
     }
 
     private final Callable<Void> Store = new Callable<Void>()
     {
-        @Override public Void call()
+        @Override public Void call() throws IOException, URISyntaxException
         {
             store();
             return null;
         }
     };
-    private void store()
+    private void store() throws IOException, URISyntaxException
+    {
+        final AtomicReference<OperationArguments> operationArgumentsRef = new AtomicReference<OperationArguments>();
+        final AtomicReference<IAuthentication> authenticationRef = new AtomicReference<IAuthentication>();
+        initialize("store", operationArgumentsRef, authenticationRef);
+        store(operationArgumentsRef.get(), authenticationRef.get());
+    }
+    public static void store(final OperationArguments operationArguments, final IAuthentication authentication)
     {
         throw new NotImplementedException();
     }
@@ -195,6 +220,42 @@ public class Program
     private void printVersion()
     {
         throw new NotImplementedException();
+    }
+
+    private void initialize(
+        final String methodName,
+        final AtomicReference<OperationArguments> operationArgumentsRef,
+        final AtomicReference<IAuthentication> authenticationRef
+    ) throws IOException, URISyntaxException
+    {
+        // parse the operations arguments from stdin (this is how git sends commands)
+        // see: https://www.kernel.org/pub/software/scm/git/docs/technical/api-credentials.html
+        // see: https://www.kernel.org/pub/software/scm/git/docs/git-credential.html
+        final OperationArguments operationArguments;
+        final BufferedReader reader = new BufferedReader(new InputStreamReader(standardIn));
+        try
+        {
+            operationArguments = new OperationArguments(reader);
+        }
+        finally
+        {
+            IOUtils.closeQuietly(reader);
+        }
+
+        Debug.Assert(operationArguments.TargetUri != null, "The operationArguments.TargetUri is null");
+
+        final Configuration config = componentFactory.createConfiguration();
+        loadOperationArguments(operationArguments, config);
+        enableTraceLogging(operationArguments);
+
+        Trace.writeLine("Program::" + methodName);
+        Trace.writeLine("   targetUri = " + operationArguments.TargetUri);
+
+        final ISecureStore secureStore = componentFactory.createSecureStore();
+        final IAuthentication authentication = componentFactory.createAuthentication(operationArguments, secureStore);
+
+        operationArgumentsRef.set(operationArguments);
+        authenticationRef.set(authentication);
     }
 
     private static IAuthentication createAuthentication(final OperationArguments operationArguments, final ISecureStore secureStore)
@@ -378,6 +439,11 @@ public class Program
         //EventLog.WriteEntry(EventSource, message, eventType);
 
         //Trace.WriteLine("   " + eventType + "event written");
+    }
+
+    private static void enableTraceLogging(final OperationArguments operationArguments)
+    {
+        throw new NotImplementedException();
     }
 
     private static void enableDebugTrace()
