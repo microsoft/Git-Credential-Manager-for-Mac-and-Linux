@@ -3,6 +3,7 @@ package com.microsoft.alm.java.git_credential_helper.cli;
 import com.microsoft.alm.java.git_credential_helper.authentication.BaseVsoAuthentication;
 import com.microsoft.alm.java.git_credential_helper.authentication.BasicAuthentication;
 import com.microsoft.alm.java.git_credential_helper.authentication.Configuration;
+import com.microsoft.alm.java.git_credential_helper.authentication.Credential;
 import com.microsoft.alm.java.git_credential_helper.authentication.IAuthentication;
 import com.microsoft.alm.java.git_credential_helper.authentication.ISecureStore;
 import com.microsoft.alm.java.git_credential_helper.authentication.SecretStore;
@@ -16,6 +17,7 @@ import com.microsoft.alm.java.git_credential_helper.helpers.Guid;
 import com.microsoft.alm.java.git_credential_helper.helpers.InsecureStore;
 import com.microsoft.alm.java.git_credential_helper.helpers.NotImplementedException;
 import com.microsoft.alm.java.git_credential_helper.helpers.Path;
+import com.microsoft.alm.java.git_credential_helper.helpers.StringHelper;
 import com.microsoft.alm.java.git_credential_helper.helpers.Trace;
 import org.apache.commons.io.IOUtils;
 
@@ -31,6 +33,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Program
@@ -198,13 +201,13 @@ public class Program
 
     private final Callable<Void> Get = new Callable<Void>()
     {
-        @Override public Void call() throws IOException, URISyntaxException
+        @Override public Void call() throws IOException, URISyntaxException, ExecutionException, InterruptedException
         {
             get();
             return null;
         }
     };
-    private void get() throws IOException, URISyntaxException
+    private void get() throws IOException, URISyntaxException, ExecutionException, InterruptedException
     {
         final AtomicReference<OperationArguments> operationArgumentsRef = new AtomicReference<OperationArguments>();
         final AtomicReference<IAuthentication> authenticationRef = new AtomicReference<IAuthentication>();
@@ -212,9 +215,40 @@ public class Program
         final String result = get(operationArgumentsRef.get(), authenticationRef.get());
         standardOut.print(result);
     }
-    public static String get(final OperationArguments operationArguments, final IAuthentication authentication)
+    public static String get(final OperationArguments operationArguments, final IAuthentication authentication) throws ExecutionException, InterruptedException
     {
-        throw new NotImplementedException();
+        final String AadMsaAuthFailureMessage = "Logon failed, use ctrl+c to cancel basic credential prompt.";
+        final String GitHubAuthFailureMessage = "Logon failed, use ctrl+c to cancel basic credential prompt.";
+
+        final AtomicReference<Credential> credentials = new AtomicReference<Credential>();
+
+        switch (operationArguments.Authority)
+        {
+            default:
+            case Basic:
+                if (authentication.getCredentials(operationArguments.TargetUri, credentials))
+                {
+                    Trace.writeLine("   credentials found");
+                    operationArguments.setCredentials(credentials.get());
+                }
+                break;
+
+            case AzureDirectory:
+                throw new NotImplementedException();
+
+            case MicrosoftAccount:
+                throw new NotImplementedException();
+
+            case GitHub:
+                throw new NotImplementedException();
+
+            case Integrated:
+                credentials.set(new Credential(StringHelper.Empty, StringHelper.Empty));
+                operationArguments.setCredentials(credentials.get());
+                break;
+        }
+
+        return operationArguments.toString();
     }
 
     private final Callable<Void> Store = new Callable<Void>()
