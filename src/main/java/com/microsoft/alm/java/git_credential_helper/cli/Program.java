@@ -196,7 +196,7 @@ public class Program
     }
     public static void erase(final OperationArguments operationArguments, final IAuthentication authentication)
     {
-        throw new NotImplementedException();
+        authentication.deleteCredentials(operationArguments.TargetUri);
     }
 
     private final Callable<Void> Get = new Callable<Void>()
