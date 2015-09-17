@@ -1,6 +1,6 @@
 package com.microsoft.alm.java.git_credential_helper.authentication;
 
-import com.microsoft.alm.java.git_credential_helper.helpers.NotImplementedException;
+import com.microsoft.alm.java.git_credential_helper.helpers.Trace;
 
 import java.net.URI;
 import java.util.concurrent.atomic.AtomicReference;
@@ -15,18 +15,13 @@ public class BasicAuthentication extends BaseAuthentication implements IAuthenti
      */
     public BasicAuthentication(final ICredentialStore credentialStore)
     {
-        throw new NotImplementedException();
+        if (credentialStore == null)
+            throw new IllegalArgumentException("The `credentialStore` parameter is null or invalid.");
+
+        this.CredentialStore = credentialStore;
     }
 
-    private ICredentialStore credentialStore;
-    ICredentialStore getCredentialStore()
-    {
-        return credentialStore;
-    }
-    void setCredentialStore(final ICredentialStore value)
-    {
-        credentialStore = value;
-    }
+    ICredentialStore CredentialStore;
 
     /**
      * Deletes a {@link Credential} from the storage used by the authentication object.
@@ -36,7 +31,11 @@ public class BasicAuthentication extends BaseAuthentication implements IAuthenti
      */
     @Override public void deleteCredentials(final URI targetUri)
     {
-        throw new NotImplementedException();
+        BaseSecureStore.validateTargetUri(targetUri);
+
+        Trace.writeLine("BasicAuthentication::deleteCredentials");
+
+        this.CredentialStore.deleteCredentials(targetUri);
     }
     /**
      * Gets a {@link Credential} from the storage used by the authentication object.
@@ -52,7 +51,13 @@ public class BasicAuthentication extends BaseAuthentication implements IAuthenti
      */
     @Override public boolean getCredentials(final URI targetUri, final AtomicReference<Credential> credentials)
     {
-        throw new NotImplementedException();
+        BaseSecureStore.validateTargetUri(targetUri);
+
+        Trace.writeLine("BasicAuthentication::getCredentials");
+
+        this.CredentialStore.readCredentials(targetUri, credentials);
+
+        return credentials.get() != null;
     }
     /**
      * Sets a {@link Credential} in the storage used by the authentication object.
@@ -66,6 +71,12 @@ public class BasicAuthentication extends BaseAuthentication implements IAuthenti
      */
     @Override public boolean setCredentials(final URI targetUri, final Credential credentials)
     {
-        throw new NotImplementedException();
+        BaseSecureStore.validateTargetUri(targetUri);
+        Credential.validate(credentials);
+
+        Trace.writeLine("BasicAuthentication::setCredentials");
+
+        this.CredentialStore.writeCredentials(targetUri, credentials);
+        return true;
     }
 }
