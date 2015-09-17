@@ -99,6 +99,10 @@ public class Program
         {
             Trace.writeLine("Fatal: " + exception.toString());
             System.err.println("Fatal: " + exception.getClass().getName() + " encountered.");
+            if (Debug.IsDebug)
+            {
+                exception.printStackTrace(System.err);
+            }
             logEvent(exception.getMessage(), "EventLogEntryType.Error");
         }
 
