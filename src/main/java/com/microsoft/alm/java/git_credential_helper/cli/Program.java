@@ -89,7 +89,9 @@ public class Program
                 @Override public ISecureStore createSecureStore()
                 {
                     // TODO: detect the operating system/capabilities and create the appropriate instance
-                    return new InsecureStore();
+                    final String home = Environment.getFolderPath(Environment.SpecialFolder.UserProfile);
+                    final File insecureFile = new File(home, "insecureStore.xml");
+                    return new InsecureStore(insecureFile);
                 }
             });
 
