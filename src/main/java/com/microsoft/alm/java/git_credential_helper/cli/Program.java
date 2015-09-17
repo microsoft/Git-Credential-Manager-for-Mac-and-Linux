@@ -268,7 +268,10 @@ public class Program
     }
     public static void store(final OperationArguments operationArguments, final IAuthentication authentication)
     {
-        throw new NotImplementedException();
+        Debug.Assert(operationArguments.getUserName() != null, "The operationArguments.Username is null");
+
+        final Credential credentials = new Credential(operationArguments.getUserName(), operationArguments.getPassword());
+        authentication.setCredentials(operationArguments.TargetUri, credentials);
     }
 
     private final Callable<Void> PrintVersion = new Callable<Void>()
