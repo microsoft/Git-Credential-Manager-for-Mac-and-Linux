@@ -5,6 +5,7 @@ import com.microsoft.alm.java.git_credential_helper.helpers.NotImplementedExcept
 final class Global
 {
     public static final int PasswordMaxLength = 2047;
+    public static final int UsernameMaxLength = 511;
 
     private static String userAgent = null;
 
