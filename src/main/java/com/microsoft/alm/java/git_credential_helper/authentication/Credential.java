@@ -1,6 +1,7 @@
 package com.microsoft.alm.java.git_credential_helper.authentication;
 
 import com.microsoft.alm.java.git_credential_helper.helpers.NotImplementedException;
+import com.microsoft.alm.java.git_credential_helper.helpers.ObjectExtensions;
 import com.microsoft.alm.java.git_credential_helper.helpers.StringHelper;
 
 /**
@@ -18,7 +19,8 @@ public final class Credential extends Secret // TODO: implements IEquatable<Cred
      */
     public Credential(final String username, final String password)
     {
-        throw new NotImplementedException();
+        this.Username = ObjectExtensions.coalesce(username, StringHelper.Empty);
+        this.Password = ObjectExtensions.coalesce(password, StringHelper.Empty);
     }
     /**
      * Creates a credential object with only a username.
@@ -47,8 +49,9 @@ public final class Credential extends Secret // TODO: implements IEquatable<Cred
      */
     @Override public boolean equals(final Object obj)
     {
-        throw new NotImplementedException();
+        return operatorEquals(this, obj instanceof Credential ? ((Credential) obj) : null);
     }
+    // PORT NOTE: Java doesn't support a specific overload (as per IEquatable<T>)
     /**
      * Gets a hash code based on the contents of the {@link Credential}.
      *
@@ -56,12 +59,20 @@ public final class Credential extends Secret // TODO: implements IEquatable<Cred
      */
     @Override public int hashCode()
     {
-        throw new NotImplementedException();
+        // PORT NOTE: Java doesn't have unchecked blocks; the default behaviour is apparently equivalent.
+        {
+            return Username.hashCode() + 7 * Password.hashCode();
+        }
     }
 
     static void validate(final Credential credentials)
     {
-        throw new NotImplementedException();
+        if (credentials == null)
+            throw new IllegalArgumentException("The credentials parameter cannot be null");
+        if (credentials.Password.length() > Global.PasswordMaxLength)
+            throw new IllegalArgumentException(String.format("The Password field of the credentials parameter cannot be longer than %1$d characters.", Global.PasswordMaxLength));
+        if (credentials.Username.length() > Global.UsernameMaxLength)
+            throw new IllegalArgumentException(String.format("The Username field of the credentials parameter cannot be longer than %1$d characters.", Global.UsernameMaxLength));
     }
 
     /**
@@ -71,9 +82,15 @@ public final class Credential extends Secret // TODO: implements IEquatable<Cred
      * @param credential2 Credential to compare.
      * @return True if equal; false otherwise.
      */
-    public static boolean operatorEqual(final Credential credential1, final Credential credential2)
+    public static boolean operatorEquals(final Credential credential1, final Credential credential2)
     {
-        throw new NotImplementedException();
+        if (credential1 == credential2)
+            return true;
+        if ((credential1 == null) || (null == credential2))
+            return false;
+
+        return credential1.Username.equals(credential2.Username)
+                && credential1.Password.equals(credential2.Password);
     }
     /**
      * Compares two credentials for inequality.
@@ -82,8 +99,8 @@ public final class Credential extends Secret // TODO: implements IEquatable<Cred
      * @param credential2 Credential to compare.
      * @return False if equal; true otherwise.
      */
-    public static boolean operatorNotEqual(final Credential credential1, final Credential credential2)
+    public static boolean operatorNotEquals(final Credential credential1, final Credential credential2)
     {
-        throw new NotImplementedException();
+        return !operatorEquals(credential1, credential2);
     }
 }
