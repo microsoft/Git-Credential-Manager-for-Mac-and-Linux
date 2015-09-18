@@ -27,7 +27,7 @@ public abstract class BaseVsoAuthentication extends BaseAuthentication
     public static final String DefaultClientId = "872cd9fa-d31f-45e0-9eab-6e460a02d1f1";
     public static final String RedirectUrl = "urn:ietf:wg:oauth:2.0:oob";
 
-    protected static final String AdalRefreshPrefx = "ada";
+    protected static final String AdalRefreshPrefix = "ada";
 
     private BaseVsoAuthentication(final VsoTokenScope tokenScope, final ICredentialStore personalAccessTokenStore)
     {
