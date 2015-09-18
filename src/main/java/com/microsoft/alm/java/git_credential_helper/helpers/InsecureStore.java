@@ -80,10 +80,13 @@ public class InsecureStore implements ISecureStore
     {
         if (backingFile != null)
         {
+            // TODO: consider creating a backup of the file, if it exists, before overwriting it
             FileOutputStream fos = null;
             try
             {
                 fos = new FileOutputStream(backingFile);
+                final PrintStream printStream = new PrintStream(fos);
+                toXml(printStream);
             }
             catch (final FileNotFoundException e)
             {

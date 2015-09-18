@@ -54,6 +54,25 @@ public class InsecureStoreTest
         }
     }
 
+    @Test public void save_toFile() throws IOException
+    {
+        File tempFile = null;
+        try
+        {
+            tempFile = File.createTempFile(this.getClass().getSimpleName(), null);
+            final InsecureStore cut = new InsecureStore(tempFile);
+
+            cut.save();
+
+            Assert.assertTrue(tempFile.length() > 0);
+        }
+        finally
+        {
+            if (tempFile != null)
+                tempFile.delete();
+        }
+    }
+
     static InsecureStore clone(InsecureStore inputStore)
     {
         ByteArrayOutputStream baos = null;
