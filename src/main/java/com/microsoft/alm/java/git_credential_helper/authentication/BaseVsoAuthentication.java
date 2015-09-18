@@ -1,5 +1,6 @@
 package com.microsoft.alm.java.git_credential_helper.authentication;
 
+import com.microsoft.alm.java.git_credential_helper.helpers.Debug;
 import com.microsoft.alm.java.git_credential_helper.helpers.Guid;
 import com.microsoft.alm.java.git_credential_helper.helpers.NotImplementedException;
 import com.microsoft.alm.java.git_credential_helper.helpers.StringHelper;
@@ -29,9 +30,20 @@ public abstract class BaseVsoAuthentication extends BaseAuthentication
 
     protected static final String AdalRefreshPrefix = "ada";
 
-    private BaseVsoAuthentication(final VsoTokenScope tokenScope, final ICredentialStore personalAccessTokenStore)
+    private BaseVsoAuthentication(final VsoTokenScope tokenScope, final ICredentialStore personalAccessTokenStore, final ITokenStore vsoIdeTokenCache, final ITokenStore adaRefreshTokenStore, final IVsoAuthority vsoAuthority)
     {
-        throw new NotImplementedException();
+        if (tokenScope == null)
+            throw new IllegalArgumentException("The `tokenScope` parameter is null.");
+        if (personalAccessTokenStore == null)
+            throw new IllegalArgumentException("The `personalAccessTokenStore` parameter is null.");
+
+        this.ClientId = DefaultClientId;
+        this.Resource = DefaultResource;
+        this.TokenScope = tokenScope;
+        this.VsoIdeTokenCache = vsoIdeTokenCache;
+        this.PersonalAccessTokenStore = personalAccessTokenStore;
+        this.AdaRefreshTokenStore = adaRefreshTokenStore != null ? adaRefreshTokenStore : new SecretStore(null /* TODO: */, AdalRefreshPrefix);
+        this.VsoAuthority = vsoAuthority;
     }
     /**
      * Invoked by a derived classes implementation. Allows custom back-end implementations to be used.
@@ -46,7 +58,7 @@ public abstract class BaseVsoAuthentication extends BaseAuthentication
             final ITokenStore adaRefreshTokenStore
     )
     {
-        throw new NotImplementedException();
+        this(tokenScope, personalAccessTokenStore, null /* TODO: new TokenRegistry() */, adaRefreshTokenStore, new VsoAzureAuthority());
     }
     BaseVsoAuthentication(
             final ICredentialStore personalAccessTokenStore,
@@ -54,7 +66,11 @@ public abstract class BaseVsoAuthentication extends BaseAuthentication
             final ITokenStore vsoIdeTokenCache,
             final IVsoAuthority vsoAuthority)
     {
-        throw new NotImplementedException();
+        this(VsoTokenScope.ProfileRead, personalAccessTokenStore, vsoIdeTokenCache, adaRefreshTokenStore, vsoAuthority);
+
+        Debug.Assert(adaRefreshTokenStore != null, "The adaRefreshTokenStore parameter is null.");
+        Debug.Assert(vsoIdeTokenCache != null, "The vsoIdeTokenCache parameter is null.");
+        Debug.Assert(vsoAuthority != null, "The vsoAuthority parameter is null.");
     }
 
     /**
