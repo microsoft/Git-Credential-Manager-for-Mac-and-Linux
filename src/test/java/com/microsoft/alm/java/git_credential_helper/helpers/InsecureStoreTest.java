@@ -10,7 +10,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 
 public class InsecureStoreTest
 {
@@ -80,10 +79,8 @@ public class InsecureStoreTest
         try
         {
             baos = new ByteArrayOutputStream();
-            final PrintStream ps = new PrintStream(baos);
 
-            inputStore.toXml(ps);
-            ps.flush();
+            inputStore.toXml(baos);
 
             final String xmlString = baos.toString();
 

@@ -16,7 +16,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.PrintStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -85,8 +85,7 @@ public class InsecureStore implements ISecureStore
             try
             {
                 fos = new FileOutputStream(backingFile);
-                final PrintStream printStream = new PrintStream(fos);
-                toXml(printStream);
+                toXml(fos);
             }
             catch (final FileNotFoundException e)
             {
@@ -115,7 +114,7 @@ public class InsecureStore implements ISecureStore
         }
     }
 
-    public void toXml(final PrintStream destination)
+    public void toXml(final OutputStream destination)
     {
         try
         {
