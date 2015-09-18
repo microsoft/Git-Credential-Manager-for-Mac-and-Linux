@@ -8,6 +8,8 @@ import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 
 public class InsecureStoreTest
@@ -30,6 +32,26 @@ public class InsecureStoreTest
 
         Assert.assertEquals(1, actual.Credentials.size());
         Assert.assertTrue(actual.Credentials.containsKey("charlie"));
+    }
+
+    @Test public void reload_emptyFile() throws IOException
+    {
+        File tempFile = null;
+        try
+        {
+            tempFile = File.createTempFile(this.getClass().getSimpleName(), null);
+            Assert.assertEquals(0L, tempFile.length());
+
+            final InsecureStore cut = new InsecureStore(tempFile);
+
+            Assert.assertEquals(0, cut.Tokens.size());
+            Assert.assertEquals(0, cut.Credentials.size());
+        }
+        finally
+        {
+            if (tempFile != null)
+                tempFile.delete();
+        }
     }
 
     static InsecureStore clone(InsecureStore inputStore)

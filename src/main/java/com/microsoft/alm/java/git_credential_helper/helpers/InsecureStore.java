@@ -56,12 +56,14 @@ public class InsecureStore implements ISecureStore
             {
                 fis = new FileInputStream(backingFile);
                 final InsecureStore clone = fromXml(fis);
+                if (clone != null)
+                {
+                    this.Tokens.clear();
+                    this.Tokens.putAll(clone.Tokens);
 
-                this.Tokens.clear();
-                this.Tokens.putAll(clone.Tokens);
-
-                this.Credentials.clear();
-                this.Credentials.putAll(clone.Credentials);
+                    this.Credentials.clear();
+                    this.Credentials.putAll(clone.Credentials);
+                }
             }
             catch (FileNotFoundException e)
             {
@@ -105,7 +107,8 @@ public class InsecureStore implements ISecureStore
         }
         catch (final JAXBException e)
         {
-            throw new Error(e);
+            Trace.writeLine("Warning: unable to deserialize InsecureStore. Is the file corrupted?");
+            return null;
         }
     }
 
