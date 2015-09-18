@@ -14,6 +14,7 @@ class VsoAzureAuthority extends AzureAuthority implements IVsoAuthority
      */
     public static final int RequestTimeout = 15 * 1000; // 15 second limit
 
+    public VsoAzureAuthority() { this (null); }
     public VsoAzureAuthority(final String authorityHostUrl)
     {
         super();
