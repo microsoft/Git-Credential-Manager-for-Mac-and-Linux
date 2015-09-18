@@ -135,16 +135,13 @@ public class InsecureStore implements ISecureStore
         if (Tokens.containsKey(targetName))
         {
             Tokens.remove(targetName);
+            save();
         }
         else if (Credentials.containsKey(targetName))
         {
             Credentials.remove(targetName);
+            save();
         }
-        else
-        {
-            throw new IllegalArgumentException("targetName '" + targetName + "' is neither a token nor a credential.");
-        }
-        save();
     }
 
     @Override

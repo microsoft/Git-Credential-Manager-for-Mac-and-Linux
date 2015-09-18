@@ -14,6 +14,18 @@ import java.io.IOException;
 
 public class InsecureStoreTest
 {
+    /**
+     * {@link InsecureStore#delete(String)} must not throw an exception for an invalid key,
+     * because when entering incorrect credentials, git will issue an "erase" command on an entry
+     * that may not actually be there, so we shouldn't panic and instead just calmly carry on.
+     */
+    @Test public void delete_noMatchingTokenOrCredential()
+    {
+        final InsecureStore cut = new InsecureStore();
+
+        cut.delete("foo");
+    }
+
     @Test public void serialization_instanceToXmlToInstance()
     {
         final InsecureStore input = new InsecureStore();
