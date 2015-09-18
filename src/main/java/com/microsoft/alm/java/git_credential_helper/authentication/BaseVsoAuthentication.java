@@ -2,6 +2,7 @@ package com.microsoft.alm.java.git_credential_helper.authentication;
 
 import com.microsoft.alm.java.git_credential_helper.helpers.Debug;
 import com.microsoft.alm.java.git_credential_helper.helpers.Guid;
+import com.microsoft.alm.java.git_credential_helper.helpers.InsecureStore;
 import com.microsoft.alm.java.git_credential_helper.helpers.StringHelper;
 import com.microsoft.alm.java.git_credential_helper.helpers.Trace;
 import org.apache.commons.io.IOUtils;
@@ -44,7 +45,7 @@ public abstract class BaseVsoAuthentication extends BaseAuthentication
         this.TokenScope = tokenScope;
         this.VsoIdeTokenCache = vsoIdeTokenCache;
         this.PersonalAccessTokenStore = personalAccessTokenStore;
-        this.AdaRefreshTokenStore = adaRefreshTokenStore != null ? adaRefreshTokenStore : new SecretStore(null /* TODO: */, AdalRefreshPrefix);
+        this.AdaRefreshTokenStore = adaRefreshTokenStore != null ? adaRefreshTokenStore : new SecretStore(new InsecureStore() /* TODO: replace with an appropriate ISecureStore */, AdalRefreshPrefix);
         this.VsoAuthority = vsoAuthority;
     }
     /**
@@ -60,7 +61,7 @@ public abstract class BaseVsoAuthentication extends BaseAuthentication
             final ITokenStore adaRefreshTokenStore
     )
     {
-        this(tokenScope, personalAccessTokenStore, null /* TODO: new TokenRegistry() */, adaRefreshTokenStore, new VsoAzureAuthority());
+        this(tokenScope, personalAccessTokenStore, new SecretStore(new InsecureStore(), "registry") /* TODO: replace with a TokenRegistry implementation */, adaRefreshTokenStore, new VsoAzureAuthority());
     }
     BaseVsoAuthentication(
             final ICredentialStore personalAccessTokenStore,
