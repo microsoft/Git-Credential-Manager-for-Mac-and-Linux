@@ -236,6 +236,24 @@ public class Token extends Secret // TODO: implements IEquatable<Token>
     }
 
     /**
+     * Explicitly casts a personal access token token into a set of credentials
+     *
+     * @param token The {@link Token} to convert.
+     * @throws IllegalArgumentException if the {@link Token#Type} is not {@link TokenType#Personal}.
+     */
+    // PORT NOTE: Java doesn't have cast operator overloading
+    public static Credential toCredential(final Token token)
+    {
+        if (token == null)
+            return null;
+
+        if (token.Type != TokenType.Personal)
+            throw new IllegalArgumentException("Cannot convert " + token.toString() + " to credentials");
+
+        return new Credential(token.toString(), token.Value);
+    }
+
+    /**
      * Compares two tokens for equality.
      *
      * @param token1 Token to compare.
