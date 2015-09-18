@@ -1,5 +1,6 @@
 package com.microsoft.alm.java.git_credential_helper.helpers;
 
+import com.microsoft.alm.java.git_credential_helper.authentication.Credential;
 import com.microsoft.alm.java.git_credential_helper.authentication.Token;
 import com.microsoft.alm.java.git_credential_helper.authentication.TokenType;
 import org.apache.commons.io.IOUtils;
@@ -20,6 +21,8 @@ public class InsecureStoreTest
         input.Tokens.put("alpha", null);
         input.Tokens.put("bravo", inputBravo);
         input.Credentials.put("charlie", null);
+        final Credential inputDelta = new Credential("douglas.adams", "42");
+        input.Credentials.put("delta", inputDelta);
 
         final InsecureStore actual = clone(input);
 
@@ -27,10 +30,14 @@ public class InsecureStoreTest
         Assert.assertTrue(actual.Tokens.containsKey("alpha"));
         final Token actualBravo = actual.Tokens.get("bravo");
         Assert.assertEquals("42", actualBravo.Value);
+        Assert.assertEquals(TokenType.Test, actualBravo.Type);
         Assert.assertFalse(actual.Tokens.containsKey("charlie"));
 
-        Assert.assertEquals(1, actual.Credentials.size());
+        Assert.assertEquals(2, actual.Credentials.size());
         Assert.assertTrue(actual.Credentials.containsKey("charlie"));
+        final Credential actualDelta = actual.Credentials.get("delta");
+        Assert.assertEquals("douglas.adams", actualDelta.Username);
+        Assert.assertEquals("42", actualDelta.Password);
     }
 
     @Test public void reload_emptyFile() throws IOException
