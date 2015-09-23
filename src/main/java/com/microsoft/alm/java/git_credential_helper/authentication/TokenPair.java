@@ -1,6 +1,8 @@
 package com.microsoft.alm.java.git_credential_helper.authentication;
 
+import com.microsoft.alm.java.git_credential_helper.helpers.Debug;
 import com.microsoft.alm.java.git_credential_helper.helpers.NotImplementedException;
+import com.microsoft.alm.java.git_credential_helper.helpers.StringHelper;
 
 class TokenPair // TODO: implements IEquatable<TokenPair>
 {
@@ -12,7 +14,11 @@ class TokenPair // TODO: implements IEquatable<TokenPair>
      */
     public TokenPair(final String accessToken, final String refreshToken)
     {
-        throw new NotImplementedException();
+        Debug.Assert(!StringHelper.isNullOrWhiteSpace(accessToken), "The accessToken parameter is null or invalid.");
+        Debug.Assert(!StringHelper.isNullOrWhiteSpace(refreshToken), "The refreshToken parameter is null or invalid.");
+
+        this.AccessToken = new Token(accessToken, TokenType.Access);
+        this.RefreshToken = new Token(refreshToken, TokenType.Refresh);
     }
 
     /**
@@ -43,9 +49,9 @@ class TokenPair // TODO: implements IEquatable<TokenPair>
      */
     @Override public boolean equals(final Object object)
     {
-        throw new NotImplementedException();
+        return operatorEquals(this, object instanceof TokenPair ? ((TokenPair) object) : null);
     }
-
+    // PORT NOTE: Java doesn't support a specific overload (as per IEquatable<T>)
     /**
      * Gets a hash code based on the contents of the {@link TokenPair}.
      *
@@ -53,7 +59,10 @@ class TokenPair // TODO: implements IEquatable<TokenPair>
      */
     @Override public int hashCode()
     {
-        throw new NotImplementedException();
+        // PORT NOTE: Java doesn't have unchecked blocks; the default behaviour is apparently equivalent.
+        {
+            return AccessToken.hashCode() * RefreshToken.hashCode();
+        }
     }
 
     /**
@@ -65,7 +74,13 @@ class TokenPair // TODO: implements IEquatable<TokenPair>
      */
     public static boolean operatorEquals(final TokenPair pair1, final TokenPair pair2)
     {
-        throw new NotImplementedException();
+        if (pair1 == pair2)
+            return true;
+        if ((pair1 == null) || (null == pair2))
+            return false;
+
+        return Token.operatorEquals(pair1.AccessToken, pair2.AccessToken)
+            && Token.operatorEquals(pair1.RefreshToken, pair2.RefreshToken);
     }
 
     /**
@@ -77,6 +92,6 @@ class TokenPair // TODO: implements IEquatable<TokenPair>
      */
     public static boolean operatorNotEquals(final TokenPair pair1, final TokenPair pair2)
     {
-        throw new NotImplementedException();
+        return !operatorEquals(pair1, pair2);
     }
 }
