@@ -65,6 +65,33 @@ public class StringHelperTest
         Assert.assertEquals("a,b,c", actual);
     }
 
+    @Test public void join_edge_oneElementInArray()
+    {
+        final String[] a = {"a"};
+
+        final String actual = StringHelper.join(",", a, 0, a.length);
+
+        Assert.assertEquals("a", actual);
+    }
+
+    @Test public void join_skipFirst()
+    {
+        final String[] a = {"a", "b", "c"};
+
+        final String actual = StringHelper.join(",", a, 1, a.length - 1);
+
+        Assert.assertEquals("b,c", actual);
+    }
+
+    @Test public void join_skipLast()
+    {
+        final String[] a = {"a", "b", "c"};
+
+        final String actual = StringHelper.join(",", a, 0, a.length - 1);
+
+        Assert.assertEquals("a,b", actual);
+    }
+
     @Test public void join_typical_simpleOverload()
     {
         final String[] a = {"a", "b", "c"};
