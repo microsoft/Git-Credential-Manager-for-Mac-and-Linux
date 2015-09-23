@@ -76,7 +76,7 @@ public class StringHelper
      */
     public static String join(final String separator, final String[] value)
     {
-        return join(separator, value, 0, separator.length() - 1);
+        return join(separator, value, 0, value.length);
     }
 
     /**

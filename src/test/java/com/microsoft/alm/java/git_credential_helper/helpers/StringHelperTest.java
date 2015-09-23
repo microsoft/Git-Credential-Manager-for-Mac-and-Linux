@@ -65,6 +65,15 @@ public class StringHelperTest
         Assert.assertEquals("a,b,c", actual);
     }
 
+    @Test public void join_typical_simpleOverload()
+    {
+        final String[] a = {"a", "b", "c"};
+
+        final String actual = StringHelper.join(",", a);
+
+        Assert.assertEquals("a,b,c", actual);
+    }
+
     @Test public void join_returnsStringEmptyIfCountZero()
     {
         final String[] a = {"a", "b", "c"};
