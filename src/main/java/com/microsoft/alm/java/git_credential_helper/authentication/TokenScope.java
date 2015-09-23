@@ -76,8 +76,8 @@ public abstract class TokenScope // TODO: implements IEquatable<TokenScope>
             return false;
 
         final ScopeSet set = new ScopeSet();
-        set.addAll(Arrays.asList(scope1._scopes));
-        return set.containsAll(Arrays.asList(scope2._scopes));
+        set.unionWith(scope1._scopes);
+        return set.setEquals(scope2._scopes);
     }
     // TODO: [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static boolean operatorNotEquals(final TokenScope scope1, final TokenScope scope2)
