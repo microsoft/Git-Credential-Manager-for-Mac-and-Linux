@@ -17,6 +17,7 @@ public class ScopeSet extends TreeSet<String>
 
     public boolean setEquals(final String[] items)
     {
-        return this.containsAll(Arrays.asList(items));
+        return this.size() == items.length
+                && this.containsAll(Arrays.asList(items));
     }
 }
