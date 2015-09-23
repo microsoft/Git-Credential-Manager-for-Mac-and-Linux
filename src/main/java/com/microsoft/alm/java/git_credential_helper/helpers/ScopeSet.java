@@ -1,7 +1,7 @@
 package com.microsoft.alm.java.git_credential_helper.helpers;
 
-import java.util.HashSet;
+import java.util.TreeSet;
 
-public class ScopeSet extends HashSet<String>
+public class ScopeSet extends TreeSet<String>
 {
 }
