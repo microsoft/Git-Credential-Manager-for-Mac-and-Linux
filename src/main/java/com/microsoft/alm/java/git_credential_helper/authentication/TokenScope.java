@@ -7,6 +7,8 @@ import java.util.Arrays;
 
 public abstract class TokenScope // TODO: implements IEquatable<TokenScope>
 {
+    private static final String[] EmptyStringArray = new String[0];
+
     protected TokenScope(final String value)
     {
         if (StringHelper.isNullOrWhiteSpace(value))
@@ -27,7 +29,8 @@ public abstract class TokenScope // TODO: implements IEquatable<TokenScope>
 
     protected TokenScope(final ScopeSet set)
     {
-        _scopes = (String[]) set.toArray();
+        //noinspection ToArrayCallWithZeroLengthArrayArgument
+        _scopes = set.toArray(EmptyStringArray);
     }
 
     public String getValue()
