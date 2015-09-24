@@ -146,27 +146,39 @@ public class VsoTokenScope extends TokenScope
     }
 
     // TODO: [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static VsoTokenScope operatorPlus(final VsoTokenScope scope1, final VsoTokenScope scope2)
+    public static VsoTokenScope add(final VsoTokenScope scope1, final VsoTokenScope scope2)
+    {
+        final ScopeSet set = new ScopeSet();
+        set.unionWith(scope1._scopes);
+        set.unionWith(scope2._scopes);
+
+        return new VsoTokenScope(set);
+    }
+    // TODO: [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static VsoTokenScope subtract(final VsoTokenScope scope1, final VsoTokenScope scope2)
     {
         throw new NotImplementedException();
     }
     // TODO: [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static VsoTokenScope operatorMinus(final VsoTokenScope scope1, final VsoTokenScope scope2)
+    public static VsoTokenScope or(final VsoTokenScope scope1, final VsoTokenScope scope2)
     {
-        throw new NotImplementedException();
+        final ScopeSet set = new ScopeSet();
+        set.unionWith(scope1._scopes);
+        set.unionWith(scope2._scopes);
+
+        return new VsoTokenScope(set);
     }
     // TODO: [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static VsoTokenScope operatorOr(final VsoTokenScope scope1, final VsoTokenScope scope2)
+    public static VsoTokenScope and(final VsoTokenScope scope1, final VsoTokenScope scope2)
     {
-        throw new NotImplementedException();
+        final ScopeSet set = new ScopeSet();
+        set.unionWith(scope1._scopes);
+        set.intersectWith(scope2._scopes);
+
+        return new VsoTokenScope(set);
     }
     // TODO: [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static VsoTokenScope operatorAnd(final VsoTokenScope scope1, final VsoTokenScope scope2)
-    {
-        throw new NotImplementedException();
-    }
-    // TODO: [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static VsoTokenScope operatorXor(final VsoTokenScope scope1, final VsoTokenScope scope2)
+    public static VsoTokenScope xor(final VsoTokenScope scope1, final VsoTokenScope scope2)
     {
         throw new NotImplementedException();
     }
