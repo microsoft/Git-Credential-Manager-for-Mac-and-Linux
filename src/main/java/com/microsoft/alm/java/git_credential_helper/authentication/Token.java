@@ -52,14 +52,6 @@ public class Token extends Secret // TODO: implements IEquatable<Token>
         return false;
     }
 
-    //http://blog.bdoughan.com/2010/12/jaxb-and-immutable-objects.html?showComment=1296031142997#c584069422380571931
-    @SuppressWarnings("unused" /* Used by JAXB's serialization */)
-    private Token()
-    {
-        this.Type = null;
-        this.Value = null;
-    }
-
     public Token(final String value, final TokenType type)
     {
         Debug.Assert(!StringHelper.isNullOrWhiteSpace(value), "The value parameter is null or invalid");
@@ -101,6 +93,11 @@ public class Token extends Secret // TODO: implements IEquatable<Token>
     public UUID getTargetIdentity()
     {
         return targetIdentity;
+    }
+
+    public void setTargetIdentity(final UUID targetIdentity)
+    {
+        this.targetIdentity = targetIdentity;
     }
 
     /**

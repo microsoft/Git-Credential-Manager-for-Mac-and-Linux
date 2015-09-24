@@ -26,6 +26,41 @@ public class InsecureStoreTest
         cut.delete("foo");
     }
 
+    @Test public void fromXml()
+    {
+        ByteArrayInputStream bais = null;
+        try
+        {
+            final String xmlString =
+                    "<?xml version='1.0' encoding='UTF-8' standalone='yes'?>\n" +
+                    "<insecureStore>\n" +
+                    "    <Tokens/>\n" +
+                    "    <Credentials>\n" +
+                    "        <entry>\n" +
+                    "            <key>git:https://server.example.com</key>\n" +
+                    "            <value>\n" +
+                    "                <Password>swordfish</Password>\n" +
+                    "                <Username>j.travolta</Username>\n" +
+                    "            </value>\n" +
+                    "        </entry>\n" +
+                    "    </Credentials>\n" +
+                    "</insecureStore>";
+            bais = new ByteArrayInputStream(xmlString.getBytes());
+
+            final InsecureStore actual = InsecureStore.fromXml(bais);
+
+            Assert.assertNotNull(actual);
+            Assert.assertEquals(1, actual.Credentials.size());
+            final Credential credential = actual.Credentials.get("git:https://server.example.com");
+            Assert.assertEquals("swordfish", credential.Password);
+            Assert.assertEquals("j.travolta", credential.Username);
+        }
+        finally
+        {
+            IOUtils.closeQuietly(bais);
+        }
+    }
+
     @Test public void serialization_instanceToXmlToInstance()
     {
         final InsecureStore input = new InsecureStore();

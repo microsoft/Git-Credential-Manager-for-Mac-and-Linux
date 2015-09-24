@@ -10,14 +10,6 @@ public final class Credential extends Secret // TODO: implements IEquatable<Cred
 {
     public static final Credential Empty = new Credential(StringHelper.Empty, StringHelper.Empty);
 
-    //http://blog.bdoughan.com/2010/12/jaxb-and-immutable-objects.html?showComment=1296031142997#c584069422380571931
-    @SuppressWarnings("unused" /* Used by JAXB's serialization */)
-    private Credential()
-    {
-        this.Username = null;
-        this.Password = null;
-    }
-
     /**
      * Creates a credential object with a username and password pair.
      *
