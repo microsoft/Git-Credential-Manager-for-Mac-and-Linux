@@ -56,7 +56,7 @@ public class InsecureStore implements ISecureStore
 
     void reload()
     {
-        if (backingFile != null)
+        if (backingFile != null && backingFile.isFile() && backingFile.length() > 0)
         {
             FileInputStream fis = null;
             try
