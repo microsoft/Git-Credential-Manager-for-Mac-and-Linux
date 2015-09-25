@@ -1,4 +1,4 @@
-package com.microsoft.alm.java.git_credential_helper.cli;
+package com.microsoft.alm.gitcredentialhelper;
 
 import com.microsoft.alm.authentication.Credential;
 import com.microsoft.alm.helpers.Debug;
@@ -17,7 +17,7 @@ final class OperationArguments
         Debug.Assert(stdin != null, "The stdin parameter is null");
 
         this.Authority = AuthorityType.Auto;
-        this.Interactivity = com.microsoft.alm.java.git_credential_helper.cli.Interactivity.Auto;
+        this.Interactivity = com.microsoft.alm.gitcredentialhelper.Interactivity.Auto;
         this.ValidateCredentials = true;
         this.WriteLog = false;
 

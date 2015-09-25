@@ -1,4 +1,4 @@
-package com.microsoft.alm.java.git_credential_helper.cli;
+package com.microsoft.alm.gitcredentialhelper;
 
 import com.microsoft.alm.authentication.Configuration;
 import com.microsoft.alm.authentication.IAuthentication;

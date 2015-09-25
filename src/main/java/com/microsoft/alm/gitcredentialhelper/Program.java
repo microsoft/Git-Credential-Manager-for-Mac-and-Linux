@@ -1,4 +1,4 @@
-package com.microsoft.alm.java.git_credential_helper.cli;
+package com.microsoft.alm.gitcredentialhelper;
 
 import com.microsoft.alm.authentication.BaseVsoAuthentication;
 import com.microsoft.alm.authentication.BasicAuthentication;
