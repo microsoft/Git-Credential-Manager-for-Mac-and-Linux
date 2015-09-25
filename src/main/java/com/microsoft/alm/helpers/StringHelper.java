@@ -174,7 +174,9 @@ public class StringHelper
     }
 
     /**
-     * Equivalent to .NET's Encoding.UTF8.GetBytes(String)
+     * Encodes all the characters in the specified string into a sequence of UTF-8 bytes.
+     * @param value The string containing the characters to encode.
+     * @return      A byte array containing the results of encoding the specified set of characters.
      */
     public static byte[] UTF8GetBytes(final String value)
     {
@@ -183,7 +185,10 @@ public class StringHelper
     }
 
     /**
-     * Equivalent to .NET's Encoding.UTF8.GetString(byte[])
+     * Decodes all the bytes in the specified byte array into a string.
+     *
+     * @param bytes The byte array containing the sequence of bytes to decode.
+     * @return      A string that contains the results of decoding the specified sequence of bytes.
      */
     public static String UTF8GetString(final byte[] bytes)
     {
@@ -192,7 +197,12 @@ public class StringHelper
     }
 
     /**
-     * Equivalent to .NET's Encoding.UTF8.GetString(byte[], int, int)
+     * Decodes a range of bytes from a byte array into a string.
+     *
+     * @param bytes The byte array containing the sequence of bytes to decode.
+     * @param index The index of the first byte to decode.
+     * @param count The number of bytes to decode.
+     * @return      A string that contains the results of decoding the specified sequence of bytes.
      */
     public static String UTF8GetString(final byte[] bytes, final int index, final int count)
     {

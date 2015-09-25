@@ -116,6 +116,7 @@ public class Where
      * @param startingDirectory A directory of the repository where the configuration file is contained.
      * @param path Path to the Git local configuration.
      * @return True if succeeds; false otherwise.
+     * @throws IOException if reading from the config file fails.
      */
     public static boolean gitLocalConfig(final String startingDirectory, final AtomicReference<String> path) throws IOException
     {
@@ -200,6 +201,7 @@ public class Where
      *
      * @param path Path to the Git local configuration.
      * @return True if succeeds; false otherwise.
+     * @throws IOException if reading from the config file fails.
      */
     public static boolean gitLocalConfig(final AtomicReference<String> path) throws IOException
     {

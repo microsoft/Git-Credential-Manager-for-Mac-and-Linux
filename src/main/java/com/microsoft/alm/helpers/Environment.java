@@ -56,7 +56,7 @@ public class Environment
         /**
          * The directory that serves as a common repository for application-specific data
          * for the current roaming user.
-         * <p/>
+         *
          * A roaming user works on more than one computer on a network.
          * A roaming user's profile is kept on a server on the network and
          * is loaded onto a system when the user logs on.

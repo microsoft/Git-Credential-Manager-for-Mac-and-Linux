@@ -29,6 +29,7 @@ public final class SecretStore extends BaseSecureStore implements ICredentialSto
      *                        not provided.
      * @param tokenCache      (optional) Write-through, read-first cache. Default cache is used if a custom cache is
      *                        not provided.
+     * @param getTargetName   The {@link Secret.IUriNameConversion} implementation to use for converting URIs to names.
      */
     public SecretStore(final ISecureStore backingStore, final String namespace, final ICredentialStore credentialCache, final ITokenStore tokenCache, final Secret.IUriNameConversion getTargetName)
     {

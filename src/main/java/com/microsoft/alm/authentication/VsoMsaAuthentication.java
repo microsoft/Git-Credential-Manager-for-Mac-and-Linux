@@ -96,10 +96,8 @@ public final class VsoMsaAuthentication extends BaseVsoAuthentication implements
     }
     /**
      * Sets credentials for future use with this authentication object.
-     * </summary>
-     * <remarks>Not supported.</remarks>
-     * @param targetUri
-     * The uniform resource indicator of the resource access tokens are being set for.
+     * Not supported.
+     * @param targetUri The uniform resource indicator of the resource access tokens are being set for.
      * 
      * @param credentials The credentials being set.
      * @return True if successful; false otherwise.

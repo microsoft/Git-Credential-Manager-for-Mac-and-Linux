@@ -91,7 +91,7 @@ public class Token extends Secret // TODO: implements IEquatable<Token>
 
     UUID targetIdentity = Guid.Empty;
     /**
-     * The guid form Identity of the target
+     * @return The guid form Identity of the target
      */
     public UUID getTargetIdentity()
     {
@@ -239,6 +239,7 @@ public class Token extends Secret // TODO: implements IEquatable<Token>
      * Explicitly casts a personal access token token into a set of credentials
      *
      * @param token The {@link Token} to convert.
+     * @return A corresponding {@link Credential} instance.
      * @throws IllegalArgumentException if the {@link Token#Type} is not {@link TokenType#Personal}.
      */
     // PORT NOTE: Java doesn't have cast operator overloading
