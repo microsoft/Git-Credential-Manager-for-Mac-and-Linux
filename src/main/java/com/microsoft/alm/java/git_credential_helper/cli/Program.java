@@ -1,16 +1,16 @@
 package com.microsoft.alm.java.git_credential_helper.cli;
 
-import com.microsoft.alm.java.git_credential_helper.authentication.BaseVsoAuthentication;
-import com.microsoft.alm.java.git_credential_helper.authentication.BasicAuthentication;
-import com.microsoft.alm.java.git_credential_helper.authentication.Configuration;
-import com.microsoft.alm.java.git_credential_helper.authentication.Credential;
-import com.microsoft.alm.java.git_credential_helper.authentication.IAuthentication;
-import com.microsoft.alm.java.git_credential_helper.authentication.ISecureStore;
-import com.microsoft.alm.java.git_credential_helper.authentication.SecretStore;
-import com.microsoft.alm.java.git_credential_helper.authentication.VsoAadAuthentication;
-import com.microsoft.alm.java.git_credential_helper.authentication.VsoMsaAuthentication;
-import com.microsoft.alm.java.git_credential_helper.authentication.VsoTokenScope;
-import com.microsoft.alm.java.git_credential_helper.authentication.Where;
+import com.microsoft.alm.authentication.BaseVsoAuthentication;
+import com.microsoft.alm.authentication.BasicAuthentication;
+import com.microsoft.alm.authentication.Configuration;
+import com.microsoft.alm.authentication.Credential;
+import com.microsoft.alm.authentication.IAuthentication;
+import com.microsoft.alm.authentication.ISecureStore;
+import com.microsoft.alm.authentication.SecretStore;
+import com.microsoft.alm.authentication.VsoAadAuthentication;
+import com.microsoft.alm.authentication.VsoMsaAuthentication;
+import com.microsoft.alm.authentication.VsoTokenScope;
+import com.microsoft.alm.authentication.Where;
 import com.microsoft.alm.java.git_credential_helper.helpers.Debug;
 import com.microsoft.alm.java.git_credential_helper.helpers.Environment;
 import com.microsoft.alm.java.git_credential_helper.helpers.Guid;

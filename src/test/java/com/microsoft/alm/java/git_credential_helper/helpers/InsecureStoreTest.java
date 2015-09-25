@@ -1,8 +1,8 @@
 package com.microsoft.alm.java.git_credential_helper.helpers;
 
-import com.microsoft.alm.java.git_credential_helper.authentication.Credential;
-import com.microsoft.alm.java.git_credential_helper.authentication.Token;
-import com.microsoft.alm.java.git_credential_helper.authentication.TokenType;
+import com.microsoft.alm.authentication.Credential;
+import com.microsoft.alm.authentication.Token;
+import com.microsoft.alm.authentication.TokenType;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;

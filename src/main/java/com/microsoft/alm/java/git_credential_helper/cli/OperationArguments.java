@@ -1,6 +1,6 @@
 package com.microsoft.alm.java.git_credential_helper.cli;
 
-import com.microsoft.alm.java.git_credential_helper.authentication.Credential;
+import com.microsoft.alm.authentication.Credential;
 import com.microsoft.alm.java.git_credential_helper.helpers.Debug;
 import com.microsoft.alm.java.git_credential_helper.helpers.ObjectExtensions;
 import com.microsoft.alm.java.git_credential_helper.helpers.StringHelper;
