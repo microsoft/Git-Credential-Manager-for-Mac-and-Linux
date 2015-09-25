@@ -14,6 +14,13 @@ Licensed under the MIT license. See License.txt in the project root. -->
     Provides secure logon for Visual Studio Online (visualstudio.com).</description>
   <url>https://www.visualstudio.com/downloads/download-visual-studio-vs</url>
 
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>http://www.opensource.org/licenses/mit-license.php</url>
+    </license>
+  </licenses>
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
