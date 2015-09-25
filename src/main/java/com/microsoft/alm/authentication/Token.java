@@ -1,9 +1,9 @@
 package com.microsoft.alm.authentication;
 
-import com.microsoft.alm.java.git_credential_helper.helpers.Debug;
-import com.microsoft.alm.java.git_credential_helper.helpers.Guid;
-import com.microsoft.alm.java.git_credential_helper.helpers.StringHelper;
-import com.microsoft.alm.java.git_credential_helper.helpers.Trace;
+import com.microsoft.alm.helpers.Debug;
+import com.microsoft.alm.helpers.Guid;
+import com.microsoft.alm.helpers.StringHelper;
+import com.microsoft.alm.helpers.Trace;
 
 import java.nio.ByteBuffer;
 import java.util.EnumSet;

@@ -1,8 +1,8 @@
 package com.microsoft.alm.authentication;
 
-import com.microsoft.alm.java.git_credential_helper.helpers.NotImplementedException;
-import com.microsoft.alm.java.git_credential_helper.helpers.ScopeSet;
-import com.microsoft.alm.java.git_credential_helper.helpers.StringHelper;
+import com.microsoft.alm.helpers.NotImplementedException;
+import com.microsoft.alm.helpers.ScopeSet;
+import com.microsoft.alm.helpers.StringHelper;
 
 import java.util.Arrays;
 import java.util.Iterator;

@@ -1,7 +1,7 @@
 package com.microsoft.alm.authentication;
 
-import com.microsoft.alm.java.git_credential_helper.helpers.Debug;
-import com.microsoft.alm.java.git_credential_helper.helpers.Trace;
+import com.microsoft.alm.helpers.Debug;
+import com.microsoft.alm.helpers.Trace;
 
 import java.net.URI;
 import java.net.URISyntaxException;

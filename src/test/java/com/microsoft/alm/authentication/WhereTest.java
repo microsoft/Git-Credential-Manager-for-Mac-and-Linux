@@ -1,7 +1,7 @@
 package com.microsoft.alm.authentication;
 
-import com.microsoft.alm.java.git_credential_helper.helpers.Func;
-import com.microsoft.alm.java.git_credential_helper.helpers.StringHelper;
+import com.microsoft.alm.helpers.Func;
+import com.microsoft.alm.helpers.StringHelper;
 import org.junit.Assert;
 import org.junit.Test;
 

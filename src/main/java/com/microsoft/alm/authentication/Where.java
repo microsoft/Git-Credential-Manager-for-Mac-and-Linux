@@ -1,11 +1,11 @@
 package com.microsoft.alm.authentication;
 
-import com.microsoft.alm.java.git_credential_helper.helpers.Environment;
-import com.microsoft.alm.java.git_credential_helper.helpers.Func;
-import com.microsoft.alm.java.git_credential_helper.helpers.IteratorExtensions;
-import com.microsoft.alm.java.git_credential_helper.helpers.ObjectExtensions;
-import com.microsoft.alm.java.git_credential_helper.helpers.Path;
-import com.microsoft.alm.java.git_credential_helper.helpers.StringHelper;
+import com.microsoft.alm.helpers.Environment;
+import com.microsoft.alm.helpers.Func;
+import com.microsoft.alm.helpers.IteratorExtensions;
+import com.microsoft.alm.helpers.ObjectExtensions;
+import com.microsoft.alm.helpers.Path;
+import com.microsoft.alm.helpers.StringHelper;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.NameFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;

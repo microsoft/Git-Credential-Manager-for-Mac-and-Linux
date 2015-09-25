@@ -1,4 +1,4 @@
-package com.microsoft.alm.java.git_credential_helper.helpers;
+package com.microsoft.alm.helpers;
 
 import java.io.PrintStream;
 import java.util.ArrayList;

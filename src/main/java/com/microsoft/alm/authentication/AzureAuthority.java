@@ -1,6 +1,6 @@
 package com.microsoft.alm.authentication;
 
-import com.microsoft.alm.java.git_credential_helper.helpers.NotImplementedException;
+import com.microsoft.alm.helpers.NotImplementedException;
 
 import java.net.URI;
 import java.util.UUID;

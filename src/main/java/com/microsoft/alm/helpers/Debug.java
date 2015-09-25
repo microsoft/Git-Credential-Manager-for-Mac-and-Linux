@@ -1,4 +1,4 @@
-package com.microsoft.alm.java.git_credential_helper.helpers;
+package com.microsoft.alm.helpers;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;

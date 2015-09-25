@@ -1,8 +1,8 @@
 package com.microsoft.alm.authentication;
 
-import com.microsoft.alm.java.git_credential_helper.helpers.BitConverter;
-import com.microsoft.alm.java.git_credential_helper.helpers.Guid;
-import com.microsoft.alm.java.git_credential_helper.helpers.InsecureStore;
+import com.microsoft.alm.helpers.BitConverter;
+import com.microsoft.alm.helpers.Guid;
+import com.microsoft.alm.helpers.InsecureStore;
 import org.junit.Assert;
 import org.junit.Test;
 
