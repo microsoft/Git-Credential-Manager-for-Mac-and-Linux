@@ -6,7 +6,7 @@ Licensed under the MIT license. See License.txt in the project root. -->
 
   <groupId>com.microsoft.alm</groupId>
   <artifactId>git-credential-helper</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>0.1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>Microsoft Git Credential Manager for Java</name>
