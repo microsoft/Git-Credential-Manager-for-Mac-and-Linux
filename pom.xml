@@ -8,7 +8,9 @@
   <packaging>jar</packaging>
 
   <name>Microsoft Git Credential Manager for Java</name>
-  <url>http://maven.apache.org</url>
+  <description>Stores credentials for Git version control securely.
+    Provides secure logon for Visual Studio Online (visualstudio.com).</description>
+  <url>https://www.visualstudio.com/downloads/download-visual-studio-vs</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
