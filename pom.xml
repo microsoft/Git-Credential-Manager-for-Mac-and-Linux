@@ -21,6 +21,21 @@ Licensed under the MIT license. See License.txt in the project root. -->
     </license>
   </licenses>
 
+  <developers>
+    <developer>
+      <name>Oli Dagenais</name>
+      <email>olivida@microsoft.com</email>
+      <organization>Microsoft</organization>
+      <organizationUrl>http://www.microsoft.com/</organizationUrl>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:https://mseng.visualstudio.com/DefaultCollection/VSOnline/_git/Java.CredHelper</connection>
+    <developerConnection>scm:git:https://mseng.visualstudio.com/DefaultCollection/VSOnline/_git/Java.CredHelper</developerConnection>
+    <url>https://mseng.visualstudio.com/DefaultCollection/VSOnline/_git/Java.CredHelper</url>
+  </scm>
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
