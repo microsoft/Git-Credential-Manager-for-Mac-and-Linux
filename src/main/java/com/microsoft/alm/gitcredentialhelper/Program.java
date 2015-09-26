@@ -17,12 +17,12 @@ import com.microsoft.alm.authentication.Where;
 import com.microsoft.alm.helpers.Debug;
 import com.microsoft.alm.helpers.Environment;
 import com.microsoft.alm.helpers.Guid;
+import com.microsoft.alm.helpers.IOHelper;
 import com.microsoft.alm.helpers.InsecureStore;
 import com.microsoft.alm.helpers.NotImplementedException;
 import com.microsoft.alm.helpers.Path;
 import com.microsoft.alm.helpers.StringHelper;
 import com.microsoft.alm.helpers.Trace;
-import org.apache.commons.io.IOUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -315,7 +315,7 @@ public class Program
         }
         finally
         {
-            IOUtils.closeQuietly(reader);
+            IOHelper.closeQuietly(reader);
         }
 
         Debug.Assert(operationArguments.TargetUri != null, "The operationArguments.TargetUri is null");

@@ -5,10 +5,10 @@ package com.microsoft.alm.authentication;
 
 import com.microsoft.alm.helpers.Debug;
 import com.microsoft.alm.helpers.Guid;
+import com.microsoft.alm.helpers.IOHelper;
 import com.microsoft.alm.helpers.InsecureStore;
 import com.microsoft.alm.helpers.StringHelper;
 import com.microsoft.alm.helpers.Trace;
-import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ResponseHandler;
@@ -330,7 +330,7 @@ public abstract class BaseVsoAuthentication extends BaseAuthentication
             }
             finally
             {
-                IOUtils.closeQuietly(httpClient);
+                IOHelper.closeQuietly(httpClient);
             }
         }
 

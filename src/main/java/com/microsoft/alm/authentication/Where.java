@@ -5,15 +5,15 @@ package com.microsoft.alm.authentication;
 
 import com.microsoft.alm.helpers.Environment;
 import com.microsoft.alm.helpers.Func;
+import com.microsoft.alm.helpers.IOHelper;
 import com.microsoft.alm.helpers.IteratorExtensions;
 import com.microsoft.alm.helpers.ObjectExtensions;
 import com.microsoft.alm.helpers.Path;
 import com.microsoft.alm.helpers.StringHelper;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.NameFileFilter;
-import org.apache.commons.io.filefilter.TrueFileFilter;
 
 import java.io.File;
+import java.io.FileFilter;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
@@ -158,7 +158,7 @@ public class Where
                         String content = null;
 
                         // shortcut the opening streams & readers just to read the whole file as a string
-                        content = FileUtils.readFileToString(result);
+                        content = IOHelper.readFileToString(result);
 
                         final Matcher match;
                         if ((match = gitdirPattern.matcher(content)).matches()
@@ -228,11 +228,21 @@ public class Where
                 dir = dir.getParentFile();
             }
 
-            File file = IteratorExtensions.firstOrDefault(FileUtils.iterateFiles(dir, new NameFileFilter(SystemConfigFileName), TrueFileFilter.INSTANCE));
-            if (file != null && file.exists())
+            final File[] subDirs = dir.listFiles(new FileFilter()
             {
-                path.set(file.getAbsolutePath());
-                return true;
+                @Override public boolean accept(final File pathname)
+                {
+                    return pathname.isDirectory();
+                }
+            });
+            for (final File subDir : subDirs)
+            {
+                final File file = new File(subDir, SystemConfigFileName);
+                if (file.isFile())
+                {
+                    path.set(file.getAbsolutePath());
+                    return true;
+                }
             }
         }
 

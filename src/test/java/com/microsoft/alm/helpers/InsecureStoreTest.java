@@ -6,7 +6,6 @@ package com.microsoft.alm.helpers;
 import com.microsoft.alm.authentication.Credential;
 import com.microsoft.alm.authentication.Token;
 import com.microsoft.alm.authentication.TokenType;
-import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -60,7 +59,7 @@ public class InsecureStoreTest
         }
         finally
         {
-            IOUtils.closeQuietly(bais);
+            IOHelper.closeQuietly(bais);
         }
     }
 
@@ -148,8 +147,8 @@ public class InsecureStoreTest
         }
         finally
         {
-            IOUtils.closeQuietly(baos);
-            IOUtils.closeQuietly(bais);
+            IOHelper.closeQuietly(baos);
+            IOHelper.closeQuietly(bais);
         }
     }
 }

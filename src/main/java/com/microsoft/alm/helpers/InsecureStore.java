@@ -7,7 +7,6 @@ import com.microsoft.alm.authentication.Credential;
 import com.microsoft.alm.authentication.ISecureStore;
 import com.microsoft.alm.authentication.Token;
 import com.microsoft.alm.authentication.TokenType;
-import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -81,7 +80,7 @@ public class InsecureStore implements ISecureStore
             }
             finally
             {
-                IOUtils.closeQuietly(fis);
+                IOHelper.closeQuietly(fis);
             }
         }
     }
@@ -103,7 +102,7 @@ public class InsecureStore implements ISecureStore
             }
             finally
             {
-                IOUtils.closeQuietly(fos);
+                IOHelper.closeQuietly(fos);
             }
         }
     }
