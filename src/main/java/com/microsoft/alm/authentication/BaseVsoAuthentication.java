@@ -9,15 +9,12 @@ import com.microsoft.alm.helpers.IOHelper;
 import com.microsoft.alm.helpers.InsecureStore;
 import com.microsoft.alm.helpers.StringHelper;
 import com.microsoft.alm.helpers.Trace;
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpHead;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -297,40 +294,24 @@ public abstract class BaseVsoAuthentication extends BaseAuthentication
 
             String tenant = null;
 
-
-            final CloseableHttpClient httpClient = HttpClients.custom()
-                    .setUserAgent(Global.getUserAgent())
-                    .disableRedirectHandling()
-                    .build();
+            HttpURLConnection connection = null;
             try
             {
-                // build a request that we expect to fail, do not allow redirect to sign in url
-                final HttpHead request = new HttpHead(targetUri);
-                final ResponseHandler<String> responseHandler = new ResponseHandler<String>()
-                {
-                    @Override public String handleResponse(final HttpResponse response) throws IOException
-                    {
-                        // if the response exists and we have headers, parse them
-                        if (response != null && response.containsHeader(VsoResourceTenantHeader))
-                        {
-                            Trace.writeLine("   server has responded");
-                            final Header header = response.getFirstHeader(VsoResourceTenantHeader);
-                            return header.getValue();
-                        }
-                        return null;
-                    }
-                };
-                tenant = httpClient.execute(request, responseHandler);
+                final URL url = targetUri.toURL();
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("HEAD");
+                connection.setRequestProperty("User-Agent", Global.getUserAgent());
+                connection.setInstanceFollowRedirects(false);
+                connection.connect();
+
+                tenant = connection.getHeaderField(VsoResourceTenantHeader);
+                Trace.writeLine("   server has responded");
 
                 return !StringHelper.isNullOrWhiteSpace(tenant)
                         && Guid.tryParse(tenant, tenantId);
             }
             catch (final IOException ignored)
             {
-            }
-            finally
-            {
-                IOHelper.closeQuietly(httpClient);
             }
         }
 

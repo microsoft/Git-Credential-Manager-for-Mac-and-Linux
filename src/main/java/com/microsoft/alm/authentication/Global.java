@@ -3,29 +3,8 @@
 
 package com.microsoft.alm.authentication;
 
-import org.apache.commons.logging.impl.Jdk13LumberjackLogger;
-import org.apache.commons.logging.impl.Jdk14Logger;
-import org.apache.commons.logging.impl.Log4JLogger;
-import org.apache.commons.logging.impl.LogFactoryImpl;
-import org.apache.commons.logging.impl.SimpleLog;
-
 final class Global
 {
-    // http://stackoverflow.com/a/16216748/
-    static
-    {
-        //noinspection MismatchedReadAndWriteOfArray
-        @SuppressWarnings("unused" /* This prevents Maven Shade plugin from removing these classes */)
-        final Class<?>[] dynamicallyCreatedClasses = new Class<?>[]
-        {
-            LogFactoryImpl.class,
-            Jdk13LumberjackLogger.class,
-            Jdk14Logger.class,
-            Log4JLogger.class,
-            SimpleLog.class,
-        };
-    }
-
     public static final int PasswordMaxLength = 2047;
     public static final int UsernameMaxLength = 511;
 
