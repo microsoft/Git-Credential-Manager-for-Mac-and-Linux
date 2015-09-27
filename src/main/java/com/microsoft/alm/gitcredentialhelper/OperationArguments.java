@@ -19,7 +19,7 @@ final class OperationArguments
     {
         Debug.Assert(stdin != null, "The stdin parameter is null");
 
-        this.Authority = AuthorityType.Auto;
+        this.Authority = AuthorityType.Basic;
         this.Interactivity = com.microsoft.alm.gitcredentialhelper.Interactivity.Auto;
         this.ValidateCredentials = true;
         this.WriteLog = false;
