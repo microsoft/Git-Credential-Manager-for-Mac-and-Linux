@@ -5,7 +5,7 @@ package com.microsoft.alm.authentication;
 
 import com.microsoft.alm.helpers.BitConverter;
 import com.microsoft.alm.helpers.Guid;
-import com.microsoft.alm.helpers.InsecureStore;
+import com.microsoft.alm.gitcredentialhelper.InsecureStore;
 import org.junit.Assert;
 import org.junit.Test;
 

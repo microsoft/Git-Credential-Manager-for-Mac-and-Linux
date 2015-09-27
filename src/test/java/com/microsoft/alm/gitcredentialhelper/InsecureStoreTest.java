@@ -1,11 +1,12 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See License.txt in the project root.
 
-package com.microsoft.alm.helpers;
+package com.microsoft.alm.gitcredentialhelper;
 
 import com.microsoft.alm.authentication.Credential;
 import com.microsoft.alm.authentication.Token;
 import com.microsoft.alm.authentication.TokenType;
+import com.microsoft.alm.helpers.IOHelper;
 import org.junit.Assert;
 import org.junit.Test;
 

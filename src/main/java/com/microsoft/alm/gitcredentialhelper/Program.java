@@ -18,7 +18,6 @@ import com.microsoft.alm.helpers.Debug;
 import com.microsoft.alm.helpers.Environment;
 import com.microsoft.alm.helpers.Guid;
 import com.microsoft.alm.helpers.IOHelper;
-import com.microsoft.alm.helpers.InsecureStore;
 import com.microsoft.alm.helpers.NotImplementedException;
 import com.microsoft.alm.helpers.Path;
 import com.microsoft.alm.helpers.StringHelper;

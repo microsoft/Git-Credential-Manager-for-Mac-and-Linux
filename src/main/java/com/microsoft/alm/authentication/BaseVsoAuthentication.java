@@ -5,8 +5,7 @@ package com.microsoft.alm.authentication;
 
 import com.microsoft.alm.helpers.Debug;
 import com.microsoft.alm.helpers.Guid;
-import com.microsoft.alm.helpers.IOHelper;
-import com.microsoft.alm.helpers.InsecureStore;
+import com.microsoft.alm.gitcredentialhelper.InsecureStore;
 import com.microsoft.alm.helpers.StringHelper;
 import com.microsoft.alm.helpers.Trace;
 
@@ -14,7 +13,6 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
