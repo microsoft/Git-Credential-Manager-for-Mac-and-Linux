@@ -1,14 +1,51 @@
+<!-- Copyright (c) Microsoft. All rights reserved.
+Licensed under the MIT license. See License.txt in the project root. -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.microsoft.alm.java</groupId>
+  <groupId>com.microsoft.alm</groupId>
   <artifactId>git-credential-helper</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>0.1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>Microsoft Git Credential Manager for Java</name>
-  <url>http://maven.apache.org</url>
+  <description>Stores credentials for Git version control securely.
+    Provides secure logon for Visual Studio Online (visualstudio.com).</description>
+  <url>https://www.visualstudio.com/downloads/download-visual-studio-vs</url>
+
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>http://www.opensource.org/licenses/mit-license.php</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>Oli Dagenais</name>
+      <email>olivida@microsoft.com</email>
+      <organization>Microsoft</organization>
+      <organizationUrl>http://www.microsoft.com/</organizationUrl>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:https://mseng.visualstudio.com/DefaultCollection/VSOnline/_git/Java.CredHelper</connection>
+    <developerConnection>scm:git:https://mseng.visualstudio.com/DefaultCollection/VSOnline/_git/Java.CredHelper</developerConnection>
+    <url>https://mseng.visualstudio.com/DefaultCollection/VSOnline/_git/Java.CredHelper</url>
+  </scm>
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>teamNexus</id>
+      <url>http://artifacts.cloudapp.net:8081/nexus/content/repositories/snapshots</url>
+    </snapshotRepository>
+    <repository>
+      <id>teamNexus</id>
+      <url>http://artifacts.cloudapp.net:8081/nexus/content/repositories/releases</url>
+    </repository>
+  </distributionManagement>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -68,6 +105,32 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>2.16</version>
+        <executions>
+          <execution>
+            <id>verify-style</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <checkstyleRules>
+            <module name="Checker">
+              <module name="Header">
+                <property name="headerFile" value="config/checkstyle/java.header"/>
+                <property name="fileExtensions" value="java"/>
+              </module>
+            </module>
+          </checkstyleRules>
+          <includeTestSourceDirectory>true</includeTestSourceDirectory>
+          <logViolationsToConsole>true</logViolationsToConsole>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <version>2.4</version>
         <configuration>
@@ -94,27 +157,70 @@
               <minimizeJar>true</minimizeJar>
               <transformers>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <mainClass>com.microsoft.alm.java.git_credential_helper.cli.Program</mainClass>
+                  <mainClass>com.microsoft.alm.gitcredentialhelper.Program</mainClass>
                 </transformer>
               </transformers>
             </configuration>
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.9.1</version>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <additionalparam>-quiet</additionalparam>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
+  <profiles>
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>2.2.1</version>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar-no-fork</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.6</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
   <dependencies>
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <version>2.4</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
-      <version>4.5.1</version>
-    </dependency>
 
     <dependency>
       <groupId>junit</groupId>
