@@ -57,6 +57,7 @@ Licensed under the MIT license. See License.txt in the project root. -->
         <directory>${basedir}</directory>
         <targetPath>./</targetPath>
         <includes>
+          <include>Install.md</include>
           <include>License.txt</include>
           <include>ReadMe.md</include>
           <include>ReleaseNotes.md</include>
