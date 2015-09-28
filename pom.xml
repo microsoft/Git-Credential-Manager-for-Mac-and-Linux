@@ -52,6 +52,18 @@ Licensed under the MIT license. See License.txt in the project root. -->
   </properties>
 
   <build>
+    <resources>
+      <resource>
+        <directory>${basedir}</directory>
+        <targetPath>./</targetPath>
+        <includes>
+          <include>Install.md</include>
+          <include>License.txt</include>
+          <include>ReadMe.md</include>
+          <include>ReleaseNotes.md</include>
+        </includes>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -106,7 +118,7 @@ Licensed under the MIT license. See License.txt in the project root. -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>2.16</version>
+        <version>2.15</version>
         <executions>
           <execution>
             <id>verify-style</id>
