@@ -1,12 +1,11 @@
 <!-- Copyright (c) Microsoft. All rights reserved.
 Licensed under the MIT license. See License.txt in the project root. -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.microsoft.alm</groupId>
   <artifactId>git-credential-helper</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.1.1</version>
   <packaging>jar</packaging>
 
   <name>Microsoft Git Credential Manager for Java</name>
@@ -34,6 +33,7 @@ Licensed under the MIT license. See License.txt in the project root. -->
     <connection>scm:git:https://mseng.visualstudio.com/DefaultCollection/VSOnline/_git/Java.CredHelper</connection>
     <developerConnection>scm:git:https://mseng.visualstudio.com/DefaultCollection/VSOnline/_git/Java.CredHelper</developerConnection>
     <url>https://mseng.visualstudio.com/DefaultCollection/VSOnline/_git/Java.CredHelper</url>
+    <tag>git-credential-helper-0.1.1</tag>
   </scm>
 
   <distributionManagement>
@@ -139,8 +139,8 @@ Licensed under the MIT license. See License.txt in the project root. -->
           <checkstyleRules>
             <module name="Checker">
               <module name="Header">
-                <property name="headerFile" value="config/checkstyle/java.header"/>
-                <property name="fileExtensions" value="java"/>
+                <property name="headerFile" value="config/checkstyle/java.header" />
+                <property name="fileExtensions" value="java" />
               </module>
             </module>
           </checkstyleRules>
