@@ -5,7 +5,7 @@ Licensed under the MIT license. See License.txt in the project root. -->
 
   <groupId>com.microsoft.alm</groupId>
   <artifactId>git-credential-helper</artifactId>
-  <version>0.1.2-SNAPSHOT</version>
+  <version>0.1.2</version>
   <packaging>jar</packaging>
 
   <name>Microsoft Git Credential Manager for Java</name>
@@ -33,7 +33,7 @@ Licensed under the MIT license. See License.txt in the project root. -->
     <connection>scm:git:https://mseng.visualstudio.com/DefaultCollection/VSOnline/_git/Java.CredHelper</connection>
     <developerConnection>scm:git:https://mseng.visualstudio.com/DefaultCollection/VSOnline/_git/Java.CredHelper</developerConnection>
     <url>https://mseng.visualstudio.com/DefaultCollection/VSOnline/_git/Java.CredHelper</url>
-    <tag>HEAD</tag>
+    <tag>git-credential-helper-0.1.2</tag>
   </scm>
 
   <distributionManagement>
