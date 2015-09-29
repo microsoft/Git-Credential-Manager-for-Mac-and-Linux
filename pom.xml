@@ -215,7 +215,7 @@ Licensed under the MIT license. See License.txt in the project root. -->
               <execution>
                 <id>attach-sources</id>
                 <goals>
-                  <goal>jar-no-fork</goal>
+                  <goal>jar</goal>
                 </goals>
               </execution>
             </executions>
