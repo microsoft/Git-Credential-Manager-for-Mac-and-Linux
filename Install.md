@@ -4,7 +4,7 @@ This document explains where to copy the JAR and how to configure Git to use the
 
 System Requirements
 -------------------
-Great care was taken to avoid using any features of Java that would impact compatibility with Java 6.  If you find a compatibility issue, please report it.
+Great care was taken to avoid using any features of Java that would impact compatibility with Java 6.  If you find a compatibility issue, please report it and provide as many details about your platform as necessary to reproduce the problem.
 1. Java 6+
 2. Git 1.9+
 
