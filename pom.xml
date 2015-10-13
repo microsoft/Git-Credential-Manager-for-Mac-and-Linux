@@ -36,6 +36,13 @@ Licensed under the MIT license. See License.txt in the project root. -->
     <tag>HEAD</tag>
   </scm>
 
+  <repositories>
+    <repository>
+      <id>teamNexus</id>
+      <url>http://artifacts.cloudapp.net:8081/nexus/content/repositories/releases</url>
+    </repository>
+  </repositories>
+
   <distributionManagement>
     <snapshotRepository>
       <id>teamNexus</id>
