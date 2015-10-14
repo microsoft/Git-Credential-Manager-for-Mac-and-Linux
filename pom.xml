@@ -180,7 +180,8 @@ Licensed under the MIT license. See License.txt in the project root. -->
             </goals>
             <configuration>
               <createDependencyReducedPom>false</createDependencyReducedPom>
-              <minimizeJar>true</minimizeJar>
+              <!-- oauth2-useragent won't work if we [blindly] minimize -->
+              <minimizeJar>false</minimizeJar>
               <transformers>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                   <mainClass>com.microsoft.alm.gitcredentialhelper.Program</mainClass>
@@ -247,6 +248,11 @@ Licensed under the MIT license. See License.txt in the project root. -->
   </profiles>
 
   <dependencies>
+    <dependency>
+      <groupId>com.microsoft.alm</groupId>
+      <artifactId>oauth2-useragent</artifactId>
+      <version>0.2.0</version>
+    </dependency>
 
     <dependency>
       <groupId>junit</groupId>
