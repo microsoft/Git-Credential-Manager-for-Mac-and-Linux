@@ -170,6 +170,38 @@ class AzureAuthority implements IAzureAuthority
         return result;
     }
 
+    static URI createTokenEndpointUri(final String authorityHostUrl)
+    {
+        final StringBuilder sb = new StringBuilder(authorityHostUrl);
+        sb.append("/oauth2/token");
+        final URI result;
+        try
+        {
+            result = new URI(sb.toString());
+        }
+        catch (final URISyntaxException e)
+        {
+            throw new Error(e);
+        }
+        return result;
+    }
+
+    static QueryString createTokenRequest(final String resource, final String clientId, final String authorizationCode, final URI redirectUri, final UUID correlationId)
+    {
+        final QueryString qs = new QueryString();
+        qs.put(OAuthParameter.RESOURCE, resource);
+        qs.put(OAuthParameter.CLIENT_ID, clientId);
+        qs.put(OAuthParameter.GRANT_TYPE, OAuthParameter.AUTHORIZATION_CODE);
+        qs.put(OAuthParameter.CODE, authorizationCode);
+        qs.put(OAuthParameter.REDIRECT_URI, redirectUri.toString());
+        if (correlationId != null && !correlationId.equals(Guid.Empty))
+        {
+            qs.put(OAuthParameter.CORRELATION_ID, correlationId.toString());
+            qs.put(OAuthParameter.REQUEST_CORRELATION_ID_IN_RESPONSE, "true");
+        }
+        return qs;
+    }
+
     public static String getAuthorityUrl(final UUID tenantId)
     {
         throw new NotImplementedException();
