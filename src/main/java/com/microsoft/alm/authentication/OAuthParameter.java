@@ -1,0 +1,17 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See License.txt in the project root.
+
+package com.microsoft.alm.authentication;
+
+class OAuthParameter
+{
+    static final String RESPONSE_TYPE = "response_type";
+    static final String CLIENT_ID = "client_id";
+    static final String REDIRECT_URI = "redirect_uri";
+    static final String RESOURCE = "resource";
+    static final String CODE = "code";
+    static final String LOGIN_HINT = "login_hint";
+
+    static final String CORRELATION_ID = "client-request-id"; // correlation id is not standard oauth2 parameter
+    static final String PROMPT = "prompt"; // prompt is not standard oauth2 parameter
+}

@@ -4,12 +4,16 @@
 package com.microsoft.alm.authentication;
 
 import com.microsoft.alm.helpers.Debug;
+import com.microsoft.alm.helpers.Guid;
 import com.microsoft.alm.helpers.NotImplementedException;
+import com.microsoft.alm.helpers.QueryString;
+import com.microsoft.alm.helpers.StringHelper;
 import com.microsoft.alm.helpers.UriHelper;
 import com.microsoft.alm.oauth2.useragent.UserAgent;
 import com.microsoft.alm.oauth2.useragent.UserAgentImpl;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.UUID;
 import java.util.concurrent.Future;
 
@@ -78,7 +82,6 @@ class AzureAuthority implements IAzureAuthority
         throw new NotImplementedException();
     }
 
-
     /**
      * Acquires a {@link TokenPair} from the authority using optionally provided
      * credentials or via the current identity.
@@ -106,6 +109,65 @@ class AzureAuthority implements IAzureAuthority
     public Future<TokenPair> acquireTokenByRefreshTokenAsync(final URI targetUri, final String clientId, final String resource, final Token refreshToken)
     {
         throw new NotImplementedException();
+    }
+
+    static URI createAuthorizationEndpointUri(final String authorityHostUrl, final String resource, final String clientId, final URI redirectUri, final UserIdentifier userId, final UUID correlationId, final PromptBehavior promptBehavior, final String queryParameters)
+    {
+        final QueryString qs = new QueryString();
+        qs.put(OAuthParameter.RESOURCE, resource);
+        qs.put(OAuthParameter.CLIENT_ID, clientId);
+        qs.put(OAuthParameter.RESPONSE_TYPE, OAuthParameter.CODE);
+        qs.put(OAuthParameter.REDIRECT_URI, redirectUri.toString());
+
+        if (!userId.isAnyUser()
+            && (userId.getType() == UserIdentifierType.OPTIONAL_DISPLAYABLE_ID
+                || userId.getType() == UserIdentifierType.REQUIRED_DISPLAYABLE_ID))
+        {
+            qs.put(OAuthParameter.LOGIN_HINT, userId.getId());
+        }
+
+        if (correlationId != null && !correlationId.equals(Guid.Empty))
+        {
+            qs.put(OAuthParameter.CORRELATION_ID, correlationId.toString());
+        }
+
+        String promptValue = null;
+        switch (promptBehavior)
+        {
+            case ALWAYS:
+                promptValue = PromptValue.LOGIN;
+                break;
+            case NEVER:
+                promptValue = PromptValue.ATTEMPT_NONE;
+                break;
+            case REFRESH_SESSION:
+                // TODO: implement when oauth2-useragent supports persistent cookies
+                throw new NotImplementedException();
+        }
+        if (promptValue != null)
+        {
+            qs.put(OAuthParameter.PROMPT, promptValue);
+        }
+
+        final StringBuilder sb = new StringBuilder(authorityHostUrl);
+        sb.append("/oauth2/authorize?");
+        sb.append(qs.toString());
+        if (!StringHelper.isNullOrWhiteSpace(queryParameters))
+        {
+            // TODO: ADAL.NET checks if queryParameters contains any duplicate parameters
+            int start = (queryParameters.charAt(0) == '&') ? 1 : 0;
+            sb.append('&').append(queryParameters, start, queryParameters.length());
+        }
+        final URI result;
+        try
+        {
+            result = new URI(sb.toString());
+        }
+        catch (final URISyntaxException e)
+        {
+            throw new Error(e);
+        }
+        return result;
     }
 
     public static String getAuthorityUrl(final UUID tenantId)
