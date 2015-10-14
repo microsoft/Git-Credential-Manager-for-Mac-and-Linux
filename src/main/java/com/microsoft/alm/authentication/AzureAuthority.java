@@ -3,7 +3,11 @@
 
 package com.microsoft.alm.authentication;
 
+import com.microsoft.alm.helpers.Debug;
 import com.microsoft.alm.helpers.NotImplementedException;
+import com.microsoft.alm.helpers.UriHelper;
+import com.microsoft.alm.oauth2.useragent.UserAgent;
+import com.microsoft.alm.oauth2.useragent.UserAgentImpl;
 
 import java.net.URI;
 import java.util.UUID;
@@ -35,10 +39,21 @@ class AzureAuthority implements IAzureAuthority
      */
     public AzureAuthority(final String authorityHostUrl)
     {
-        throw new NotImplementedException();
+        this(authorityHostUrl, new UserAgentImpl());
+    }
+
+    AzureAuthority(final String authorityHostUrl, final UserAgent userAgent)
+    {
+        Debug.Assert(UriHelper.isWellFormedUriString(authorityHostUrl), "The authorityHostUrl parameter is invalid.");
+        Debug.Assert(userAgent != null, "The userAgent parameter is null.");
+
+        this.authorityHostUrl = authorityHostUrl;
+        _adalTokenCache = /* TODO: consider new InsecureStore("adalTokenCache.xml");*/null;
+        _userAgent = userAgent;
     }
 
     private final VsoAdalTokenCache _adalTokenCache;
+    private final UserAgent _userAgent;
 
     protected String authorityHostUrl;
     /**
