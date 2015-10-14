@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class UriHelper
 {
-    private static final String UTF_8 = "UTF-8";
+    public static final String UTF_8 = "UTF-8";
 
     public static boolean isWellFormedUriString(final String uriString)
     {
