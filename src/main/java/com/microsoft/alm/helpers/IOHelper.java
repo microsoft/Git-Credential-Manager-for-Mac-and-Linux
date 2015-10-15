@@ -8,6 +8,7 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 
 public class IOHelper
@@ -29,12 +30,24 @@ public class IOHelper
     public static String readFileToString(final File file) throws IOException
     {
         FileInputStream fis = null;
+        try
+        {
+            fis = new FileInputStream(file);
+            return readToString(fis);
+        }
+        finally
+        {
+            IOHelper.closeQuietly(fis);
+        }
+    }
+
+    public static String readToString(final InputStream stream) throws IOException
+    {
         InputStreamReader isr = null;
         BufferedReader reader = null;
         try
         {
-            fis = new FileInputStream(file);
-            isr = new InputStreamReader(fis);
+            isr = new InputStreamReader(stream);
             reader = new BufferedReader(isr);
 
             final StringBuilder sb = new StringBuilder();
@@ -50,7 +63,6 @@ public class IOHelper
         {
             IOHelper.closeQuietly(reader);
             IOHelper.closeQuietly(isr);
-            IOHelper.closeQuietly(fis);
         }
     }
 }
