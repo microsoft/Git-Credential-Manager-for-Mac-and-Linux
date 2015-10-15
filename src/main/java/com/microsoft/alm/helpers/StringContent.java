@@ -43,6 +43,11 @@ public class StringContent
         return new StringContent(parameters.toString(), "application/x-www-form-urlencoded");
     }
 
+    public static StringContent createJson(final String json)
+    {
+        return new StringContent(json, "application/json");
+    }
+
     public void write(final HttpURLConnection connection) throws IOException
     {
         for (final Map.Entry<String, String> entry : Headers.entrySet())
