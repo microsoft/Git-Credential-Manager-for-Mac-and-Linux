@@ -118,6 +118,19 @@ public class HttpClient
         return connection;
     }
 
+    public HttpURLConnection get(final URI uri) throws IOException
+    {
+        return get(uri, null);
+    }
+
+    public HttpURLConnection get(final URI uri, final Action<HttpURLConnection> interceptor) throws IOException
+    {
+        final HttpURLConnection connection = createConnection(uri, "GET", interceptor);
+        connection.setDoInput(true);
+
+        return connection;
+    }
+
     public HttpURLConnection post(final URI uri, final StringContent content) throws IOException
     {
         return post(uri, content, null);
