@@ -50,6 +50,10 @@ public class Guid
 
     public static boolean tryParse(final String input, final AtomicReference<UUID> result)
     {
+        if (input == null)
+        {
+            return false;
+        }
         try
         {
             result.set(UUID.fromString(input));

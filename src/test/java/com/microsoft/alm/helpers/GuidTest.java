@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class GuidTest
 {
@@ -104,6 +105,15 @@ public class GuidTest
             (byte) 0x97, (byte) 0xbe, (byte) 0x7d, (byte) 0x99, (byte) 0x13, (byte) 0xde,
         };
         assertArrayEquals(expected, actual);
+    }
+
+    @Test public void tryParse_null() throws Exception
+    {
+        final AtomicReference<UUID> result = new AtomicReference<UUID>();
+
+        final boolean actual = Guid.tryParse(null, result);
+
+        Assert.assertEquals(false, actual);
     }
 
     private static void assertArrayEquals(byte[] expected, byte[] actual)
