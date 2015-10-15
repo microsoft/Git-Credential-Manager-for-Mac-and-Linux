@@ -3,16 +3,17 @@
 
 package com.microsoft.alm.authentication;
 
+import com.microsoft.alm.helpers.Action;
 import com.microsoft.alm.helpers.Debug;
 import com.microsoft.alm.helpers.Guid;
 import com.microsoft.alm.gitcredentialhelper.InsecureStore;
+import com.microsoft.alm.helpers.HttpClient;
 import com.microsoft.alm.helpers.StringHelper;
 import com.microsoft.alm.helpers.Trace;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URI;
-import java.net.URL;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -293,14 +294,16 @@ public abstract class BaseVsoAuthentication extends BaseAuthentication
             String tenant = null;
 
             HttpURLConnection connection = null;
+            final HttpClient client = new HttpClient(Global.getUserAgent());
             try
             {
-                final URL url = targetUri.toURL();
-                connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("HEAD");
-                connection.setRequestProperty("User-Agent", Global.getUserAgent());
-                connection.setInstanceFollowRedirects(false);
-                connection.connect();
+                connection = client.head(targetUri, new Action<HttpURLConnection>()
+                {
+                    @Override public void call(final HttpURLConnection conn)
+                    {
+                        conn.setInstanceFollowRedirects(false);
+                    }
+                });
 
                 tenant = connection.getHeaderField(VsoResourceTenantHeader);
                 Trace.writeLine("   server has responded");
