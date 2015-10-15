@@ -5,7 +5,6 @@ package com.microsoft.alm.helpers;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -130,16 +129,7 @@ public class HttpClient
         connection.setDoInput(true);
         connection.setDoOutput(true);
 
-        OutputStream requestStream = null;
-        try
-        {
-            requestStream = connection.getOutputStream();
-            content.write(connection);
-        }
-        finally
-        {
-            IOHelper.closeQuietly(requestStream);
-        }
+        content.write(connection);
 
         return connection;
     }
