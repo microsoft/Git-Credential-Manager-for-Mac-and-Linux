@@ -7,6 +7,7 @@ import com.microsoft.alm.helpers.Debug;
 import com.microsoft.alm.helpers.Guid;
 import com.microsoft.alm.helpers.NotImplementedException;
 import com.microsoft.alm.helpers.QueryString;
+import com.microsoft.alm.helpers.StringContent;
 import com.microsoft.alm.helpers.StringHelper;
 import com.microsoft.alm.helpers.UriHelper;
 import com.microsoft.alm.oauth2.useragent.UserAgent;
@@ -186,7 +187,7 @@ class AzureAuthority implements IAzureAuthority
         return result;
     }
 
-    static QueryString createTokenRequest(final String resource, final String clientId, final String authorizationCode, final URI redirectUri, final UUID correlationId)
+    static StringContent createTokenRequest(final String resource, final String clientId, final String authorizationCode, final URI redirectUri, final UUID correlationId)
     {
         final QueryString qs = new QueryString();
         qs.put(OAuthParameter.RESOURCE, resource);
@@ -199,7 +200,8 @@ class AzureAuthority implements IAzureAuthority
             qs.put(OAuthParameter.CORRELATION_ID, correlationId.toString());
             qs.put(OAuthParameter.REQUEST_CORRELATION_ID_IN_RESPONSE, "true");
         }
-        return qs;
+        final StringContent result = StringContent.createUrlEncoded(qs);
+        return result;
     }
 
     public static String getAuthorityUrl(final UUID tenantId)

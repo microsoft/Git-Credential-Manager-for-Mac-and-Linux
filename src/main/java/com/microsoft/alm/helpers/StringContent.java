@@ -20,15 +20,22 @@ public class StringContent
 
     public final Map<String, String> Headers = new LinkedHashMap<String, String>();
 
+    private final String content;
     private final byte[] bytes;
 
     private StringContent(final String content, final String mediaType)
     {
-        bytes = StringHelper.UTF8GetBytes(content);
+        this.content = content;
+        this.bytes = StringHelper.UTF8GetBytes(content);
         final String contentType = String.format(CONTENT_TYPE_TEMPLATE, mediaType, UTF8);
         Headers.put("Content-Type", contentType);
-        final String contentLength = Integer.toString(bytes.length, 10);
+        final String contentLength = Integer.toString(this.bytes.length, 10);
         Headers.put("Content-Length", contentLength);
+    }
+
+    public String getContent()
+    {
+        return this.content;
     }
 
     public static StringContent createUrlEncoded(final QueryString parameters)

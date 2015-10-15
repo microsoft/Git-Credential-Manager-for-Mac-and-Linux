@@ -3,7 +3,7 @@
 
 package com.microsoft.alm.authentication;
 
-import com.microsoft.alm.helpers.QueryString;
+import com.microsoft.alm.helpers.StringContent;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -88,13 +88,13 @@ public class AzureAuthorityTest
             "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
         final URI redirectUri = URI.create("https://example.com");
 
-        final QueryString actual = AzureAuthority.createTokenRequest(resource, clientId, authorizationCode, redirectUri, null);
+        final StringContent actual = AzureAuthority.createTokenRequest(resource, clientId, authorizationCode, redirectUri, null);
 
         Assert.assertEquals(
             "resource=a8860e8f-ca7d-4efe-b80d-4affab13d4ba" +
             "&client_id=f7e11bcd-b50b-4869-ad88-8bdd6cbc8473" +
             "&grant_type=authorization_code" +
             "&code=" + authorizationCode +
-            "&redirect_uri=https%3A%2F%2Fexample.com", actual.toString());
+            "&redirect_uri=https%3A%2F%2Fexample.com", actual.getContent());
     }
 }
