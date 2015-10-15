@@ -333,7 +333,7 @@ public class Program
         authenticationRef.set(authentication);
     }
 
-    private static IAuthentication createAuthentication(final OperationArguments operationArguments, final ISecureStore secureStore)
+    static IAuthentication createAuthentication(final OperationArguments operationArguments, final ISecureStore secureStore)
     {
         Debug.Assert(operationArguments != null, "The operationArguments is null");
 
