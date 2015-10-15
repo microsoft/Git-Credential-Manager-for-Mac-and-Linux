@@ -43,7 +43,7 @@ public class HttpClient
         }
     }
 
-    public String readToString(final HttpURLConnection connection) throws IOException
+    public static String readToString(final HttpURLConnection connection) throws IOException
     {
         String responseContent;
         InputStream responseStream = null;

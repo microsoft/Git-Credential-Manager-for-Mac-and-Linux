@@ -122,7 +122,7 @@ class AzureAuthority implements IAzureAuthority
                 }
             });
             client.ensureOK(connection);
-            final String responseContent = client.readToString(connection);
+            final String responseContent = HttpClient.readToString(connection);
             tokens = new TokenPair(responseContent);
 
             // TODO: verify correlationId in access token response
