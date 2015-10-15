@@ -277,6 +277,6 @@ class AzureAuthority implements IAzureAuthority
 
     public static String getAuthorityUrl(final UUID tenantId)
     {
-        throw new NotImplementedException();
+        return String.format("%1$s/%2$s", AuthorityHostUrlBase, tenantId.toString());
     }
 }
