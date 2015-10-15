@@ -374,8 +374,10 @@ public class Program
                 }
                 */
             }
-
-            operationArguments.Authority = AuthorityType.Basic;
+            else
+            {
+                operationArguments.Authority = AuthorityType.Basic;
+            }
         }
 
         switch (operationArguments.Authority)
