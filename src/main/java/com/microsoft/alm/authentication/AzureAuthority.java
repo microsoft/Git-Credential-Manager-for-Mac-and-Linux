@@ -10,6 +10,8 @@ import com.microsoft.alm.helpers.QueryString;
 import com.microsoft.alm.helpers.StringContent;
 import com.microsoft.alm.helpers.StringHelper;
 import com.microsoft.alm.helpers.UriHelper;
+import com.microsoft.alm.oauth2.useragent.AuthorizationException;
+import com.microsoft.alm.oauth2.useragent.AuthorizationResponse;
 import com.microsoft.alm.oauth2.useragent.UserAgent;
 import com.microsoft.alm.oauth2.useragent.UserAgentImpl;
 
@@ -110,6 +112,21 @@ class AzureAuthority implements IAzureAuthority
     public Future<TokenPair> acquireTokenByRefreshTokenAsync(final URI targetUri, final String clientId, final String resource, final Token refreshToken)
     {
         throw new NotImplementedException();
+    }
+
+    String acquireAuthorizationCode(final String resource, final String clientId, final URI redirectUri, final UUID correlationId, final String queryParameters)
+    {
+        String authorizationCode = null;
+        try
+        {
+            final URI authorizationEndpoint = createAuthorizationEndpointUri(authorityHostUrl, resource, clientId, redirectUri, UserIdentifier.ANY_USER, correlationId, PromptBehavior.ALWAYS, queryParameters);
+            final AuthorizationResponse response = _userAgent.requestAuthorizationCode(authorizationEndpoint, redirectUri);
+            authorizationCode = response.getCode();
+        }
+        catch (final AuthorizationException ignored)
+        {
+        }
+        return authorizationCode;
     }
 
     static URI createAuthorizationEndpointUri(final String authorityHostUrl, final String resource, final String clientId, final URI redirectUri, final UserIdentifier userId, final UUID correlationId, final PromptBehavior promptBehavior, final String queryParameters)
