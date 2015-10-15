@@ -4,6 +4,8 @@
 package com.microsoft.alm.helpers;
 
 import java.io.File;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * Equivalent to the .NET class with the same name.
@@ -27,6 +29,32 @@ public class Environment
             default:
                 throw new NotImplementedException();
         }
+    }
+
+    public static String getMachineName()
+    {
+        String machineName = null;
+        if (machineName == null)
+        {
+            machineName = System.getenv("COMPUTERNAME");
+        }
+        if (machineName == null)
+        {
+            machineName = System.getenv("HOSTNAME");
+        }
+        if (machineName == null)
+        {
+            try
+            {
+                final InetAddress address = InetAddress.getLocalHost();
+                machineName = address.getHostName();
+            }
+            catch (final UnknownHostException e)
+            {
+                machineName = "unknown";
+            }
+        }
+        return machineName;
     }
 
     public static final String NewLine = System.getProperty("line.separator");
