@@ -62,8 +62,7 @@ public final class VsoMsaAuthentication extends BaseVsoAuthentication implements
         try
         {
             TokenPair tokens;
-            final URI redirectUri = new URI(RedirectUrl);
-            if ((tokens = this.VsoAuthority.acquireToken(targetUri, this.ClientId, this.Resource, redirectUri, QueryParameters)) != null)
+            if ((tokens = this.VsoAuthority.acquireToken(targetUri, this.ClientId, this.Resource, RedirectUri, QueryParameters)) != null)
             {
                 Trace.writeLine("   token successfully acquired.");
 
@@ -78,10 +77,6 @@ public final class VsoMsaAuthentication extends BaseVsoAuthentication implements
             Debug.Write(exception);
         }
         */
-        catch (final URISyntaxException e)
-        {
-            Debug.Assert(false, "Shouldn't happen with hardcoded constant.");
-        }
         catch (InterruptedException e)
         {
             e.printStackTrace();
