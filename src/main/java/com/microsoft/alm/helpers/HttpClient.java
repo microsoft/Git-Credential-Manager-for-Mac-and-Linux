@@ -118,4 +118,29 @@ public class HttpClient
 
         return connection;
     }
+
+    public HttpURLConnection post(final URI uri, final StringContent content) throws IOException
+    {
+        return post(uri, content, null);
+    }
+
+    public HttpURLConnection post(final URI uri, final StringContent content, final Action<HttpURLConnection> interceptor) throws IOException
+    {
+        final HttpURLConnection connection = createConnection(uri, "POST", interceptor);
+        connection.setDoInput(true);
+        connection.setDoOutput(true);
+
+        OutputStream requestStream = null;
+        try
+        {
+            requestStream = connection.getOutputStream();
+            content.write(connection);
+        }
+        finally
+        {
+            IOHelper.closeQuietly(requestStream);
+        }
+
+        return connection;
+    }
 }
