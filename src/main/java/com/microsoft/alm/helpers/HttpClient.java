@@ -23,6 +23,43 @@ public class HttpClient
         Headers.put("User-Agent", userAgent);
     }
 
+    public void ensureOK(final HttpURLConnection connection) throws IOException
+    {
+        final int statusCode = connection.getResponseCode();
+        if (statusCode != HttpURLConnection.HTTP_OK)
+        {
+            InputStream errorStream = null;
+            try
+            {
+                errorStream = connection.getErrorStream();
+                final String content = IOHelper.readToString(errorStream);
+                final String template = "HTTP request failed with code %1$d: %2$s";
+                final String message = String.format(template, statusCode, content);
+                throw new IOException(message);
+            }
+            finally
+            {
+                IOHelper.closeQuietly(errorStream);
+            }
+        }
+    }
+
+    public String readToString(final HttpURLConnection connection) throws IOException
+    {
+        String responseContent;
+        InputStream responseStream = null;
+        try
+        {
+            responseStream = connection.getInputStream();
+            responseContent = IOHelper.readToString(responseStream);
+        }
+        finally
+        {
+            IOHelper.closeQuietly(responseStream);
+        }
+        return responseContent;
+    }
+
     HttpURLConnection createConnection(final URI uri, final String method, final Action<HttpURLConnection> interceptor)
     {
         final URL url;
