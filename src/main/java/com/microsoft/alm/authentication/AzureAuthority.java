@@ -3,18 +3,24 @@
 
 package com.microsoft.alm.authentication;
 
+import com.microsoft.alm.helpers.Action;
 import com.microsoft.alm.helpers.Debug;
 import com.microsoft.alm.helpers.Guid;
+import com.microsoft.alm.helpers.HttpClient;
 import com.microsoft.alm.helpers.NotImplementedException;
+import com.microsoft.alm.helpers.ObjectExtensions;
 import com.microsoft.alm.helpers.QueryString;
 import com.microsoft.alm.helpers.StringContent;
 import com.microsoft.alm.helpers.StringHelper;
+import com.microsoft.alm.helpers.Trace;
 import com.microsoft.alm.helpers.UriHelper;
 import com.microsoft.alm.oauth2.useragent.AuthorizationException;
 import com.microsoft.alm.oauth2.useragent.AuthorizationResponse;
 import com.microsoft.alm.oauth2.useragent.UserAgent;
 import com.microsoft.alm.oauth2.useragent.UserAgentImpl;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.UUID;
@@ -80,9 +86,57 @@ class AzureAuthority implements IAzureAuthority
      *                        authority.
      * @return If successful, a {@link TokenPair}; otherwise null.
      */
-    public TokenPair acquireToken(final URI targetUri, final String clientId, final String resource, final URI redirectUri, final String queryParameters)
+    public TokenPair acquireToken(final URI targetUri, final String clientId, final String resource, final URI redirectUri, String queryParameters)
     {
-        throw new NotImplementedException();
+        Debug.Assert(targetUri != null && targetUri.isAbsolute(), "The targetUri parameter is null or invalid");
+        Debug.Assert(!StringHelper.isNullOrWhiteSpace(clientId), "The clientId parameter is null or empty");
+        Debug.Assert(!StringHelper.isNullOrWhiteSpace(resource), "The resource parameter is null or empty");
+        Debug.Assert(redirectUri != null, "The redirectUri parameter is null");
+        Debug.Assert(redirectUri.isAbsolute(), "The redirectUri parameter is not an absolute Uri");
+
+        Trace.writeLine("AzureAuthority::acquireToken");
+
+        final UUID correlationId = /* TODO: does this actually help against CSRF? */ null;
+        TokenPair tokens = null;
+        queryParameters = ObjectExtensions.coalesce(queryParameters, StringHelper.Empty);
+
+        // TODO: check _adalTokenCache first, then attempt to acquire token from refresh token
+
+        final String authorizationCode = acquireAuthorizationCode(resource,  clientId,  redirectUri,  correlationId, queryParameters);
+        if (authorizationCode == null)
+        {
+            Trace.writeLine("   token acquisition failed.");
+            return tokens;
+        }
+
+        final HttpClient client = new HttpClient(Global.getUserAgent());
+        try
+        {
+            final URI tokenEndpoint = createTokenEndpointUri(authorityHostUrl);
+            final StringContent requestContent = createTokenRequest(resource, clientId, authorizationCode, redirectUri, correlationId);
+            final HttpURLConnection connection = client.post(tokenEndpoint, requestContent, new Action<HttpURLConnection>()
+            {
+                @Override public void call(final HttpURLConnection conn)
+                {
+                    conn.setUseCaches(false);
+                }
+            });
+            client.ensureOK(connection);
+            final String responseContent = client.readToString(connection);
+            tokens = new TokenPair(responseContent);
+
+            // TODO: verify correlationId in access token response
+
+            // TODO: store access + refresh tokens to _adalTokenCache
+
+            Trace.writeLine("   token acquisition succeeded.");
+        }
+        catch (final IOException e)
+        {
+            // TODO: silently catching the exception here seems horribly wrong
+            Trace.writeLine("   token acquisition failed.");
+        }
+        return tokens;
     }
 
     /**
