@@ -17,8 +17,9 @@ import java.net.URI;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -32,6 +33,8 @@ public abstract class BaseVsoAuthentication extends BaseAuthentication
     public static final URI RedirectUri = URI.create("https://msopentech.com");
 
     protected static final String AdalRefreshPrefix = "ada";
+
+    private final ExecutorService service = Executors.newSingleThreadExecutor();
 
     private BaseVsoAuthentication(final VsoTokenScope tokenScope, final ICredentialStore personalAccessTokenStore, final ITokenStore vsoIdeTokenCache, final ITokenStore adaRefreshTokenStore, final IVsoAuthority vsoAuthority)
     {
@@ -151,7 +154,7 @@ public abstract class BaseVsoAuthentication extends BaseAuthentication
      */
     public Future<Boolean> refreshCredentials(final URI targetUri, final boolean requireCompactToken)
     {
-        return new FutureTask<Boolean>(new Callable<Boolean>()
+        return service.submit(new Callable<Boolean>()
         {
             @Override public Boolean call() throws Exception
             {
@@ -230,7 +233,7 @@ public abstract class BaseVsoAuthentication extends BaseAuthentication
      */
     protected Future<Boolean> generatePersonalAccessToken(final URI targetUri, final Token accessToken, final boolean requestCompactToken)
     {
-        return new FutureTask<Boolean>(new Callable<Boolean>()
+        return service.submit(new Callable<Boolean>()
         {
             @Override public Boolean call() throws Exception
             {
