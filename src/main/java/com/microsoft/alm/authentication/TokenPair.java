@@ -7,8 +7,20 @@ import com.microsoft.alm.helpers.Debug;
 import com.microsoft.alm.helpers.NotImplementedException;
 import com.microsoft.alm.helpers.StringHelper;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 class TokenPair // TODO: implements IEquatable<TokenPair>
 {
+    private static final Map<String, String> EMPTY_MAP = Collections.unmodifiableMap(new LinkedHashMap<String, String>(0));
+    private static final String ACCESS_TOKEN = "access_token";
+    private static final String REFRESH_TOKEN = "refresh_token";
+    // TODO: this won't match numerical values, such as '"expires_in":3600'
+    private static final Pattern JSON_NAME_VALUE_PAIR = Pattern.compile("\\s*\"([^\"]+)\"\\s*:\\s*\"([^\"]+)\"");
+
     /**
      * Creates a new {@link TokenPair} from raw access and refresh token data.
      *
@@ -22,6 +34,7 @@ class TokenPair // TODO: implements IEquatable<TokenPair>
 
         this.AccessToken = new Token(accessToken, TokenType.Access);
         this.RefreshToken = new Token(refreshToken, TokenType.Refresh);
+        this.Parameters = EMPTY_MAP;
     }
 
     /**
@@ -35,6 +48,34 @@ class TokenPair // TODO: implements IEquatable<TokenPair>
         throw new NotImplementedException();
     }
 
+    public TokenPair(final String accessTokenResponse)
+    {
+        final LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
+        final Matcher matcher = JSON_NAME_VALUE_PAIR.matcher(accessTokenResponse);
+        String accessToken = null;
+        String refreshToken = null;
+        while (matcher.find())
+        {
+            final String name = matcher.group(1);
+            final String value = matcher.group(2);
+            if (ACCESS_TOKEN.equals(name))
+            {
+                accessToken = value;
+            }
+            else if (REFRESH_TOKEN.equals(name))
+            {
+                refreshToken = value;
+            }
+            else
+            {
+                parameters.put(name, value);
+            }
+        }
+        this.AccessToken = new Token(accessToken, TokenType.Access);
+        this.RefreshToken = new Token(refreshToken, TokenType.Refresh);
+        this.Parameters = Collections.unmodifiableMap(parameters);
+    }
+
     /**
      * Access token, used to grant access to resources.
      */
@@ -43,6 +84,7 @@ class TokenPair // TODO: implements IEquatable<TokenPair>
      * Refresh token, used to grant new access tokens.
      */
     public final Token RefreshToken;
+    public final Map<String, String> Parameters;
 
     /**
      * Compares an object to this.
