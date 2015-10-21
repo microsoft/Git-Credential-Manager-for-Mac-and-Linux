@@ -9,6 +9,7 @@ import com.microsoft.alm.authentication.Configuration;
 import com.microsoft.alm.authentication.Credential;
 import com.microsoft.alm.authentication.IAuthentication;
 import com.microsoft.alm.authentication.ISecureStore;
+import com.microsoft.alm.authentication.IVsoAadAuthentication;
 import com.microsoft.alm.authentication.SecretStore;
 import com.microsoft.alm.authentication.VsoAadAuthentication;
 import com.microsoft.alm.authentication.VsoMsaAuthentication;
@@ -241,7 +242,41 @@ public class Program
                 break;
 
             case AzureDirectory:
-                throw new NotImplementedException();
+                final IVsoAadAuthentication aadAuth = (IVsoAadAuthentication) authentication;
+
+                // attempt to get cached creds -> refresh creds -> non-interactive logon -> interactive logon
+                // note that AAD "credentials" are always scoped access tokens
+                if (((operationArguments.Interactivity != Interactivity.Always
+                        && aadAuth.getCredentials(operationArguments.TargetUri, credentials)
+                        && (!operationArguments.ValidateCredentials
+                            || aadAuth.validateCredentials(operationArguments.TargetUri, credentials.get())))
+                        || (operationArguments.Interactivity != Interactivity.Always
+                            && aadAuth.refreshCredentials(operationArguments.TargetUri, true)
+                            && aadAuth.getCredentials(operationArguments.TargetUri, credentials)
+                            && (!operationArguments.ValidateCredentials
+                                || aadAuth.validateCredentials(operationArguments.TargetUri, credentials.get())))
+//                        || (operationArguments.Interactivity != Interactivity.Always
+//                            && aadAuth.noninteractiveLogon(operationArguments.TargetUri, true)
+//                            && aadAuth.getCredentials(operationArguments.TargetUri, credentials)
+//                            && (!operationArguments.ValidateCredentials
+//                                || aadAuth.validateCredentials(operationArguments.TargetUri, credentials.get())))
+                        || (operationArguments.Interactivity != Interactivity.Never
+                            && aadAuth.interactiveLogon(operationArguments.TargetUri, true))
+                            && aadAuth.getCredentials(operationArguments.TargetUri, credentials)
+                            && (!operationArguments.ValidateCredentials
+                                || aadAuth.validateCredentials(operationArguments.TargetUri, credentials.get()))))
+                {
+                    Trace.writeLine("   credentials found");
+                    operationArguments.setCredentials(credentials.get());
+                    logEvent("Azure Directory credentials for " + operationArguments.TargetUri + " successfully retrieved.", "SuccessAudit");
+                }
+                else
+                {
+                    System.err.println(AadMsaAuthFailureMessage);
+                    logEvent("Failed to retrieve Azure Directory credentials for " + operationArguments.TargetUri + ".", "FailureAudit");
+                }
+
+                break;
 
             case MicrosoftAccount:
                 throw new NotImplementedException();
