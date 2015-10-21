@@ -8,6 +8,7 @@ import com.microsoft.alm.helpers.Debug;
 import com.microsoft.alm.helpers.Guid;
 import com.microsoft.alm.gitcredentialhelper.InsecureStore;
 import com.microsoft.alm.helpers.HttpClient;
+import com.microsoft.alm.helpers.NotImplementedException;
 import com.microsoft.alm.helpers.StringHelper;
 import com.microsoft.alm.helpers.Trace;
 
@@ -33,8 +34,6 @@ public abstract class BaseVsoAuthentication extends BaseAuthentication
     public static final URI RedirectUri = URI.create("https://msopentech.com");
 
     protected static final String AdalRefreshPrefix = "ada";
-
-    private final ExecutorService service = Executors.newSingleThreadExecutor();
 
     private BaseVsoAuthentication(final VsoTokenScope tokenScope, final ICredentialStore personalAccessTokenStore, final ITokenStore vsoIdeTokenCache, final ITokenStore adaRefreshTokenStore, final IVsoAuthority vsoAuthority)
     {
@@ -154,13 +153,7 @@ public abstract class BaseVsoAuthentication extends BaseAuthentication
      */
     public Future<Boolean> refreshCredentials(final URI targetUri, final boolean requireCompactToken)
     {
-        return service.submit(new Callable<Boolean>()
-        {
-            @Override public Boolean call() throws Exception
-            {
-                return refreshCredentialsSync(targetUri, requireCompactToken);
-            }
-        });
+        throw new NotImplementedException();
     }
 
     boolean refreshCredentialsSync(final URI targetUri, final boolean requireCompactToken)
@@ -233,13 +226,7 @@ public abstract class BaseVsoAuthentication extends BaseAuthentication
      */
     protected Future<Boolean> generatePersonalAccessToken(final URI targetUri, final Token accessToken, final boolean requestCompactToken)
     {
-        return service.submit(new Callable<Boolean>()
-        {
-            @Override public Boolean call() throws Exception
-            {
-                return generatePersonalAccessTokenSync(targetUri, accessToken, requestCompactToken);
-            }
-        });
+        throw new NotImplementedException();
     }
 
     boolean generatePersonalAccessTokenSync(final URI targetUri, final Token accessToken, final boolean requestCompactToken) throws ExecutionException, InterruptedException
