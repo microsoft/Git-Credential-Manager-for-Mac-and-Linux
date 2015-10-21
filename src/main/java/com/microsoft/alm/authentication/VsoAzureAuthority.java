@@ -6,6 +6,7 @@ package com.microsoft.alm.authentication;
 import com.microsoft.alm.helpers.Action;
 import com.microsoft.alm.helpers.Debug;
 import com.microsoft.alm.helpers.Environment;
+import com.microsoft.alm.helpers.Guid;
 import com.microsoft.alm.helpers.HttpClient;
 import com.microsoft.alm.helpers.NotImplementedException;
 import com.microsoft.alm.helpers.StringContent;
@@ -15,7 +16,9 @@ import com.microsoft.alm.helpers.Trace;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.util.UUID;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -50,9 +53,89 @@ class VsoAzureAuthority extends AzureAuthority implements IVsoAuthority
         throw new NotImplementedException();
     }
 
+    public Token generatePersonalAccessTokenSync(final URI targetUri, final Token accessToken, final VsoTokenScope tokenScope, final boolean requireCompactToken)
+    {
+        final String TokenAuthHost = "app.vssps.visualstudio.com";
+        final String SessionTokenUrl = "https://" + TokenAuthHost + "/_apis/token/sessiontokens?api-version=1.0";
+        final String CompactTokenUrl = SessionTokenUrl + "&tokentype=compact";
+
+        Debug.Assert(targetUri != null, "The targetUri parameter is null");
+        Debug.Assert(accessToken != null && !StringHelper.isNullOrWhiteSpace(accessToken.Value) && (accessToken.Type == TokenType.Access || accessToken.Type == TokenType.Federated), "The accessToken parameter is null or invalid");
+        Debug.Assert(tokenScope != null, "The tokenScope parameter is invalid");
+
+        Trace.writeLine("VsoAzureAuthority::generatePersonalAccessTokenSync");
+
+        try
+        {
+            // TODO: create a `HttpClient` with a minimum number of redirects, default creds, and a reasonable timeout (access token generation seems to hang occasionally)
+            final HttpClient client = new HttpClient(Global.getUserAgent());
+            Trace.writeLine("   using token to acquire personal access token");
+            accessToken.contributeHeader(client.Headers);
+
+            if (populateTokenTargetIdSync(targetUri, accessToken))
+            {
+                final URI requestUrl = URI.create(requireCompactToken ? CompactTokenUrl : SessionTokenUrl);
+
+                final StringContent content = getAccessTokenRequestBody(targetUri, accessToken, tokenScope);
+                final HttpURLConnection response = client.post(requestUrl, content);
+                if (response.getResponseCode() == HttpURLConnection.HTTP_OK)
+                {
+                    final String responseText = HttpClient.readToString(response);
+
+                    final Token token = parsePersonalAccessTokenFromJson(responseText);
+                    if (token != null)
+                    {
+                        Trace.writeLine("   personal access token acquisition succeeded.");
+                    }
+                    return token;
+                }
+            }
+        }
+        catch (IOException e)
+        {
+            throw new Error(e);
+        }
+        return null;
+    }
+
     public Future<Boolean> populateTokenTargetId(final URI targetUri, final Token accessToken)
     {
         throw new NotImplementedException();
+    }
+
+    public boolean populateTokenTargetIdSync(final URI targetUri, final Token accessToken)
+    {
+        Debug.Assert(targetUri != null && targetUri.isAbsolute(), "The targetUri parameter is null or invalid");
+        Debug.Assert(accessToken != null && !StringHelper.isNullOrWhiteSpace(accessToken.Value) && (accessToken.Type == TokenType.Access || accessToken.Type == TokenType.Federated), "The accessToken parameter is null or invalid");
+
+        Trace.writeLine("VsoAzureAuthority::populateTokenTargetIdSync");
+
+        String resultId = null;
+        try
+        {
+            // create an request to the VSO deployment data end-point
+            final HttpURLConnection request = createConnectionDataRequest(targetUri, accessToken);
+
+            // send the request and wait for the response
+            final String content = HttpClient.readToString(request);
+
+            resultId = parseInstanceIdFromJson(content);
+        }
+        catch (final IOException e)
+        {
+            Trace.writeLine("   server returned " + e.getMessage());
+        }
+
+        final AtomicReference<UUID> instanceId = new AtomicReference<UUID>();
+        if (Guid.tryParse(resultId, instanceId))
+        {
+            Trace.writeLine("   target identity is " + resultId);
+            accessToken.setTargetIdentity(instanceId.get());
+
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -66,6 +149,39 @@ class VsoAzureAuthority extends AzureAuthority implements IVsoAuthority
     @Override public Future<Boolean> validateCredentials(final URI targetUri, final Credential credentials)
     {
         throw new NotImplementedException();
+    }
+
+    public Boolean validateCredentialsSync(final URI targetUri, final Credential credentials)
+    {
+        Debug.Assert(targetUri != null && targetUri.isAbsolute(), "The targetUri parameter is null or invalid");
+        Debug.Assert(credentials != null, "The credentials parameter is null or invalid");
+
+        Trace.writeLine("VsoAzureAuthority::validateCredentialsSync");
+
+        try
+        {
+            // create an request to the VSO deployment data end-point
+            final HttpURLConnection request = createConnectionDataRequest(targetUri, credentials);
+
+            // send the request and wait for the response
+            request.connect();
+            final int statusCode = request.getResponseCode();
+            // we're looking for 'OK 200' here, anything else is failure
+            Trace.writeLine("   server returned: " + statusCode);
+            return statusCode == HttpURLConnection.HTTP_OK;
+        }
+        catch (final IOException e)
+        {
+            Trace.writeLine("   server returned: " + e.getMessage());
+        }
+        catch(final Throwable ignored)
+        {
+            Trace.writeLine("   unexpected error");
+        }
+
+        Trace.writeLine("   credential validation failed");
+        return false;
+
     }
 
     /**
