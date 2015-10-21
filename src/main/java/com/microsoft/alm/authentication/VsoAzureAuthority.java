@@ -12,11 +12,12 @@ import com.microsoft.alm.helpers.StringContent;
 import com.microsoft.alm.helpers.StringHelper;
 import com.microsoft.alm.helpers.Trace;
 
-import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.util.concurrent.Future;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 class VsoAzureAuthority extends AzureAuthority implements IVsoAuthority
 {
@@ -80,6 +81,43 @@ class VsoAzureAuthority extends AzureAuthority implements IVsoAuthority
     @Override public Future<Boolean> validateToken(final URI targetUri, final Token token)
     {
         throw new NotImplementedException();
+    }
+
+    private static final Pattern TOKEN_PATTERN = Pattern.compile(
+        "\"token\"\\s*:\\s*\"([^\"]+)\"",
+        Pattern.CASE_INSENSITIVE
+    );
+    static Token parsePersonalAccessTokenFromJson(final String json)
+    {
+        Token token = null;
+        if (!StringHelper.isNullOrWhiteSpace(json))
+        {
+            // find the 'token : <value>' portion of the result content, if any
+            final Matcher matcher = TOKEN_PATTERN.matcher(json);
+            if (matcher.find())
+            {
+                final String tokenValue = matcher.group(1);
+                token = new Token(tokenValue, TokenType.Personal);
+            }
+        }
+        return token;
+    }
+
+     private static final Pattern INSTANCE_ID_PATTERN = Pattern.compile(
+        "\"instanceId\"\\s*:\\s*\"([^\"]+)\"",
+        Pattern.CASE_INSENSITIVE
+    );
+    static String parseInstanceIdFromJson(final String json)
+    {
+        String result = null;
+
+        final Matcher matcher = INSTANCE_ID_PATTERN.matcher(json);
+        if (matcher.find())
+        {
+            result = matcher.group(1);
+        }
+
+        return result;
     }
 
     private StringContent getAccessTokenRequestBody(final URI targetUri, final Token accessToken, final VsoTokenScope tokenScope)
