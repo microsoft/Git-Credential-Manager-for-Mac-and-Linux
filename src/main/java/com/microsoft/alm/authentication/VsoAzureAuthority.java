@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.util.UUID;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -48,12 +47,7 @@ class VsoAzureAuthority extends AzureAuthority implements IVsoAuthority
      * @param requireCompactToken
      * @return
      */
-    @Override public Future<Token> generatePersonalAccessToken(final URI targetUri, final Token accessToken, final VsoTokenScope tokenScope, final boolean requireCompactToken)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Token generatePersonalAccessTokenSync(final URI targetUri, final Token accessToken, final VsoTokenScope tokenScope, final boolean requireCompactToken)
+    @Override public Token generatePersonalAccessToken(final URI targetUri, final Token accessToken, final VsoTokenScope tokenScope, final boolean requireCompactToken)
     {
         final String TokenAuthHost = "app.vssps.visualstudio.com";
         final String SessionTokenUrl = "https://" + TokenAuthHost + "/_apis/token/sessiontokens?api-version=1.0";
@@ -63,7 +57,7 @@ class VsoAzureAuthority extends AzureAuthority implements IVsoAuthority
         Debug.Assert(accessToken != null && !StringHelper.isNullOrWhiteSpace(accessToken.Value) && (accessToken.Type == TokenType.Access || accessToken.Type == TokenType.Federated), "The accessToken parameter is null or invalid");
         Debug.Assert(tokenScope != null, "The tokenScope parameter is invalid");
 
-        Trace.writeLine("VsoAzureAuthority::generatePersonalAccessTokenSync");
+        Trace.writeLine("VsoAzureAuthority::generatePersonalAccessToken");
 
         try
         {
@@ -72,7 +66,7 @@ class VsoAzureAuthority extends AzureAuthority implements IVsoAuthority
             Trace.writeLine("   using token to acquire personal access token");
             accessToken.contributeHeader(client.Headers);
 
-            if (populateTokenTargetIdSync(targetUri, accessToken))
+            if (populateTokenTargetId(targetUri, accessToken))
             {
                 final URI requestUrl = URI.create(requireCompactToken ? CompactTokenUrl : SessionTokenUrl);
 
@@ -98,17 +92,12 @@ class VsoAzureAuthority extends AzureAuthority implements IVsoAuthority
         return null;
     }
 
-    public Future<Boolean> populateTokenTargetId(final URI targetUri, final Token accessToken)
-    {
-        throw new NotImplementedException();
-    }
-
-    public boolean populateTokenTargetIdSync(final URI targetUri, final Token accessToken)
+    public boolean populateTokenTargetId(final URI targetUri, final Token accessToken)
     {
         Debug.Assert(targetUri != null && targetUri.isAbsolute(), "The targetUri parameter is null or invalid");
         Debug.Assert(accessToken != null && !StringHelper.isNullOrWhiteSpace(accessToken.Value) && (accessToken.Type == TokenType.Access || accessToken.Type == TokenType.Federated), "The accessToken parameter is null or invalid");
 
-        Trace.writeLine("VsoAzureAuthority::populateTokenTargetIdSync");
+        Trace.writeLine("VsoAzureAuthority::populateTokenTargetId");
 
         String resultId = null;
         try
@@ -146,17 +135,12 @@ class VsoAzureAuthority extends AzureAuthority implements IVsoAuthority
      * @param credentials {@link Credential} expected to grant access to the VSO service.
      * @return True if successful; otherwise false.
      */
-    @Override public Future<Boolean> validateCredentials(final URI targetUri, final Credential credentials)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Boolean validateCredentialsSync(final URI targetUri, final Credential credentials)
+    @Override public boolean validateCredentials(final URI targetUri, final Credential credentials)
     {
         Debug.Assert(targetUri != null && targetUri.isAbsolute(), "The targetUri parameter is null or invalid");
         Debug.Assert(credentials != null, "The credentials parameter is null or invalid");
 
-        Trace.writeLine("VsoAzureAuthority::validateCredentialsSync");
+        Trace.writeLine("VsoAzureAuthority::validateCredentials");
 
         try
         {
@@ -194,7 +178,7 @@ class VsoAzureAuthority extends AzureAuthority implements IVsoAuthority
      * @param token       {@link Token} expected to grant access to the VSO service.
      * @return True if successful; otherwise false.
      */
-    @Override public Future<Boolean> validateToken(final URI targetUri, final Token token)
+    @Override public boolean validateToken(final URI targetUri, final Token token)
     {
         throw new NotImplementedException();
     }

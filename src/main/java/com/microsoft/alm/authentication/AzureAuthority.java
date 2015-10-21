@@ -24,7 +24,6 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.UUID;
-import java.util.concurrent.Future;
 
 /**
  * Interfaces with Azure to perform authentication and identity services.
@@ -149,7 +148,7 @@ class AzureAuthority implements IAzureAuthority
      * @param credentials Optional: user credential to use for token acquisition.
      * @return If successful, a {@link TokenPair}; otherwise null.
      */
-    public Future<TokenPair> acquireTokenAsync(final URI targetUri, final String clientId, final String resource, final Credential credentials)
+    public TokenPair acquireToken(final URI targetUri, final String clientId, final String resource, final Credential credentials)
     {
         throw new NotImplementedException();
     }
@@ -163,7 +162,7 @@ class AzureAuthority implements IAzureAuthority
      * @param refreshToken The {@link Token} of type {@link TokenType#Refresh}.
      * @return If successful, a {@link TokenPair}; otherwise null.
      */
-    public Future<TokenPair> acquireTokenByRefreshTokenAsync(final URI targetUri, final String clientId, final String resource, final Token refreshToken)
+    public TokenPair acquireTokenByRefreshToken(final URI targetUri, final String clientId, final String resource, final Token refreshToken)
     {
         throw new NotImplementedException();
     }

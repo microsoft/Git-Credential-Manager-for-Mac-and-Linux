@@ -9,8 +9,6 @@ import com.microsoft.alm.helpers.Trace;
 
 import java.net.URI;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 /**
  * Facilitates Azure Directory authentication.
@@ -97,18 +95,7 @@ public final class VsoAadAuthentication extends BaseVsoAuthentication implements
 
             this.storeRefreshToken(targetUri, tokens.RefreshToken);
 
-            try
-            {
-                return this.generatePersonalAccessTokenSync(targetUri, tokens.AccessToken,  requestCompactToken);
-            }
-            catch (final ExecutionException e)
-            {
-                Trace.writeLine("   token acquisition failed.");
-            }
-            catch (final InterruptedException e)
-            {
-                Trace.writeLine("   token acquisition failed.");
-            }
+            return this.generatePersonalAccessToken(targetUri, tokens.AccessToken,  requestCompactToken);
         }
 
         Trace.writeLine("   interactive logon failed");
@@ -131,7 +118,7 @@ public final class VsoAadAuthentication extends BaseVsoAuthentication implements
      *                            the basic authentication header which they can create (example: Git).</p>
      * @return                    True if authentication and personal access token acquisition was successful; otherwise false.
      */
-    public Future<Boolean> noninteractiveLogonWithCredentials(final URI targetUri, final Credential credentials, final boolean requestCompactToken)
+    public boolean noninteractiveLogonWithCredentials(final URI targetUri, final Credential credentials, final boolean requestCompactToken)
     {
         throw new NotImplementedException();
     }
@@ -151,7 +138,7 @@ public final class VsoAadAuthentication extends BaseVsoAuthentication implements
      *                            the basic authentication header which they can create (example: Git).</p>
      * @return                    True if authentication and personal access token acquisition was successful; otherwise false.
      */
-    public Future<Boolean> noninteractiveLogon(final URI targetUri, final boolean requestCompactToken)
+    public boolean noninteractiveLogon(final URI targetUri, final boolean requestCompactToken)
     {
         throw new NotImplementedException();
     }

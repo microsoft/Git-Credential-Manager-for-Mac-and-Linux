@@ -8,7 +8,6 @@ import com.microsoft.alm.helpers.Debug;
 import com.microsoft.alm.helpers.Guid;
 import com.microsoft.alm.gitcredentialhelper.InsecureStore;
 import com.microsoft.alm.helpers.HttpClient;
-import com.microsoft.alm.helpers.NotImplementedException;
 import com.microsoft.alm.helpers.StringHelper;
 import com.microsoft.alm.helpers.Trace;
 
@@ -16,11 +15,6 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.util.UUID;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -151,12 +145,7 @@ public abstract class BaseVsoAuthentication extends BaseAuthentication
      *                            describing token if false.
      * @return True if successful; false otherwise.
      */
-    public Future<Boolean> refreshCredentials(final URI targetUri, final boolean requireCompactToken)
-    {
-        throw new NotImplementedException();
-    }
-
-    boolean refreshCredentialsSync(final URI targetUri, final boolean requireCompactToken)
+    public boolean refreshCredentials(final URI targetUri, final boolean requireCompactToken)
     {
         BaseSecureStore.validateTargetUri(targetUri);
 
@@ -170,14 +159,14 @@ public abstract class BaseVsoAuthentication extends BaseAuthentication
             // attempt to read from the local store
             if (this.AdaRefreshTokenStore.readToken(targetUri, refreshToken))
             {
-                if ((tokens = this.VsoAuthority.acquireTokenByRefreshTokenAsync(targetUri, this.ClientId, this.Resource, refreshToken.get()).get()) !=
+                if ((tokens = this.VsoAuthority.acquireTokenByRefreshToken(targetUri, this.ClientId, this.Resource, refreshToken.get())) !=
                         null)
                 {
                     Trace.writeLine("   Azure token found in primary cache.");
 
                     this.TenantId = tokens.AccessToken.getTargetIdentity();
 
-                    return this.generatePersonalAccessToken(targetUri, tokens.AccessToken, requireCompactToken).get();
+                    return this.generatePersonalAccessToken(targetUri, tokens.AccessToken, requireCompactToken);
                 }
             }
 
@@ -187,7 +176,7 @@ public abstract class BaseVsoAuthentication extends BaseAuthentication
             {
                 Trace.writeLine("   federated auth token found in IDE cache.");
 
-                return this.generatePersonalAccessToken(targetUri, federatedAuthToken.get(), requireCompactToken).get();
+                return this.generatePersonalAccessToken(targetUri, federatedAuthToken.get(), requireCompactToken);
             }
         }
         catch (final Exception exception)
@@ -206,7 +195,7 @@ public abstract class BaseVsoAuthentication extends BaseAuthentication
      * @param credentials The credentials to validate.
      * @return True if successful; false otherwise.
      */
-    public Future<Boolean> validateCredentials(final URI targetUri, final Credential credentials)
+    public boolean validateCredentials(final URI targetUri, final Credential credentials)
     {
         Trace.writeLine("BaseVsoAuthentication::validateCredentials");
 
@@ -224,12 +213,7 @@ public abstract class BaseVsoAuthentication extends BaseAuthentication
      *                            generates a self describing token if false.
      * @return True if successful; false otherwise.
      */
-    protected Future<Boolean> generatePersonalAccessToken(final URI targetUri, final Token accessToken, final boolean requestCompactToken)
-    {
-        throw new NotImplementedException();
-    }
-
-    boolean generatePersonalAccessTokenSync(final URI targetUri, final Token accessToken, final boolean requestCompactToken) throws ExecutionException, InterruptedException
+    protected boolean generatePersonalAccessToken(final URI targetUri, final Token accessToken, final boolean requestCompactToken)
     {
         Debug.Assert(targetUri != null, "The targetUri parameter is null");
         Debug.Assert(accessToken != null, "The accessToken parameter is null");
@@ -237,7 +221,7 @@ public abstract class BaseVsoAuthentication extends BaseAuthentication
         Trace.writeLine("BaseVsoAuthentication::generatePersonalAccessToken");
 
         Token personalAccessToken;
-        if ((personalAccessToken = this.VsoAuthority.generatePersonalAccessToken(targetUri, accessToken, TokenScope, requestCompactToken).get()) != null)
+        if ((personalAccessToken = this.VsoAuthority.generatePersonalAccessToken(targetUri, accessToken, TokenScope, requestCompactToken)) != null)
         {
             this.PersonalAccessTokenStore.writeCredentials(targetUri, Token.toCredential(personalAccessToken));
         }

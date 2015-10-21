@@ -35,7 +35,6 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Program
@@ -209,13 +208,13 @@ public class Program
 
     private final Callable<Void> Get = new Callable<Void>()
     {
-        @Override public Void call() throws IOException, URISyntaxException, ExecutionException, InterruptedException
+        @Override public Void call() throws IOException, URISyntaxException
         {
             get();
             return null;
         }
     };
-    private void get() throws IOException, URISyntaxException, ExecutionException, InterruptedException
+    private void get() throws IOException, URISyntaxException
     {
         final AtomicReference<OperationArguments> operationArgumentsRef = new AtomicReference<OperationArguments>();
         final AtomicReference<IAuthentication> authenticationRef = new AtomicReference<IAuthentication>();
@@ -223,7 +222,7 @@ public class Program
         final String result = get(operationArgumentsRef.get(), authenticationRef.get());
         standardOut.print(result);
     }
-    public static String get(final OperationArguments operationArguments, final IAuthentication authentication) throws ExecutionException, InterruptedException
+    public static String get(final OperationArguments operationArguments, final IAuthentication authentication)
     {
         final String AadMsaAuthFailureMessage = "Logon failed, use ctrl+c to cancel basic credential prompt.";
         final String GitHubAuthFailureMessage = "Logon failed, use ctrl+c to cancel basic credential prompt.";
