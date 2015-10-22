@@ -9,6 +9,7 @@ import com.microsoft.alm.authentication.Configuration;
 import com.microsoft.alm.authentication.Credential;
 import com.microsoft.alm.authentication.IAuthentication;
 import com.microsoft.alm.authentication.ISecureStore;
+import com.microsoft.alm.authentication.IVsoAadAuthentication;
 import com.microsoft.alm.authentication.SecretStore;
 import com.microsoft.alm.authentication.VsoAadAuthentication;
 import com.microsoft.alm.authentication.VsoMsaAuthentication;
@@ -35,7 +36,6 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Program
@@ -209,13 +209,13 @@ public class Program
 
     private final Callable<Void> Get = new Callable<Void>()
     {
-        @Override public Void call() throws IOException, URISyntaxException, ExecutionException, InterruptedException
+        @Override public Void call() throws IOException, URISyntaxException
         {
             get();
             return null;
         }
     };
-    private void get() throws IOException, URISyntaxException, ExecutionException, InterruptedException
+    private void get() throws IOException, URISyntaxException
     {
         final AtomicReference<OperationArguments> operationArgumentsRef = new AtomicReference<OperationArguments>();
         final AtomicReference<IAuthentication> authenticationRef = new AtomicReference<IAuthentication>();
@@ -223,7 +223,7 @@ public class Program
         final String result = get(operationArgumentsRef.get(), authenticationRef.get());
         standardOut.print(result);
     }
-    public static String get(final OperationArguments operationArguments, final IAuthentication authentication) throws ExecutionException, InterruptedException
+    public static String get(final OperationArguments operationArguments, final IAuthentication authentication)
     {
         final String AadMsaAuthFailureMessage = "Logon failed, use ctrl+c to cancel basic credential prompt.";
         final String GitHubAuthFailureMessage = "Logon failed, use ctrl+c to cancel basic credential prompt.";
@@ -242,7 +242,41 @@ public class Program
                 break;
 
             case AzureDirectory:
-                throw new NotImplementedException();
+                final IVsoAadAuthentication aadAuth = (IVsoAadAuthentication) authentication;
+
+                // attempt to get cached creds -> refresh creds -> non-interactive logon -> interactive logon
+                // note that AAD "credentials" are always scoped access tokens
+                if (((operationArguments.Interactivity != Interactivity.Always
+                        && aadAuth.getCredentials(operationArguments.TargetUri, credentials)
+                        && (!operationArguments.ValidateCredentials
+                            || aadAuth.validateCredentials(operationArguments.TargetUri, credentials.get())))
+                        || (operationArguments.Interactivity != Interactivity.Always
+                            && aadAuth.refreshCredentials(operationArguments.TargetUri, true)
+                            && aadAuth.getCredentials(operationArguments.TargetUri, credentials)
+                            && (!operationArguments.ValidateCredentials
+                                || aadAuth.validateCredentials(operationArguments.TargetUri, credentials.get())))
+//                        || (operationArguments.Interactivity != Interactivity.Always
+//                            && aadAuth.noninteractiveLogon(operationArguments.TargetUri, true)
+//                            && aadAuth.getCredentials(operationArguments.TargetUri, credentials)
+//                            && (!operationArguments.ValidateCredentials
+//                                || aadAuth.validateCredentials(operationArguments.TargetUri, credentials.get())))
+                        || (operationArguments.Interactivity != Interactivity.Never
+                            && aadAuth.interactiveLogon(operationArguments.TargetUri, true))
+                            && aadAuth.getCredentials(operationArguments.TargetUri, credentials)
+                            && (!operationArguments.ValidateCredentials
+                                || aadAuth.validateCredentials(operationArguments.TargetUri, credentials.get()))))
+                {
+                    Trace.writeLine("   credentials found");
+                    operationArguments.setCredentials(credentials.get());
+                    logEvent("Azure Directory credentials for " + operationArguments.TargetUri + " successfully retrieved.", "SuccessAudit");
+                }
+                else
+                {
+                    System.err.println(AadMsaAuthFailureMessage);
+                    logEvent("Failed to retrieve Azure Directory credentials for " + operationArguments.TargetUri + ".", "FailureAudit");
+                }
+
+                break;
 
             case MicrosoftAccount:
                 throw new NotImplementedException();
@@ -333,7 +367,7 @@ public class Program
         authenticationRef.set(authentication);
     }
 
-    private static IAuthentication createAuthentication(final OperationArguments operationArguments, final ISecureStore secureStore)
+    static IAuthentication createAuthentication(final OperationArguments operationArguments, final ISecureStore secureStore)
     {
         Debug.Assert(operationArguments != null, "The operationArguments is null");
 
@@ -374,8 +408,10 @@ public class Program
                 }
                 */
             }
-
-            operationArguments.Authority = AuthorityType.Basic;
+            else
+            {
+                operationArguments.Authority = AuthorityType.Basic;
+            }
         }
 
         switch (operationArguments.Authority)

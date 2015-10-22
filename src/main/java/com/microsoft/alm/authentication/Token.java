@@ -5,11 +5,13 @@ package com.microsoft.alm.authentication;
 
 import com.microsoft.alm.helpers.Debug;
 import com.microsoft.alm.helpers.Guid;
+import com.microsoft.alm.helpers.NotImplementedException;
 import com.microsoft.alm.helpers.StringHelper;
 import com.microsoft.alm.helpers.Trace;
 
 import java.nio.ByteBuffer;
 import java.util.EnumSet;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -138,6 +140,24 @@ public class Token extends Secret // TODO: implements IEquatable<Token>
             return value.get();
         else
             return super.toString();
+    }
+
+    public void contributeHeader(final Map<String, String> headers)
+    {
+        // different types of tokens are packed differently
+        switch (Type)
+        {
+            case Access:
+                final String prefix = "Bearer";
+                headers.put("Authorization", prefix + " " + Value);
+                break;
+            case Federated:
+                throw new NotImplementedException();
+            default:
+                final String template = "Tokens of type '%1$s' cannot be used for headers.";
+                final String message = String.format(template, Type);
+                throw new IllegalStateException(message);
+        }
     }
 
     static boolean deserialize(final byte[] bytes, final TokenType type, final AtomicReference<Token> tokenReference)

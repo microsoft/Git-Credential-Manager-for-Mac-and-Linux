@@ -3,12 +3,9 @@
 
 package com.microsoft.alm.authentication;
 
-import com.microsoft.alm.helpers.Debug;
 import com.microsoft.alm.helpers.Trace;
 
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.concurrent.ExecutionException;
 
 public final class VsoMsaAuthentication extends BaseVsoAuthentication implements IVsoMsaAuthentication
 {
@@ -59,36 +56,14 @@ public final class VsoMsaAuthentication extends BaseVsoAuthentication implements
 
         Trace.writeLine("VsoMsaAuthentication::InteractiveLogon");
 
-        try
+        TokenPair tokens;
+        if ((tokens = this.VsoAuthority.acquireToken(targetUri, this.ClientId, this.Resource, RedirectUri, QueryParameters)) != null)
         {
-            TokenPair tokens;
-            final URI redirectUri = new URI(RedirectUrl);
-            if ((tokens = this.VsoAuthority.acquireToken(targetUri, this.ClientId, this.Resource, redirectUri, QueryParameters)) != null)
-            {
-                Trace.writeLine("   token successfully acquired.");
+            Trace.writeLine("   token successfully acquired.");
 
-                this.storeRefreshToken(targetUri, tokens.RefreshToken);
+            this.storeRefreshToken(targetUri, tokens.RefreshToken);
 
-                return this.generatePersonalAccessToken(targetUri, tokens.AccessToken, requireCompactToken).get();
-            }
-        }
-        /* TODO: ADAL-specific
-        catch (AdalException exception)
-        {
-            Debug.Write(exception);
-        }
-        */
-        catch (final URISyntaxException e)
-        {
-            Debug.Assert(false, "Shouldn't happen with hardcoded constant.");
-        }
-        catch (InterruptedException e)
-        {
-            e.printStackTrace();
-        }
-        catch (ExecutionException e)
-        {
-            e.printStackTrace();
+            return this.generatePersonalAccessToken(targetUri, tokens.AccessToken, requireCompactToken);
         }
 
         Trace.writeLine("   failed to acquire token.");

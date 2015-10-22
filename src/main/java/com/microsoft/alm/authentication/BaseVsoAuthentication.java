@@ -3,21 +3,18 @@
 
 package com.microsoft.alm.authentication;
 
+import com.microsoft.alm.helpers.Action;
 import com.microsoft.alm.helpers.Debug;
 import com.microsoft.alm.helpers.Guid;
 import com.microsoft.alm.gitcredentialhelper.InsecureStore;
+import com.microsoft.alm.helpers.HttpClient;
 import com.microsoft.alm.helpers.StringHelper;
 import com.microsoft.alm.helpers.Trace;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URI;
-import java.net.URL;
 import java.util.UUID;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -26,8 +23,9 @@ import java.util.concurrent.atomic.AtomicReference;
 public abstract class BaseVsoAuthentication extends BaseAuthentication
 {
     public static final String DefaultResource = "499b84ac-1321-427f-aa17-267ca6975798";
-    public static final String DefaultClientId = "872cd9fa-d31f-45e0-9eab-6e460a02d1f1";
-    public static final String RedirectUrl = "urn:ietf:wg:oauth:2.0:oob";
+    // TODO: request a client_id and redirect URI, these are MSOpenTech's
+    public static final String DefaultClientId = "61d65f5a-6e3b-468b-af73-a033f5098c5c";
+    public static final URI RedirectUri = URI.create("https://msopentech.com");
 
     protected static final String AdalRefreshPrefix = "ada";
 
@@ -147,18 +145,7 @@ public abstract class BaseVsoAuthentication extends BaseAuthentication
      *                            describing token if false.
      * @return True if successful; false otherwise.
      */
-    public Future<Boolean> refreshCredentials(final URI targetUri, final boolean requireCompactToken)
-    {
-        return new FutureTask<Boolean>(new Callable<Boolean>()
-        {
-            @Override public Boolean call() throws Exception
-            {
-                return refreshCredentialsSync(targetUri, requireCompactToken);
-            }
-        });
-    }
-
-    boolean refreshCredentialsSync(final URI targetUri, final boolean requireCompactToken)
+    public boolean refreshCredentials(final URI targetUri, final boolean requireCompactToken)
     {
         BaseSecureStore.validateTargetUri(targetUri);
 
@@ -172,14 +159,14 @@ public abstract class BaseVsoAuthentication extends BaseAuthentication
             // attempt to read from the local store
             if (this.AdaRefreshTokenStore.readToken(targetUri, refreshToken))
             {
-                if ((tokens = this.VsoAuthority.acquireTokenByRefreshTokenAsync(targetUri, this.ClientId, this.Resource, refreshToken.get()).get()) !=
+                if ((tokens = this.VsoAuthority.acquireTokenByRefreshToken(targetUri, this.ClientId, this.Resource, refreshToken.get())) !=
                         null)
                 {
                     Trace.writeLine("   Azure token found in primary cache.");
 
                     this.TenantId = tokens.AccessToken.getTargetIdentity();
 
-                    return this.generatePersonalAccessToken(targetUri, tokens.AccessToken, requireCompactToken).get();
+                    return this.generatePersonalAccessToken(targetUri, tokens.AccessToken, requireCompactToken);
                 }
             }
 
@@ -189,7 +176,7 @@ public abstract class BaseVsoAuthentication extends BaseAuthentication
             {
                 Trace.writeLine("   federated auth token found in IDE cache.");
 
-                return this.generatePersonalAccessToken(targetUri, federatedAuthToken.get(), requireCompactToken).get();
+                return this.generatePersonalAccessToken(targetUri, federatedAuthToken.get(), requireCompactToken);
             }
         }
         catch (final Exception exception)
@@ -208,7 +195,7 @@ public abstract class BaseVsoAuthentication extends BaseAuthentication
      * @param credentials The credentials to validate.
      * @return True if successful; false otherwise.
      */
-    public Future<Boolean> validateCredentials(final URI targetUri, final Credential credentials)
+    public boolean validateCredentials(final URI targetUri, final Credential credentials)
     {
         Trace.writeLine("BaseVsoAuthentication::validateCredentials");
 
@@ -226,18 +213,7 @@ public abstract class BaseVsoAuthentication extends BaseAuthentication
      *                            generates a self describing token if false.
      * @return True if successful; false otherwise.
      */
-    protected Future<Boolean> generatePersonalAccessToken(final URI targetUri, final Token accessToken, final boolean requestCompactToken)
-    {
-        return new FutureTask<Boolean>(new Callable<Boolean>()
-        {
-            @Override public Boolean call() throws Exception
-            {
-                return generatePersonalAccessTokenSync(targetUri, accessToken, requestCompactToken);
-            }
-        });
-    }
-
-    boolean generatePersonalAccessTokenSync(final URI targetUri, final Token accessToken, final boolean requestCompactToken) throws ExecutionException, InterruptedException
+    protected boolean generatePersonalAccessToken(final URI targetUri, final Token accessToken, final boolean requestCompactToken)
     {
         Debug.Assert(targetUri != null, "The targetUri parameter is null");
         Debug.Assert(accessToken != null, "The accessToken parameter is null");
@@ -245,7 +221,7 @@ public abstract class BaseVsoAuthentication extends BaseAuthentication
         Trace.writeLine("BaseVsoAuthentication::generatePersonalAccessToken");
 
         Token personalAccessToken;
-        if ((personalAccessToken = this.VsoAuthority.generatePersonalAccessToken(targetUri, accessToken, TokenScope, requestCompactToken).get()) != null)
+        if ((personalAccessToken = this.VsoAuthority.generatePersonalAccessToken(targetUri, accessToken, TokenScope, requestCompactToken)) != null)
         {
             this.PersonalAccessTokenStore.writeCredentials(targetUri, Token.toCredential(personalAccessToken));
         }
@@ -293,14 +269,16 @@ public abstract class BaseVsoAuthentication extends BaseAuthentication
             String tenant = null;
 
             HttpURLConnection connection = null;
+            final HttpClient client = new HttpClient(Global.getUserAgent());
             try
             {
-                final URL url = targetUri.toURL();
-                connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("HEAD");
-                connection.setRequestProperty("User-Agent", Global.getUserAgent());
-                connection.setInstanceFollowRedirects(false);
-                connection.connect();
+                connection = client.head(targetUri, new Action<HttpURLConnection>()
+                {
+                    @Override public void call(final HttpURLConnection conn)
+                    {
+                        conn.setInstanceFollowRedirects(false);
+                    }
+                });
 
                 tenant = connection.getHeaderField(VsoResourceTenantHeader);
                 Trace.writeLine("   server has responded");
