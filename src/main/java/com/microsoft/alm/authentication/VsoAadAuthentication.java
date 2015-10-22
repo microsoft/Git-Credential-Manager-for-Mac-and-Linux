@@ -64,7 +64,6 @@ public final class VsoAadAuthentication extends BaseVsoAuthentication implements
               adaRefreshTokenStore,
               vsoIdeTokenCache,
               vsoAuthority);
-        throw new NotImplementedException();
     }
 
     /**
