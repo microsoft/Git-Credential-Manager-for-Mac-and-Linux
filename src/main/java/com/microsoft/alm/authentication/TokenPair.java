@@ -13,12 +13,12 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-class TokenPair // TODO: implements IEquatable<TokenPair>
+class TokenPair
 {
     private static final Map<String, String> EMPTY_MAP = Collections.unmodifiableMap(new LinkedHashMap<String, String>(0));
     private static final String ACCESS_TOKEN = "access_token";
     private static final String REFRESH_TOKEN = "refresh_token";
-    // TODO: this won't match numerical values, such as '"expires_in":3600'
+    // TODO: 449517: this won't match numerical values, such as '"expires_in":3600'
     private static final Pattern JSON_NAME_VALUE_PAIR = Pattern.compile("\\s*\"([^\"]+)\"\\s*:\\s*\"([^\"]+)\"");
 
     /**
@@ -43,9 +43,9 @@ class TokenPair // TODO: implements IEquatable<TokenPair>
      * @param authResult A successful AuthenticationResult
      *                   which contains both access and refresh token data.
      */
-    public TokenPair(final Object /* TODO: AD.AuthenticationResult */ authResult)
+    public TokenPair(final Object /* TODO: 449520: AD.AuthenticationResult */ authResult)
     {
-        throw new NotImplementedException();
+        throw new NotImplementedException(449520);
     }
 
     public TokenPair(final String accessTokenResponse)

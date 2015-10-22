@@ -27,7 +27,7 @@ public class Environment
             case UserProfile:
                 return System.getProperty("user.home");
             default:
-                throw new NotImplementedException();
+                throw new IllegalArgumentException("Very few SpecialFolder flags are supported.");
         }
     }
 

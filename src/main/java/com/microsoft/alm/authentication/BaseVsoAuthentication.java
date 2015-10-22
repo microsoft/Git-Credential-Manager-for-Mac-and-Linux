@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public abstract class BaseVsoAuthentication extends BaseAuthentication
 {
     public static final String DefaultResource = "499b84ac-1321-427f-aa17-267ca6975798";
-    // TODO: request a client_id and redirect URI, these are MSOpenTech's
+    // TODO: 449327: request a client_id and redirect URI, these are MSOpenTech's
     public static final String DefaultClientId = "61d65f5a-6e3b-468b-af73-a033f5098c5c";
     public static final URI RedirectUri = URI.create("https://msopentech.com");
 
@@ -41,7 +41,7 @@ public abstract class BaseVsoAuthentication extends BaseAuthentication
         this.TokenScope = tokenScope;
         this.VsoIdeTokenCache = vsoIdeTokenCache;
         this.PersonalAccessTokenStore = personalAccessTokenStore;
-        this.AdaRefreshTokenStore = adaRefreshTokenStore != null ? adaRefreshTokenStore : new SecretStore(new InsecureStore() /* TODO: replace with an appropriate ISecureStore */, AdalRefreshPrefix);
+        this.AdaRefreshTokenStore = adaRefreshTokenStore != null ? adaRefreshTokenStore : new SecretStore(new InsecureStore() /* TODO: 449201: replace with an appropriate ISecureStore */, AdalRefreshPrefix);
         this.VsoAuthority = vsoAuthority;
     }
     /**
@@ -57,7 +57,7 @@ public abstract class BaseVsoAuthentication extends BaseAuthentication
             final ITokenStore adaRefreshTokenStore
     )
     {
-        this(tokenScope, personalAccessTokenStore, new SecretStore(new InsecureStore(), "registry") /* TODO: replace with a TokenRegistry implementation */, adaRefreshTokenStore, new VsoAzureAuthority());
+        this(tokenScope, personalAccessTokenStore, new SecretStore(new InsecureStore(), "registry") /* TODO: 449222: replace with a TokenRegistry implementation */, adaRefreshTokenStore, new VsoAzureAuthority());
     }
     BaseVsoAuthentication(
             final ICredentialStore personalAccessTokenStore,

@@ -61,7 +61,7 @@ class VsoAzureAuthority extends AzureAuthority implements IVsoAuthority
 
         try
         {
-            // TODO: create a `HttpClient` with a minimum number of redirects, default creds, and a reasonable timeout (access token generation seems to hang occasionally)
+            // TODO: 449524: create a `HttpClient` with a minimum number of redirects, default creds, and a reasonable timeout (access token generation seems to hang occasionally)
             final HttpClient client = new HttpClient(Global.getUserAgent());
             Trace.writeLine("   using token to acquire personal access token");
             accessToken.contributeHeader(client.Headers);
@@ -180,7 +180,7 @@ class VsoAzureAuthority extends AzureAuthority implements IVsoAuthority
      */
     @Override public boolean validateToken(final URI targetUri, final Token token)
     {
-        throw new NotImplementedException();
+        throw new NotImplementedException(449243);
     }
 
     private static final Pattern TOKEN_PATTERN = Pattern.compile(

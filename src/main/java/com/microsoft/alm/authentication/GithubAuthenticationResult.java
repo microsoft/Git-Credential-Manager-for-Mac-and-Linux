@@ -3,7 +3,6 @@
 
 package com.microsoft.alm.authentication;
 
-// TODO: [DebuggerDisplay("{Type}")]
 public class GithubAuthenticationResult
 {
     public GithubAuthenticationResult(final GithubAuthenticationResultType type)

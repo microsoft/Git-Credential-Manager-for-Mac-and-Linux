@@ -64,7 +64,6 @@ public final class VsoAadAuthentication extends BaseVsoAuthentication implements
               adaRefreshTokenStore,
               vsoIdeTokenCache,
               vsoAuthority);
-        throw new NotImplementedException();
     }
 
     /**
@@ -120,7 +119,7 @@ public final class VsoAadAuthentication extends BaseVsoAuthentication implements
      */
     public boolean noninteractiveLogonWithCredentials(final URI targetUri, final Credential credentials, final boolean requestCompactToken)
     {
-        throw new NotImplementedException();
+        throw new NotImplementedException(449288);
     }
 
     /**
@@ -140,7 +139,7 @@ public final class VsoAadAuthentication extends BaseVsoAuthentication implements
      */
     public boolean noninteractiveLogon(final URI targetUri, final boolean requestCompactToken)
     {
-        throw new NotImplementedException();
+        throw new NotImplementedException(449285);
     }
 
     /**

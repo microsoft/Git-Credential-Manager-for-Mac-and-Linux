@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * A security token, usually acquired by some authentication and identity services.
  */
-public class Token extends Secret // TODO: implements IEquatable<Token>
+public class Token extends Secret
 {
     private static final int sizeofTokenType = 4;
     private static final int sizeofGuid = 16;
@@ -152,7 +152,7 @@ public class Token extends Secret // TODO: implements IEquatable<Token>
                 headers.put("Authorization", prefix + " " + Value);
                 break;
             case Federated:
-                throw new NotImplementedException();
+                throw new NotImplementedException(449222);
             default:
                 final String template = "Tokens of type '%1$s' cannot be used for headers.";
                 final String message = String.format(template, Type);

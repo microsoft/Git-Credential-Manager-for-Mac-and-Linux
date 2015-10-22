@@ -6,7 +6,7 @@ package com.microsoft.alm.authentication;
 import com.microsoft.alm.helpers.ScopeSet;
 import com.microsoft.alm.helpers.StringHelper;
 
-public abstract class TokenScope // TODO: implements IEquatable<TokenScope>
+public abstract class TokenScope
 {
     private static final String[] EmptyStringArray = new String[0];
 
@@ -41,7 +41,6 @@ public abstract class TokenScope // TODO: implements IEquatable<TokenScope>
 
     protected final String[] _scopes;
 
-    // TODO: [MethodImpl(MethodImplOptions.AggressiveInlining)]
     @Override public boolean equals(final Object obj)
     {
         return operatorEquals(this, obj instanceof TokenScope ? ((TokenScope) obj) : null);
@@ -68,7 +67,6 @@ public abstract class TokenScope // TODO: implements IEquatable<TokenScope>
         return getValue();
     }
 
-    // TODO: [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static boolean operatorEquals(final TokenScope scope1, final TokenScope scope2)
     {
         if (scope1 == scope2)
@@ -80,7 +78,7 @@ public abstract class TokenScope // TODO: implements IEquatable<TokenScope>
         set.unionWith(scope1._scopes);
         return set.setEquals(scope2._scopes);
     }
-    // TODO: [MethodImpl(MethodImplOptions.AggressiveInlining)]
+
     public static boolean operatorNotEquals(final TokenScope scope1, final TokenScope scope2)
     {
         return !operatorEquals(scope1, scope2);
