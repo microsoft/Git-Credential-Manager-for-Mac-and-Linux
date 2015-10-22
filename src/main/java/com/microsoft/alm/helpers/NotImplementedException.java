@@ -8,11 +8,6 @@ public class NotImplementedException extends RuntimeException
     private final int workItemNumber;
     private final String details;
 
-    public NotImplementedException()
-    {
-        this(-1);
-    }
-
     public NotImplementedException(final int workItemNumber)
     {
         this(workItemNumber, null);
