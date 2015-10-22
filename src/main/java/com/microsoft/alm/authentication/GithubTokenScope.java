@@ -141,27 +141,27 @@ public class GithubTokenScope extends TokenScope
 
     public static GithubTokenScope operatorPlus(final GithubTokenScope scope1, final GithubTokenScope scope2)
     {
-        throw new NotImplementedException();
+        throw new NotImplementedException(449506);
     }
 
     public static GithubTokenScope operatorMinus(final GithubTokenScope scope1, final GithubTokenScope scope2)
     {
-        throw new NotImplementedException();
+        throw new NotImplementedException(449506);
     }
 
     public static GithubTokenScope operatorOr(final GithubTokenScope scope1, final GithubTokenScope scope2)
     {
-        throw new NotImplementedException();
+        throw new NotImplementedException(449506);
     }
 
     public static GithubTokenScope operatorAnd(final GithubTokenScope scope1, final GithubTokenScope scope2)
     {
-        throw new NotImplementedException();
+        throw new NotImplementedException(449506);
     }
 
     public static GithubTokenScope operatorXor(final GithubTokenScope scope1, final GithubTokenScope scope2)
     {
-        throw new NotImplementedException();
+        throw new NotImplementedException(449506);
     }
 
 }

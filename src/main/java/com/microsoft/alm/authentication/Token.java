@@ -152,7 +152,7 @@ public class Token extends Secret
                 headers.put("Authorization", prefix + " " + Value);
                 break;
             case Federated:
-                throw new NotImplementedException();
+                throw new NotImplementedException(449222);
             default:
                 final String template = "Tokens of type '%1$s' cannot be used for headers.";
                 final String message = String.format(template, Type);

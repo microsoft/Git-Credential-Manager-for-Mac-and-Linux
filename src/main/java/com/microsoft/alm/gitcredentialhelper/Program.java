@@ -90,7 +90,7 @@ public class Program
 
                 @Override public ISecureStore createSecureStore()
                 {
-                    // TODO: detect the operating system/capabilities and create the appropriate instance
+                    // TODO: 449516: detect the operating system/capabilities and create the appropriate instance
                     final String home = Environment.getFolderPath(Environment.SpecialFolder.UserProfile);
                     final File insecureFile = new File(home, "insecureStore.xml");
                     return new InsecureStore(insecureFile);
@@ -279,10 +279,10 @@ public class Program
                 break;
 
             case MicrosoftAccount:
-                throw new NotImplementedException();
+                throw new NotImplementedException(449529);
 
             case GitHub:
-                throw new NotImplementedException();
+                throw new NotImplementedException(449515);
 
             case Integrated:
                 credentials.set(new Credential(StringHelper.Empty, StringHelper.Empty));
@@ -386,7 +386,7 @@ public class Program
                     secrets,
                     null,
                     authorityRef)
-                    /* TODO: add GitHub support
+                    /* TODO: 449515: add GitHub support
                     || GithubAuthentication.GetAuthentication(operationArguments.TargetUri,
                     GithubCredentialScope,
                     secrets,
@@ -401,7 +401,7 @@ public class Program
                 {
                     operationArguments.Authority = AuthorityType.AzureDirectory;
                 }
-                /* TODO: add GitHub support
+                /* TODO: 449515: add GitHub support
                 else if (authorityRef instanceof GithubAuthentication)
                 {
                     operationArguments.Authority = AuthorityType.GitHub;
@@ -430,7 +430,7 @@ public class Program
                 // return a generic username + password authentication object
                 return authorityRef.get() != null ? authorityRef.get() : new BasicAuthentication(secrets);
 
-            /* TODO: add GitHub support
+            /* TODO: 449515: add GitHub support
             case GitHub:
                 Trace.writeLine("    authority it GitHub");
 

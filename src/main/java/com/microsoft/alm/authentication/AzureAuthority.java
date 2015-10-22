@@ -60,7 +60,7 @@ class AzureAuthority implements IAzureAuthority
         Debug.Assert(userAgent != null, "The userAgent parameter is null.");
 
         this.authorityHostUrl = authorityHostUrl;
-        _adalTokenCache = /* TODO: consider new InsecureStore("adalTokenCache.xml");*/null;
+        _adalTokenCache = /* TODO: 449201: consider new InsecureStore("adalTokenCache.xml");*/null;
         _userAgent = userAgent;
     }
 
@@ -95,11 +95,11 @@ class AzureAuthority implements IAzureAuthority
 
         Trace.writeLine("AzureAuthority::acquireToken");
 
-        final UUID correlationId = /* TODO: does this actually help against CSRF? */ null;
+        final UUID correlationId = /* TODO: 449239: does this actually help against CSRF? */ null;
         TokenPair tokens = null;
         queryParameters = ObjectExtensions.coalesce(queryParameters, StringHelper.Empty);
 
-        // TODO: check _adalTokenCache first, then attempt to acquire token from refresh token
+        // TODO: 449243: check _adalTokenCache first, then attempt to acquire token from refresh token
 
         final String authorizationCode = acquireAuthorizationCode(resource,  clientId,  redirectUri,  correlationId, queryParameters);
         if (authorizationCode == null)
@@ -124,15 +124,15 @@ class AzureAuthority implements IAzureAuthority
             final String responseContent = HttpClient.readToString(connection);
             tokens = new TokenPair(responseContent);
 
-            // TODO: verify correlationId in access token response
+            // TODO: 449239: verify correlationId in access token response
 
-            // TODO: store access + refresh tokens to _adalTokenCache
+            // TODO: 449201: store access + refresh tokens to _adalTokenCache
 
             Trace.writeLine("   token acquisition succeeded.");
         }
         catch (final IOException e)
         {
-            // TODO: silently catching the exception here seems horribly wrong
+            // TODO: 449248: silently catching the exception here seems horribly wrong
             Trace.writeLine("   token acquisition failed.");
         }
         return tokens;
@@ -150,7 +150,7 @@ class AzureAuthority implements IAzureAuthority
      */
     public TokenPair acquireToken(final URI targetUri, final String clientId, final String resource, final Credential credentials)
     {
-        throw new NotImplementedException();
+        throw new NotImplementedException(449285);
     }
 
     /**
@@ -164,7 +164,7 @@ class AzureAuthority implements IAzureAuthority
      */
     public TokenPair acquireTokenByRefreshToken(final URI targetUri, final String clientId, final String resource, final Token refreshToken)
     {
-        throw new NotImplementedException();
+        throw new NotImplementedException(449243);
     }
 
     String acquireAuthorizationCode(final String resource, final String clientId, final URI redirectUri, final UUID correlationId, final String queryParameters)
@@ -212,8 +212,7 @@ class AzureAuthority implements IAzureAuthority
                 promptValue = PromptValue.ATTEMPT_NONE;
                 break;
             case REFRESH_SESSION:
-                // TODO: implement when oauth2-useragent supports persistent cookies
-                throw new NotImplementedException();
+                throw new NotImplementedException(449280, "implement when oauth2-useragent supports persistent cookies");
         }
         if (promptValue != null)
         {
@@ -225,7 +224,7 @@ class AzureAuthority implements IAzureAuthority
         sb.append(qs.toString());
         if (!StringHelper.isNullOrWhiteSpace(queryParameters))
         {
-            // TODO: ADAL.NET checks if queryParameters contains any duplicate parameters
+            // TODO: 449282: ADAL.NET checks if queryParameters contains any duplicate parameters
             int start = (queryParameters.charAt(0) == '&') ? 1 : 0;
             sb.append('&').append(queryParameters, start, queryParameters.length());
         }

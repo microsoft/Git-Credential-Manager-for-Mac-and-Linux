@@ -159,7 +159,7 @@ public class VsoTokenScope extends TokenScope
 
     public static VsoTokenScope subtract(final VsoTokenScope scope1, final VsoTokenScope scope2)
     {
-        throw new NotImplementedException();
+        throw new NotImplementedException(421292);
     }
 
     public static VsoTokenScope or(final VsoTokenScope scope1, final VsoTokenScope scope2)
@@ -182,6 +182,6 @@ public class VsoTokenScope extends TokenScope
 
     public static VsoTokenScope xor(final VsoTokenScope scope1, final VsoTokenScope scope2)
     {
-        throw new NotImplementedException();
+        throw new NotImplementedException(421292);
     }
 }

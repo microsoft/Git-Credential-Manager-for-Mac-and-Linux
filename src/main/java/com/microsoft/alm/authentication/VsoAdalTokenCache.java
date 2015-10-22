@@ -5,7 +5,7 @@ package com.microsoft.alm.authentication;
 
 import com.microsoft.alm.helpers.NotImplementedException;
 
-class VsoAdalTokenCache // TODO: extends TokenCache
+class VsoAdalTokenCache // TODO: 449520: extends TokenCache
 {
     private static final String AdalCachePath = "Microsoft\\VSCommon\\VSAccountManagement";
     private static final String AdalCacheFile = "AdalCache.cache";
@@ -15,7 +15,7 @@ class VsoAdalTokenCache // TODO: extends TokenCache
      */
     public VsoAdalTokenCache()
     {
-        throw new NotImplementedException();
+        throw new NotImplementedException(449520);
     }
 
     /**
@@ -25,22 +25,22 @@ class VsoAdalTokenCache // TODO: extends TokenCache
      */
     public VsoAdalTokenCache(final byte[] state)
     {
-        throw new NotImplementedException();
+        throw new NotImplementedException(449520);
     }
 
     private final String _cacheFilePath;
 
     private final Object lock = new Object();
 
-    // TODO: arguments should be TokenCacheNotificationArgs
+    // TODO: 449520: arguments should be TokenCacheNotificationArgs
     private void afterAccessNotification(final Object args)
     {
-        throw new NotImplementedException();
+        throw new NotImplementedException(449520);
     }
 
 
     private void beforeAccessNotification(final Object args)
     {
-        throw new NotImplementedException();
+        throw new NotImplementedException(449520);
     }
 }
