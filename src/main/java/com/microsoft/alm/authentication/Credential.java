@@ -13,7 +13,7 @@ import java.util.Map;
 /**
  * Credential for user authentication.
  */
-public final class Credential extends Secret // TODO: implements IEquatable<Credential>
+public final class Credential extends Secret
 {
     private static final Charset ASCII = Charset.forName("ASCII");
 

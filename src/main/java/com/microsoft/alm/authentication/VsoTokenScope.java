@@ -148,7 +148,6 @@ public class VsoTokenScope extends TokenScope
         return values.iterator();
     }
 
-    // TODO: [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static VsoTokenScope add(final VsoTokenScope scope1, final VsoTokenScope scope2)
     {
         final ScopeSet set = new ScopeSet();
@@ -157,12 +156,12 @@ public class VsoTokenScope extends TokenScope
 
         return new VsoTokenScope(set);
     }
-    // TODO: [MethodImpl(MethodImplOptions.AggressiveInlining)]
+
     public static VsoTokenScope subtract(final VsoTokenScope scope1, final VsoTokenScope scope2)
     {
         throw new NotImplementedException();
     }
-    // TODO: [MethodImpl(MethodImplOptions.AggressiveInlining)]
+
     public static VsoTokenScope or(final VsoTokenScope scope1, final VsoTokenScope scope2)
     {
         final ScopeSet set = new ScopeSet();
@@ -171,7 +170,7 @@ public class VsoTokenScope extends TokenScope
 
         return new VsoTokenScope(set);
     }
-    // TODO: [MethodImpl(MethodImplOptions.AggressiveInlining)]
+
     public static VsoTokenScope and(final VsoTokenScope scope1, final VsoTokenScope scope2)
     {
         final ScopeSet set = new ScopeSet();
@@ -180,7 +179,7 @@ public class VsoTokenScope extends TokenScope
 
         return new VsoTokenScope(set);
     }
-    // TODO: [MethodImpl(MethodImplOptions.AggressiveInlining)]
+
     public static VsoTokenScope xor(final VsoTokenScope scope1, final VsoTokenScope scope2)
     {
         throw new NotImplementedException();

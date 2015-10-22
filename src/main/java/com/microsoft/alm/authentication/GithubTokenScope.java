@@ -139,27 +139,26 @@ public class GithubTokenScope extends TokenScope
         return values.iterator();
     }
 
-    // TODO: [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static GithubTokenScope operatorPlus(final GithubTokenScope scope1, final GithubTokenScope scope2)
     {
         throw new NotImplementedException();
     }
-    // TODO: [MethodImpl(MethodImplOptions.AggressiveInlining)]
+
     public static GithubTokenScope operatorMinus(final GithubTokenScope scope1, final GithubTokenScope scope2)
     {
         throw new NotImplementedException();
     }
-    // TODO: [MethodImpl(MethodImplOptions.AggressiveInlining)]
+
     public static GithubTokenScope operatorOr(final GithubTokenScope scope1, final GithubTokenScope scope2)
     {
         throw new NotImplementedException();
     }
-    // TODO: [MethodImpl(MethodImplOptions.AggressiveInlining)]
+
     public static GithubTokenScope operatorAnd(final GithubTokenScope scope1, final GithubTokenScope scope2)
     {
         throw new NotImplementedException();
     }
-    // TODO: [MethodImpl(MethodImplOptions.AggressiveInlining)]
+
     public static GithubTokenScope operatorXor(final GithubTokenScope scope1, final GithubTokenScope scope2)
     {
         throw new NotImplementedException();
