@@ -107,6 +107,18 @@ public class InsecureStore implements ISecureStore
             {
                 IOHelper.closeQuietly(fos);
             }
+            if (!backingFile.setReadable(false, false)
+                || !backingFile.setWritable(false, false)
+                || !backingFile.setExecutable(false, false))
+            {
+                Trace.writeLine("Unable to remove file permissions for everybody: " + backingFile);
+            }
+            if (!backingFile.setReadable(true, true)
+                || !backingFile.setWritable(true, true)
+                || !backingFile.setExecutable(false, true))
+            {
+                Trace.writeLine("Unable to set file permissions for owner: " + backingFile);
+            }
         }
     }
 
