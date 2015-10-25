@@ -387,7 +387,7 @@ public class InsecureStore implements ISecureStore
     }
 
     @Override
-    public void delete(final String targetName)
+    public synchronized void delete(final String targetName)
     {
         if (Tokens.containsKey(targetName))
         {
@@ -402,26 +402,26 @@ public class InsecureStore implements ISecureStore
     }
 
     @Override
-    public Credential readCredentials(final String targetName)
+    public synchronized Credential readCredentials(final String targetName)
     {
         return Credentials.get(targetName);
     }
 
     @Override
-    public Token readToken(final String targetName)
+    public synchronized Token readToken(final String targetName)
     {
         return Tokens.get(targetName);
     }
 
     @Override
-    public void writeCredential(final String targetName, final Credential credentials)
+    public synchronized void writeCredential(final String targetName, final Credential credentials)
     {
         Credentials.put(targetName, credentials);
         save();
     }
 
     @Override
-    public void writeToken(final String targetName, final Token token)
+    public synchronized void writeToken(final String targetName, final Token token)
     {
         Tokens.put(targetName, token);
         save();
