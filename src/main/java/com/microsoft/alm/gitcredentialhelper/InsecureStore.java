@@ -122,7 +122,7 @@ public class InsecureStore implements ISecureStore
         }
     }
 
-    public static InsecureStore fromXml(final InputStream source)
+    static InsecureStore fromXml(final InputStream source)
     {
         try
         {
@@ -282,7 +282,7 @@ public class InsecureStore implements ISecureStore
         return result.toString();
     }
 
-    public void toXml(final OutputStream destination)
+    void toXml(final OutputStream destination)
     {
         try
         {
