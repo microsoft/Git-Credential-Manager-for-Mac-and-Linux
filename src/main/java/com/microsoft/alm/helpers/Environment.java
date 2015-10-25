@@ -24,6 +24,10 @@ public class Environment
     {
         switch (folder)
         {
+            case ApplicationData:
+                return System.getenv("APPDATA");
+            case LocalApplicationData:
+                return System.getenv("LOCALAPPDATA");
             case UserProfile:
                 return System.getProperty("user.home");
             default:
@@ -91,6 +95,10 @@ public class Environment
          */
         ApplicationData,
         PrinterShortcuts,
+        /**
+         * The directory that serves as a common repository for application-specific data
+         * that is used by the current, non-roaming user.
+         */
         LocalApplicationData,
         InternetCache,
         Cookies,
