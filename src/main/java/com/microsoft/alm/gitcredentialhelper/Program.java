@@ -240,8 +240,7 @@ public class Program
     }
     public static String get(final OperationArguments operationArguments, final IAuthentication authentication)
     {
-        final String AadMsaAuthFailureMessage = "Logon failed, use ctrl+c to cancel basic credential prompt.";
-        final String GitHubAuthFailureMessage = "Logon failed, use ctrl+c to cancel basic credential prompt.";
+        final String AuthFailureMessage = "Logon failed, aborting authentication process.";
 
         final AtomicReference<Credential> credentials = new AtomicReference<Credential>();
 
@@ -287,8 +286,9 @@ public class Program
                 }
                 else
                 {
-                    System.err.println(AadMsaAuthFailureMessage);
+                    System.err.println(AuthFailureMessage);
                     logEvent("Failed to retrieve Azure Directory credentials for " + operationArguments.TargetUri + ".", "FailureAudit");
+                    return AbortAuthenticationProcessResponse;
                 }
 
                 break;
