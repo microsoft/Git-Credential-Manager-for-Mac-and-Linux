@@ -83,11 +83,15 @@ public class Program
         }
         catch (final Exception exception)
         {
-            Trace.writeLine("Fatal: " + exception.toString());
-            System.err.println("Fatal: " + exception.getClass().getName() + " encountered.");
             if (Debug.IsDebug)
             {
+                System.err.println("Fatal error encountered.  Details:");
                 exception.printStackTrace(System.err);
+            }
+            else
+            {
+                System.err.println("Fatal: " + exception.getClass().getName() + " encountered.  Details:");
+                System.err.println(exception.getMessage());
             }
             logEvent(exception.getMessage(), "EventLogEntryType.Error");
         }
