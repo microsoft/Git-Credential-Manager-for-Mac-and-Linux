@@ -44,6 +44,7 @@ public class Program
     private static final String SecretsNamespace = "git";
     private static final String ProgramFolderName = "git-credential-helper";
     private static final VsoTokenScope VsoCredentialScope = VsoTokenScope.CodeWrite;
+    private static final String AbortAuthenticationProcessResponse = "quit=true";
 
     private final InputStream standardIn;
     private final PrintStream standardOut;
@@ -94,6 +95,8 @@ public class Program
                 System.err.println(exception.getMessage());
             }
             logEvent(exception.getMessage(), "EventLogEntryType.Error");
+            // notice the lack of a new line; Git needs it that way
+            System.out.print(AbortAuthenticationProcessResponse);
         }
 
         Trace.flush();
