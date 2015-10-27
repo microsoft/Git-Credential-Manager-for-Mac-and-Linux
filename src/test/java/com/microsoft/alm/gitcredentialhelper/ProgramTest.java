@@ -36,8 +36,14 @@ public class ProgramTest
             "host=" + hostAccount + ".visualstudio.com\n" +
             "path=\n" +
             "username=Personal Access Token\n";
-        Assert.assertTrue(output.startsWith(expected));
-        Assert.assertTrue(output.contains("password="));
+        if (!output.startsWith(expected))
+        {
+            Assert.fail("'" + output + "' did not start with '" + expected + "'.");
+        }
+        if (!output.contains("password="))
+        {
+            Assert.fail("'" + output + "' did not contain 'password='.");
+        }
     }
 
 }
