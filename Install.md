@@ -1,6 +1,6 @@
 Installation Instructions
 =========================
-This document explains where to copy the JAR and how to configure Git to use the "Microsoft Git Credential Manager for Java" as its credential helper. 
+This document explains where to copy the JAR and how to configure Git to use the "Git Credential Manager for Mac and Linux" as its credential helper. 
 
 System Requirements
 -------------------
@@ -10,10 +10,10 @@ Great care was taken to avoid using any features of Java that would impact compa
 
 How to install
 --------------
-1. Copy the `git-credential-helper-0.1.3.jar` file somewhere safe and stable, such as `%APPDATA%/git-credential-helper/` on Windows or `~/Library/Application Support/git-credential-helper/` on Mac or `~/git-credential-helper/` on Linux.
+1. Copy the `git-credential-manager-0.1.3.jar` file somewhere safe and stable, such as `%APPDATA%/git-credential-manager/` on Windows or `~/Library/Application Support/git-credential-manager/` on Mac or `~/git-credential-manager/` on Linux.
 2. Configure the `credential.helper` setting to launch Java with the absolute path to the JAR (make sure you surround the whole value with 'single quotes' in Bash and "double quotes" in the Windows Command Prompt, _as well as_ either double-quoting values containing spaces or escaping the spaces with a backslash):
 
-```git config --global credential.helper '!java -Ddebug=false -jar /path/to\ folder\ with\ spaces/git-credential-helper-0.1.3.jar'```
+```git config --global credential.helper '!java -Ddebug=false -jar /path/to\ folder\ with\ spaces/git-credential-manager-0.1.3.jar'```
 
 How to enable (or disable) debug mode
 -------------------------------------
@@ -24,7 +24,7 @@ Debug mode will turn on tracing and assertions, producing a lot of output to `st
  
  ...it should look like this:
  
- ```!java -Ddebug=false -jar /path/to/git-credential-helper-0.1.3.jar```
+ ```!java -Ddebug=false -jar /path/to/git-credential-manager-0.1.3.jar```
 2. Set a new value for the `credential.helper` configuration (essentially repeating _installation step 2_, being careful with quoting and spaces), changing the value of the `debug` property to `true` (or `false` to disable).
 
 How to remove or uninstall

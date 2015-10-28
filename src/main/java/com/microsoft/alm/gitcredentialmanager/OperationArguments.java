@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See License.txt in the project root.
 
-package com.microsoft.alm.gitcredentialhelper;
+package com.microsoft.alm.gitcredentialmanager;
 
 import com.microsoft.alm.authentication.Credential;
 import com.microsoft.alm.helpers.Debug;
@@ -20,7 +20,7 @@ final class OperationArguments
         Debug.Assert(stdin != null, "The stdin parameter is null");
 
         this.Authority = AuthorityType.Auto;
-        this.Interactivity = com.microsoft.alm.gitcredentialhelper.Interactivity.Auto;
+        this.Interactivity = com.microsoft.alm.gitcredentialmanager.Interactivity.Auto;
         this.ValidateCredentials = true;
         this.WriteLog = false;
 
