@@ -107,10 +107,22 @@ public class InsecureStore implements ISecureStore
             {
                 IOHelper.closeQuietly(fos);
             }
+            if (!backingFile.setReadable(false, false)
+                || !backingFile.setWritable(false, false)
+                || !backingFile.setExecutable(false, false))
+            {
+                Trace.writeLine("Unable to remove file permissions for everybody: " + backingFile);
+            }
+            if (!backingFile.setReadable(true, true)
+                || !backingFile.setWritable(true, true)
+                || !backingFile.setExecutable(false, true))
+            {
+                Trace.writeLine("Unable to set file permissions for owner: " + backingFile);
+            }
         }
     }
 
-    public static InsecureStore fromXml(final InputStream source)
+    static InsecureStore fromXml(final InputStream source)
     {
         try
         {
@@ -270,7 +282,7 @@ public class InsecureStore implements ISecureStore
         return result.toString();
     }
 
-    public void toXml(final OutputStream destination)
+    void toXml(final OutputStream destination)
     {
         try
         {
@@ -375,7 +387,7 @@ public class InsecureStore implements ISecureStore
     }
 
     @Override
-    public void delete(final String targetName)
+    public synchronized void delete(final String targetName)
     {
         if (Tokens.containsKey(targetName))
         {
@@ -390,26 +402,26 @@ public class InsecureStore implements ISecureStore
     }
 
     @Override
-    public Credential readCredentials(final String targetName)
+    public synchronized Credential readCredentials(final String targetName)
     {
         return Credentials.get(targetName);
     }
 
     @Override
-    public Token readToken(final String targetName)
+    public synchronized Token readToken(final String targetName)
     {
         return Tokens.get(targetName);
     }
 
     @Override
-    public void writeCredential(final String targetName, final Credential credentials)
+    public synchronized void writeCredential(final String targetName, final Credential credentials)
     {
         Credentials.put(targetName, credentials);
         save();
     }
 
     @Override
-    public void writeToken(final String targetName, final Token token)
+    public synchronized void writeToken(final String targetName, final Token token)
     {
         Tokens.put(targetName, token);
         save();

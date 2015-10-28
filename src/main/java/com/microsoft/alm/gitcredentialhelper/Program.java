@@ -42,6 +42,7 @@ public class Program
 {
     private static final String ConfigPrefix = "credential";
     private static final String SecretsNamespace = "git";
+    private static final String ProgramFolderName = "git-credential-helper";
     private static final VsoTokenScope VsoCredentialScope = VsoTokenScope.CodeWrite;
 
     private final InputStream standardIn;
@@ -91,8 +92,11 @@ public class Program
                 @Override public ISecureStore createSecureStore()
                 {
                     // TODO: 449516: detect the operating system/capabilities and create the appropriate instance
-                    final String home = Environment.getFolderPath(Environment.SpecialFolder.UserProfile);
-                    final File insecureFile = new File(home, "insecureStore.xml");
+                    final File parentFolder = determineParentFolder();
+                    final File programFolder = new File(parentFolder, ProgramFolderName);
+                    //noinspection ResultOfMethodCallIgnored
+                    programFolder.mkdirs();
+                    final File insecureFile = new File(programFolder, "insecureStore.xml");
                     return new InsecureStore(insecureFile);
                 }
             });
@@ -111,6 +115,32 @@ public class Program
         }
 
         Trace.flush();
+    }
+
+    static File determineParentFolder()
+    {
+        return findFirstValidFolder(
+            Environment.SpecialFolder.LocalApplicationData,
+            Environment.SpecialFolder.ApplicationData,
+            Environment.SpecialFolder.UserProfile);
+    }
+
+    static File findFirstValidFolder(final Environment.SpecialFolder... candidates)
+    {
+        for (final Environment.SpecialFolder candidate : candidates)
+        {
+            final String path = Environment.getFolderPath(candidate);
+            if (path == null)
+                continue;
+            final File result = new File(path);
+            if (result.isDirectory())
+            {
+                return result;
+            }
+        }
+        final String path = System.getenv("HOME");
+        final File result = new File(path);
+        return result;
     }
 
     void innerMain(String[] args) throws Exception
