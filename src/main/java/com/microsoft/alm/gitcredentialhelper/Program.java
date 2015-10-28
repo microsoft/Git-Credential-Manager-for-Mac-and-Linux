@@ -44,6 +44,7 @@ public class Program
     private static final String SecretsNamespace = "git";
     private static final String ProgramFolderName = "git-credential-helper";
     private static final VsoTokenScope VsoCredentialScope = VsoTokenScope.CodeWrite;
+    private static final String AbortAuthenticationProcessResponse = "quit=true";
 
     private final InputStream standardIn;
     private final PrintStream standardOut;
@@ -77,41 +78,25 @@ public class Program
         try
         {
             enableDebugTrace();
-            final Program program = new Program(System.in, System.out, new IComponentFactory()
-            {
-                @Override public IAuthentication createAuthentication(final OperationArguments operationArguments, final ISecureStore secureStore)
-                {
-                    return Program.createAuthentication(operationArguments, secureStore);
-                }
-
-                @Override public Configuration createConfiguration() throws IOException
-                {
-                    return new Configuration();
-                }
-
-                @Override public ISecureStore createSecureStore()
-                {
-                    // TODO: 449516: detect the operating system/capabilities and create the appropriate instance
-                    final File parentFolder = determineParentFolder();
-                    final File programFolder = new File(parentFolder, ProgramFolderName);
-                    //noinspection ResultOfMethodCallIgnored
-                    programFolder.mkdirs();
-                    final File insecureFile = new File(programFolder, "insecureStore.xml");
-                    return new InsecureStore(insecureFile);
-                }
-            });
+            final Program program = new Program(System.in, System.out, new ComponentFactory());
 
             program.innerMain(args);
         }
         catch (final Exception exception)
         {
-            Trace.writeLine("Fatal: " + exception.toString());
-            System.err.println("Fatal: " + exception.getClass().getName() + " encountered.");
             if (Debug.IsDebug)
             {
+                System.err.println("Fatal error encountered.  Details:");
                 exception.printStackTrace(System.err);
             }
+            else
+            {
+                System.err.println("Fatal: " + exception.getClass().getName() + " encountered.  Details:");
+                System.err.println(exception.getMessage());
+            }
             logEvent(exception.getMessage(), "EventLogEntryType.Error");
+            // notice the lack of a new line; Git needs it that way
+            System.out.print(AbortAuthenticationProcessResponse);
         }
 
         Trace.flush();
@@ -255,8 +240,7 @@ public class Program
     }
     public static String get(final OperationArguments operationArguments, final IAuthentication authentication)
     {
-        final String AadMsaAuthFailureMessage = "Logon failed, use ctrl+c to cancel basic credential prompt.";
-        final String GitHubAuthFailureMessage = "Logon failed, use ctrl+c to cancel basic credential prompt.";
+        final String AuthFailureMessage = "Logon failed, aborting authentication process.";
 
         final AtomicReference<Credential> credentials = new AtomicReference<Credential>();
 
@@ -302,8 +286,9 @@ public class Program
                 }
                 else
                 {
-                    System.err.println(AadMsaAuthFailureMessage);
+                    System.err.println(AuthFailureMessage);
                     logEvent("Failed to retrieve Azure Directory credentials for " + operationArguments.TargetUri + ".", "FailureAudit");
+                    return AbortAuthenticationProcessResponse;
                 }
 
                 break;
@@ -636,6 +621,30 @@ public class Program
         {
             // use the stderr stream for the trace as stdout is used in the cross-process communications protocol
             Trace.getListeners().add(System.err);
+        }
+    }
+
+    static class ComponentFactory implements IComponentFactory
+    {
+        @Override public IAuthentication createAuthentication(final OperationArguments operationArguments, final ISecureStore secureStore)
+        {
+            return Program.createAuthentication(operationArguments, secureStore);
+        }
+
+        @Override public Configuration createConfiguration() throws IOException
+        {
+            return new Configuration();
+        }
+
+        @Override public ISecureStore createSecureStore()
+        {
+            // TODO: 449516: detect the operating system/capabilities and create the appropriate instance
+            final File parentFolder = determineParentFolder();
+            final File programFolder = new File(parentFolder, ProgramFolderName);
+            //noinspection ResultOfMethodCallIgnored
+            programFolder.mkdirs();
+            final File insecureFile = new File(programFolder, "insecureStore.xml");
+            return new InsecureStore(insecureFile);
         }
     }
 }
