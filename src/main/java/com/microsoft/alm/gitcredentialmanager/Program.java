@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See License.txt in the project root.
 
-package com.microsoft.alm.gitcredentialhelper;
+package com.microsoft.alm.gitcredentialmanager;
 
 import com.microsoft.alm.authentication.BaseVsoAuthentication;
 import com.microsoft.alm.authentication.BasicAuthentication;
@@ -42,7 +42,7 @@ public class Program
 {
     private static final String ConfigPrefix = "credential";
     private static final String SecretsNamespace = "git";
-    private static final String ProgramFolderName = "git-credential-helper";
+    private static final String ProgramFolderName = "git-credential-manager";
     private static final VsoTokenScope VsoCredentialScope = VsoTokenScope.CodeWrite;
     private static final String AbortAuthenticationProcessResponse = "quit=true";
 

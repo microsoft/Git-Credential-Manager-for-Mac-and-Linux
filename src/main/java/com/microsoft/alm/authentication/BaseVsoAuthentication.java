@@ -6,7 +6,7 @@ package com.microsoft.alm.authentication;
 import com.microsoft.alm.helpers.Action;
 import com.microsoft.alm.helpers.Debug;
 import com.microsoft.alm.helpers.Guid;
-import com.microsoft.alm.gitcredentialhelper.InsecureStore;
+import com.microsoft.alm.gitcredentialmanager.InsecureStore;
 import com.microsoft.alm.helpers.HttpClient;
 import com.microsoft.alm.helpers.StringHelper;
 import com.microsoft.alm.helpers.Trace;
