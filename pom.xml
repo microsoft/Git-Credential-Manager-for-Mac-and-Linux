@@ -63,6 +63,7 @@ Licensed under the MIT license. See License.txt in the project root. -->
       <resource>
         <directory>${basedir}</directory>
         <targetPath>./</targetPath>
+        <filtering>true</filtering>
         <includes>
           <include>Install.md</include>
           <include>License.txt</include>

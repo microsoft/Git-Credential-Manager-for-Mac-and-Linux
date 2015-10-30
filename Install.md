@@ -13,10 +13,10 @@ Great care was taken to avoid using any features of Java that would impact compa
 
 How to install
 --------------
-1. Copy the `git-credential-manager-0.1.3.jar` file somewhere safe and stable, such as `~/git-credential-manager/`.
+1. Copy the `${project.artifactId}-${project.version}.jar` file somewhere safe and stable, such as `~/${project.artifactId}/`.
 2. Configure the `credential.helper` setting to launch Java with the absolute path to the JAR (make sure you surround the whole value with 'single quotes'):
 
-```git config --global credential.helper '!java -Ddebug=false -jar /home/example/git-credential-manager/git-credential-manager-0.1.3.jar'```
+```git config --global credential.helper '!java -Ddebug=false -jar /home/example/${project.artifactId}/${project.artifactId}-${project.version}.jar'```
 
 
 How to enable (or disable) debug mode
@@ -28,7 +28,7 @@ Debug mode will turn on tracing and assertions, producing a lot of output to `st
  
  ...it should look like this:
  
- ```!java -Ddebug=false -jar /home/example/git-credential-manager/git-credential-manager-0.1.3.jar```
+ ```!java -Ddebug=false -jar /home/example/${project.artifactId}/${project.artifactId}-${project.version}.jar```
 2. Set a new value for the `credential.helper` configuration (essentially repeating _installation step 2_, being careful with quoting and spaces), changing the value of the `debug` property to `true` (or `false` to disable).
 
 
@@ -42,4 +42,4 @@ We are sad to see you go!  Please give us some feedback on how we could do bette
  
  ```git config --global --unset credential.helper```
 3. The value retrieved in _step 1_ contained the path to the JAR.  You can go delete that JAR.
-4. Archive the `insecureStore.xml` file from the git-credential-manager sub-folder under your HOME folder.
+4. Archive the `insecureStore.xml` file from the `${project.artifactId}` sub-folder under your HOME folder.
