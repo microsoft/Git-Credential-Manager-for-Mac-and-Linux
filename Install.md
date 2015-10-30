@@ -1,19 +1,23 @@
 Installation Instructions
 =========================
-This document explains where to copy the JAR and how to configure Git to use the "Git Credential Manager for Mac and Linux" as its credential helper. 
+This document explains where to copy the JAR and how to configure Git to use the Git Credential Manager for Mac and Linux (GCM) as its credential helper.
 
 System Requirements
 -------------------
-Great care was taken to avoid using any features of Java that would impact compatibility with Java 6.  If you find a compatibility issue, please report it and provide as many details about your platform as necessary to reproduce the problem.
-1. Java 6+
-2. Git 1.9+
+Great care was taken to avoid using any features of Java that would impact compatibility with Java 6.  Unfortunately, at this time, only the JavaFX-based browser is available, which excludes Java 6.  If you find a compatibility issue, please report it and provide as many details about your platform as necessary to reproduce the problem.
+1. Mac OS X version 10.10.5 and up OR a GNU/Linux distribution with a desktop environment.
+2. Oracle Java 7 Update 6 and up, Oracle Java 8, or OpenJDK with OpenJFX.
+3. Git version 1.9 and up.
+ 1. On Mac OS X, the [Homebrew](http://brew.sh/) distribution is highly recommended.
+
 
 How to install
 --------------
-1. Copy the `git-credential-manager-0.1.3.jar` file somewhere safe and stable, such as `%APPDATA%/git-credential-manager/` on Windows or `~/Library/Application Support/git-credential-manager/` on Mac or `~/git-credential-manager/` on Linux.
-2. Configure the `credential.helper` setting to launch Java with the absolute path to the JAR (make sure you surround the whole value with 'single quotes' in Bash and "double quotes" in the Windows Command Prompt, _as well as_ either double-quoting values containing spaces or escaping the spaces with a backslash):
+1. Copy the `${project.artifactId}-${project.version}.jar` file somewhere safe and stable, such as `~/${project.artifactId}/`.
+2. Configure the `credential.helper` setting to launch Java with the absolute path to the JAR (make sure you surround the whole value with 'single quotes'):
 
-```git config --global credential.helper '!java -Ddebug=false -jar /path/to\ folder\ with\ spaces/git-credential-manager-0.1.3.jar'```
+```git config --global credential.helper '!java -Ddebug=false -jar /home/example/${project.artifactId}/${project.artifactId}-${project.version}.jar'```
+
 
 How to enable (or disable) debug mode
 -------------------------------------
@@ -24,8 +28,9 @@ Debug mode will turn on tracing and assertions, producing a lot of output to `st
  
  ...it should look like this:
  
- ```!java -Ddebug=false -jar /path/to/git-credential-manager-0.1.3.jar```
+ ```!java -Ddebug=false -jar /home/example/${project.artifactId}/${project.artifactId}-${project.version}.jar```
 2. Set a new value for the `credential.helper` configuration (essentially repeating _installation step 2_, being careful with quoting and spaces), changing the value of the `debug` property to `true` (or `false` to disable).
+
 
 How to remove or uninstall
 --------------------------
@@ -37,4 +42,4 @@ We are sad to see you go!  Please give us some feedback on how we could do bette
  
  ```git config --global --unset credential.helper```
 3. The value retrieved in _step 1_ contained the path to the JAR.  You can go delete that JAR.
-4. Archive the `insecureStore.xml` file from your HOME folder. 
+4. Archive the `insecureStore.xml` file from the `${project.artifactId}` sub-folder under your HOME folder.
