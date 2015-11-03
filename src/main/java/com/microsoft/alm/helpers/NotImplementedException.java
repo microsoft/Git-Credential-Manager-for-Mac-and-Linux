@@ -15,6 +15,7 @@ public class NotImplementedException extends RuntimeException
 
     public NotImplementedException(final int workItemNumber, final String details)
     {
+        super("This feature is not yet implemented, but is tracked by work item #" + workItemNumber + ((details != null) ? ". " + details : "."));
         this.workItemNumber = workItemNumber;
         this.details = details;
     }
