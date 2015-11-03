@@ -9,6 +9,7 @@ import com.microsoft.alm.authentication.Configuration;
 import com.microsoft.alm.authentication.Credential;
 import com.microsoft.alm.authentication.IAuthentication;
 import com.microsoft.alm.authentication.ISecureStore;
+import com.microsoft.alm.authentication.ITokenStore;
 import com.microsoft.alm.authentication.IVsoAadAuthentication;
 import com.microsoft.alm.authentication.IVsoMsaAuthentication;
 import com.microsoft.alm.authentication.SecretStore;
@@ -421,6 +422,7 @@ public class Program
 
         final SecretStore secrets = new SecretStore(secureStore, SecretsNamespace);
         final AtomicReference<IAuthentication> authorityRef = new AtomicReference<IAuthentication>();
+        final ITokenStore adaRefreshTokenStore = null;
 
         if (operationArguments.Authority == AuthorityType.Auto)
         {
@@ -430,7 +432,7 @@ public class Program
             if (BaseVsoAuthentication.getAuthentication(operationArguments.TargetUri,
                     VsoCredentialScope,
                     secrets,
-                    null,
+                    adaRefreshTokenStore,
                     authorityRef)
                     /* TODO: 449515: add GitHub support
                     || GithubAuthentication.GetAuthentication(operationArguments.TargetUri,
@@ -467,7 +469,7 @@ public class Program
 
                 UUID tenantId = Guid.Empty;
                 // return the allocated authority or a generic AAD backed VSO authentication object
-                return authorityRef.get() != null ? authorityRef.get() : new VsoAadAuthentication(Guid.Empty, VsoCredentialScope, secrets, null);
+                return authorityRef.get() != null ? authorityRef.get() : new VsoAadAuthentication(Guid.Empty, VsoCredentialScope, secrets, adaRefreshTokenStore);
 
             case Basic:
             default:
@@ -488,7 +490,7 @@ public class Program
                 Trace.writeLine("   authority is Microsoft Live");
 
                 // return the allocated authority or a generic MSA backed VSO authentication object
-                return authorityRef.get() != null ? authorityRef.get() : new VsoMsaAuthentication(VsoCredentialScope, secrets, null);
+                return authorityRef.get() != null ? authorityRef.get() : new VsoMsaAuthentication(VsoCredentialScope, secrets, adaRefreshTokenStore);
         }
     }
 
