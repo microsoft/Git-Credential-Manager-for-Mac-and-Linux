@@ -10,6 +10,7 @@ import com.microsoft.alm.authentication.Credential;
 import com.microsoft.alm.authentication.IAuthentication;
 import com.microsoft.alm.authentication.ISecureStore;
 import com.microsoft.alm.authentication.IVsoAadAuthentication;
+import com.microsoft.alm.authentication.IVsoMsaAuthentication;
 import com.microsoft.alm.authentication.SecretStore;
 import com.microsoft.alm.authentication.VsoAadAuthentication;
 import com.microsoft.alm.authentication.VsoMsaAuthentication;
@@ -294,7 +295,37 @@ public class Program
                 break;
 
             case MicrosoftAccount:
-                throw new NotImplementedException(449529);
+                final IVsoMsaAuthentication msaAuth = (IVsoMsaAuthentication) authentication;
+
+                // attempt to get cached creds -> refresh creds -> interactive logon
+                // note that MSA "credentials" are always scoped access tokens
+                if (((operationArguments.Interactivity != Interactivity.Always
+                        && msaAuth.getCredentials(operationArguments.TargetUri, credentials)
+                        && (!operationArguments.ValidateCredentials
+                            || msaAuth.validateCredentials(operationArguments.TargetUri, credentials.get())))
+                        || (operationArguments.Interactivity != Interactivity.Always
+                            && msaAuth.refreshCredentials(operationArguments.TargetUri, true)
+                            && msaAuth.getCredentials(operationArguments.TargetUri, credentials)
+                            && (!operationArguments.ValidateCredentials
+                                || msaAuth.validateCredentials(operationArguments.TargetUri, credentials.get())))
+                        || (operationArguments.Interactivity != Interactivity.Never
+                            && msaAuth.interactiveLogon(operationArguments.TargetUri, true))
+                            && msaAuth.getCredentials(operationArguments.TargetUri, credentials)
+                            && (!operationArguments.ValidateCredentials
+                                || msaAuth.validateCredentials(operationArguments.TargetUri, credentials.get()))))
+                {
+                    Trace.writeLine("   credentials found");
+                    operationArguments.setCredentials(credentials.get());
+                    logEvent("Microsoft Live credentials for " + operationArguments.TargetUri + " successfully retrieved.", "SuccessAudit");
+                }
+                else
+                {
+                    System.err.println(AuthFailureMessage);
+                    logEvent("Failed to retrieve Microsoft Live credentials for " + operationArguments.TargetUri + ".", "FailureAudit");
+                    return AbortAuthenticationProcessResponse;
+                }
+
+                break;
 
             case GitHub:
                 throw new NotImplementedException(449515);
