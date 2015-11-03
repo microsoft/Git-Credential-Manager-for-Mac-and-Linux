@@ -321,7 +321,7 @@ public abstract class BaseVsoAuthentication extends BaseAuthentication
         if (detectAuthority(targetUri, tenantId))
         {
             // empty Guid is MSA, anything else is AAD
-            if (tenantId.get() == Guid.Empty)
+            if (tenantId.get().equals(Guid.Empty))
             {
                 Trace.writeLine("   MSA authority detected");
                 authentication.set(new VsoMsaAuthentication(scope, personalAccessTokenStore, adaRefreshTokenStore));
