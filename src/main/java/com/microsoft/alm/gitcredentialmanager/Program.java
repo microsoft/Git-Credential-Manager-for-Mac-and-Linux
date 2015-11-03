@@ -467,7 +467,6 @@ public class Program
             case AzureDirectory:
                 Trace.writeLine("   authority is Azure Directory");
 
-                UUID tenantId = Guid.Empty;
                 // return the allocated authority or a generic AAD backed VSO authentication object
                 return authorityRef.get() != null ? authorityRef.get() : new VsoAadAuthentication(Guid.Empty, VsoCredentialScope, secrets, adaRefreshTokenStore);
 
