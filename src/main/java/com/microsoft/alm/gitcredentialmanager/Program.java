@@ -410,21 +410,21 @@ public class Program
         try
         {
             // finding git version via commandline
-            Process gitProcess = Runtime.getRuntime().exec("git --version");
+            final Process gitProcess = Runtime.getRuntime().exec("git --version");
             gitProcess.waitFor();
-            BufferedReader br = new BufferedReader(new InputStreamReader(gitProcess.getInputStream()));
-            String gitResponse = br.readLine();
+            final BufferedReader br = new BufferedReader(new InputStreamReader(gitProcess.getInputStream()));
+            final String gitResponse = br.readLine();
 
             // if git responded with a version then parse it for the version number
             if (gitResponse != null)
             {
                 // git version numbers are in the form of x.y.z and we only need x.y to ensure the requirements are met
-                Pattern pattern = Pattern.compile(".*?(\\d+[.]\\d+)[.]");
-                Matcher matcher = pattern.matcher(gitResponse);
+                final Pattern pattern = Pattern.compile(".*?(\\d+[.]\\d+)[.]");
+                final Matcher matcher = pattern.matcher(gitResponse);
                 if (matcher.find())
                 {
-                    String gitVersionString = matcher.group(1);
-                    double gitVersion = Double.valueOf(gitVersionString);
+                    final String gitVersionString = matcher.group(1);
+                    final double gitVersion = Double.valueOf(gitVersionString);
                     if (gitVersion >= 1.9)
                     {
                         validVersion = true;
