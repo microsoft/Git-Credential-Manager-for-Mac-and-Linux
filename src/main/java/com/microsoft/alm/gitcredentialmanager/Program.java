@@ -392,7 +392,6 @@ public class Program
     };
     private void install()
     {
-        checkOsRequirements();
         if (checkJavaRequirements() && checkGitRequirements() && checkOsRequirements())
         {
             // TODO: install steps
@@ -404,65 +403,67 @@ public class Program
         return Provider.JAVA_FX.checkRequirements().isEmpty() ? true : false;
     }
 
-    private boolean checkGitRequirements()
+    protected boolean checkGitRequirements()
     {
-        boolean validVersion = false;
         try
         {
             // finding git version via commandline
-            final Process gitProcess = Runtime.getRuntime().exec("git --version");
+            final Process gitProcess = new ProcessBuilder("git", "--version").start();
             gitProcess.waitFor();
             final BufferedReader br = new BufferedReader(new InputStreamReader(gitProcess.getInputStream()));
             final String gitResponse = br.readLine();
+            return isValidGitVersion(gitResponse);
+        }
+        catch (IOException e)
+        {
+            standardOut.println("An IOException was hit while trying to determine the Git version: " + e.getMessage());
+            return false;
+        }
+        catch (InterruptedException e)
+        {
+            standardOut.println("An InterruptedException was hit while trying to determine the Git version: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
 
-            // if git responded with a version then parse it for the version number
-            if (gitResponse != null)
+    protected boolean isValidGitVersion(String gitResponse)
+    {
+        // if git responded with a version then parse it for the version number
+        if (gitResponse != null)
+        {
+            // git version numbers are in the form of x.y.z and we only need x.y to ensure the requirements are met
+            final Pattern pattern = Pattern.compile(".*?(\\d+[.]\\d+)[.]");
+            final Matcher matcher = pattern.matcher(gitResponse);
+            if (matcher.find())
             {
-                // git version numbers are in the form of x.y.z and we only need x.y to ensure the requirements are met
-                final Pattern pattern = Pattern.compile(".*?(\\d+[.]\\d+)[.]");
-                final Matcher matcher = pattern.matcher(gitResponse);
-                if (matcher.find())
+                final String gitVersionString = matcher.group(1);
+                final double gitVersion = Double.valueOf(gitVersionString);
+                if (gitVersion >= 1.9)
                 {
-                    final String gitVersionString = matcher.group(1);
-                    final double gitVersion = Double.valueOf(gitVersionString);
-                    if (gitVersion >= 1.9)
-                    {
-                        validVersion = true;
-                    }
-                    else
-                    {
-                        standardOut.println("Git version " + gitVersion + " was found but version 1.9 or above is required.");
-                        standardOut.println("Please update Git to version 1.9 or above before installation.");
-                    }
+                    return true;
                 }
                 else
                 {
-                    standardOut.println("The version of Git installed cannot be found.");
-                    standardOut.println("Please check that Git is installed and is added to your PATH");
+                    standardOut.println("Git version " + gitVersion + " was found but version 1.9 or above is required.");
+                    standardOut.println("Please update Git to version 1.9 or above before installation.");
                 }
             }
             else
             {
-                standardOut.println("Git is a requirement for installation and cannot be found.");
+                standardOut.println("The version of Git installed cannot be found.");
                 standardOut.println("Please check that Git is installed and is added to your PATH");
             }
         }
-        catch (IOException e)
+        else
         {
-            e.printStackTrace();
+            standardOut.println("Git is a requirement for installation and cannot be found.");
+            standardOut.println("Please check that Git is installed and is added to your PATH");
         }
-        catch (InterruptedException e)
-        {
-            e.printStackTrace();
-        }
-        finally
-        {
-            standardOut.println("validVersion = " + validVersion);
-            return validVersion;
-        }
+        return false;
     }
 
-    private boolean checkOsRequirements()
+    protected boolean checkOsRequirements()
     {
         final String osName = System.getProperty("os.name");
         if (Provider.isMac(osName))
@@ -473,21 +474,21 @@ public class Program
             final int minorVersion = Integer.parseInt(versionArray[1]);
             final int revision = Integer.parseInt(versionArray[2]);
 
-            if (majorVersion > 10)
+            if (majorVersion < 10)
             {
-                return true;
+                return false;
             }
-            else if (minorVersion > 10)
+            else if (minorVersion < 10)
             {
-                return true;
+                return false;
             }
-            else if (revision >= 5)
+            else if (revision < 5)
             {
-                return true;
+                return false;
             }
             else
             {
-                return false;
+                return true;
             }
         }
         else if (Provider.isLinux(osName))
