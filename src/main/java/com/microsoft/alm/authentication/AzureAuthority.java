@@ -175,6 +175,17 @@ class AzureAuthority implements IAzureAuthority
             final URI authorizationEndpoint = createAuthorizationEndpointUri(authorityHostUrl, resource, clientId, redirectUri, UserIdentifier.ANY_USER, correlationId, PromptBehavior.ALWAYS, queryParameters);
             final AuthorizationResponse response = _userAgent.requestAuthorizationCode(authorizationEndpoint, redirectUri);
             authorizationCode = response.getCode();
+            if (correlationId != null)
+            {
+                // verify authorization response gave us the state we sent in the authorization endpoint URI
+                final String expectedState = correlationId.toString();
+                final String actualState = response.getState();
+                if (!expectedState.equals(actualState))
+                {
+                    // the states are somehow different; better to assume malice and ignore the auth. code
+                    authorizationCode = null;
+                }
+            }
         }
         catch (final AuthorizationException ignored)
         {
