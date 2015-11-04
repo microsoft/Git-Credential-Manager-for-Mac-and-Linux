@@ -392,6 +392,7 @@ public class Program
     };
     private void install()
     {
+        checkOsRequirements();
         if (checkJavaRequirements() && checkGitRequirements() && checkOsRequirements())
         {
             // TODO: install steps
@@ -463,7 +464,43 @@ public class Program
 
     private boolean checkOsRequirements()
     {
-        return false;
+        final String osName = System.getProperty("os.name");
+        if (Provider.isMac(osName))
+        {
+            final String osVersionString = System.getProperty("os.version");
+            final String[] versionArray = osVersionString.split("\\.");
+            final int majorVersion = Integer.parseInt(versionArray[0]);
+            final int minorVersion = Integer.parseInt(versionArray[1]);
+            final int revision = Integer.parseInt(versionArray[2]);
+
+            if (majorVersion > 10)
+            {
+                return true;
+            }
+            else if (minorVersion > 10)
+            {
+                return true;
+            }
+            else if (revision >= 5)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else if (Provider.isLinux(osName))
+        {
+            // only needs to be a desktop env which is already checked within checkJavaRequirements()
+            return true;
+        }
+        else
+        {
+            standardOut.println("Git Credential Manager only runs on Mac OS X and Linux.");
+            standardOut.println("The operating system detected is " + osName + " which is not supported");
+            return false;
+        }
     }
 
     private void initialize(
