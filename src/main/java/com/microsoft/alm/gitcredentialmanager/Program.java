@@ -394,7 +394,20 @@ public class Program
     {
         if (checkJavaRequirements() && checkGitRequirements() && checkOsRequirements())
         {
-            // TODO: install steps
+            final Process gitProcess;
+            try
+            {
+                gitProcess = new ProcessBuilder("git", "config", "--global", "credential.helper", "!java -Ddebug=false -jar /TODO/path/to/git-credential-manager-1.0.1-SNAPSHOT.jar").start();
+                gitProcess.waitFor();
+            }
+            catch (IOException e)
+            {
+                standardOut.println("An IOException was hit while trying to set the git credential.helper configuration: " + e.getMessage());
+            }
+            catch (InterruptedException e)
+            {
+                standardOut.println("An InterruptedException was hit while trying to set the git credential.helper configuration: " + e.getMessage());
+            }
         }
     }
 
