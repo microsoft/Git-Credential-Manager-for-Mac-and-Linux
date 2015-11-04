@@ -25,6 +25,7 @@ import com.microsoft.alm.helpers.NotImplementedException;
 import com.microsoft.alm.helpers.Path;
 import com.microsoft.alm.helpers.StringHelper;
 import com.microsoft.alm.helpers.Trace;
+import com.microsoft.alm.oauth2.useragent.Provider;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -39,6 +40,8 @@ import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Program
 {
@@ -147,6 +150,7 @@ public class Program
         actions.put("reject", Erase);
         actions.put("store", Store);
         actions.put("version", PrintVersion);
+        actions.put("install", Install);
 
         for (final String arg : args)
         {
@@ -376,6 +380,90 @@ public class Program
         Trace.writeLine("Program::printVersion");
 
         standardOut.println(String.format("%1$s version %2$s", getTitle(), getVersion()));
+    }
+
+    private final Callable<Void> Install = new Callable<Void>()
+    {
+        @Override public Void call()
+        {
+            install();
+            return null;
+        }
+    };
+    private void install()
+    {
+        if (checkJavaRequirements() && checkGitRequirements() && checkOsRequirements())
+        {
+            // TODO: install steps
+        }
+    }
+
+    private boolean checkJavaRequirements()
+    {
+        return Provider.JAVA_FX.checkRequirements().isEmpty() ? true : false;
+    }
+
+    private boolean checkGitRequirements()
+    {
+        boolean validVersion = false;
+        try
+        {
+            // finding git version via commandline
+            Process gitProcess = Runtime.getRuntime().exec("git --version");
+            gitProcess.waitFor();
+            BufferedReader br = new BufferedReader(new InputStreamReader(gitProcess.getInputStream()));
+            String gitResponse = br.readLine();
+
+            // if git responded with a version then parse it for the version number
+            if (gitResponse != null)
+            {
+                // git version numbers are in the form of x.y.z and we only need x.y to ensure the requirements are met
+                Pattern pattern = Pattern.compile(".*?(\\d+[.]\\d+)[.]");
+                Matcher matcher = pattern.matcher(gitResponse);
+                if (matcher.find())
+                {
+                    String gitVersionString = matcher.group(1);
+                    double gitVersion = Double.valueOf(gitVersionString);
+                    if (gitVersion >= 1.9)
+                    {
+                        validVersion = true;
+                    }
+                    else
+                    {
+                        standardOut.println("Git version " + gitVersion + " was found but version 1.9 or above is required.");
+                        standardOut.println("Please update Git to version 1.9 or above before installation.");
+                    }
+                }
+                else
+                {
+                    standardOut.println("The version of Git installed cannot be found.");
+                    standardOut.println("Please check that Git is installed and is added to your PATH");
+                }
+            }
+            else
+            {
+                standardOut.println("Git is a requirement for installation and cannot be found.");
+                standardOut.println("Please check that Git is installed and is added to your PATH");
+            }
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+            standardOut.println("validVersion = " + validVersion);
+            return validVersion;
+        }
+    }
+
+    private boolean checkOsRequirements()
+    {
+        return false;
     }
 
     private void initialize(
