@@ -9,7 +9,9 @@ import com.microsoft.alm.authentication.Configuration;
 import com.microsoft.alm.authentication.Credential;
 import com.microsoft.alm.authentication.IAuthentication;
 import com.microsoft.alm.authentication.ISecureStore;
+import com.microsoft.alm.authentication.ITokenStore;
 import com.microsoft.alm.authentication.IVsoAadAuthentication;
+import com.microsoft.alm.authentication.IVsoMsaAuthentication;
 import com.microsoft.alm.authentication.SecretStore;
 import com.microsoft.alm.authentication.VsoAadAuthentication;
 import com.microsoft.alm.authentication.VsoMsaAuthentication;
@@ -294,7 +296,37 @@ public class Program
                 break;
 
             case MicrosoftAccount:
-                throw new NotImplementedException(449529);
+                final IVsoMsaAuthentication msaAuth = (IVsoMsaAuthentication) authentication;
+
+                // attempt to get cached creds -> refresh creds -> interactive logon
+                // note that MSA "credentials" are always scoped access tokens
+                if (((operationArguments.Interactivity != Interactivity.Always
+                        && msaAuth.getCredentials(operationArguments.TargetUri, credentials)
+                        && (!operationArguments.ValidateCredentials
+                            || msaAuth.validateCredentials(operationArguments.TargetUri, credentials.get())))
+                        || (operationArguments.Interactivity != Interactivity.Always
+                            && msaAuth.refreshCredentials(operationArguments.TargetUri, true)
+                            && msaAuth.getCredentials(operationArguments.TargetUri, credentials)
+                            && (!operationArguments.ValidateCredentials
+                                || msaAuth.validateCredentials(operationArguments.TargetUri, credentials.get())))
+                        || (operationArguments.Interactivity != Interactivity.Never
+                            && msaAuth.interactiveLogon(operationArguments.TargetUri, true))
+                            && msaAuth.getCredentials(operationArguments.TargetUri, credentials)
+                            && (!operationArguments.ValidateCredentials
+                                || msaAuth.validateCredentials(operationArguments.TargetUri, credentials.get()))))
+                {
+                    Trace.writeLine("   credentials found");
+                    operationArguments.setCredentials(credentials.get());
+                    logEvent("Microsoft Live credentials for " + operationArguments.TargetUri + " successfully retrieved.", "SuccessAudit");
+                }
+                else
+                {
+                    System.err.println(AuthFailureMessage);
+                    logEvent("Failed to retrieve Microsoft Live credentials for " + operationArguments.TargetUri + ".", "FailureAudit");
+                    return AbortAuthenticationProcessResponse;
+                }
+
+                break;
 
             case GitHub:
                 throw new NotImplementedException(449515);
@@ -390,6 +422,7 @@ public class Program
 
         final SecretStore secrets = new SecretStore(secureStore, SecretsNamespace);
         final AtomicReference<IAuthentication> authorityRef = new AtomicReference<IAuthentication>();
+        final ITokenStore adaRefreshTokenStore = null;
 
         if (operationArguments.Authority == AuthorityType.Auto)
         {
@@ -399,7 +432,7 @@ public class Program
             if (BaseVsoAuthentication.getAuthentication(operationArguments.TargetUri,
                     VsoCredentialScope,
                     secrets,
-                    null,
+                    adaRefreshTokenStore,
                     authorityRef)
                     /* TODO: 449515: add GitHub support
                     || GithubAuthentication.GetAuthentication(operationArguments.TargetUri,
@@ -434,9 +467,8 @@ public class Program
             case AzureDirectory:
                 Trace.writeLine("   authority is Azure Directory");
 
-                UUID tenantId = Guid.Empty;
                 // return the allocated authority or a generic AAD backed VSO authentication object
-                return authorityRef.get() != null ? authorityRef.get() : new VsoAadAuthentication(Guid.Empty, VsoCredentialScope, secrets, null);
+                return authorityRef.get() != null ? authorityRef.get() : new VsoAadAuthentication(Guid.Empty, VsoCredentialScope, secrets, adaRefreshTokenStore);
 
             case Basic:
             default:
@@ -457,7 +489,7 @@ public class Program
                 Trace.writeLine("   authority is Microsoft Live");
 
                 // return the allocated authority or a generic MSA backed VSO authentication object
-                return authorityRef.get() != null ? authorityRef.get() : new VsoMsaAuthentication(VsoCredentialScope, secrets, null);
+                return authorityRef.get() != null ? authorityRef.get() : new VsoMsaAuthentication(VsoCredentialScope, secrets, adaRefreshTokenStore);
         }
     }
 

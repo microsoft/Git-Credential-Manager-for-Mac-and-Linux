@@ -18,7 +18,7 @@ public final class VsoAadAuthentication extends BaseVsoAuthentication implements
     /**
      * The default authority host for all Azure Directory authentication
      */
-    public static final String DefaultAuthorityHost = " https://management.core.windows.net/";
+    public static final String DefaultAuthorityHost = "https://management.core.windows.net/";
 
     /**
      * @param tenantId                 <p>The unique identifier for the responsible Azure tenant.</p>
