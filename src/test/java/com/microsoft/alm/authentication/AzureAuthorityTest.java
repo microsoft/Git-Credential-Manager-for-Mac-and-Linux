@@ -97,4 +97,34 @@ public class AzureAuthorityTest
             "&code=" + authorizationCode +
             "&redirect_uri=https%3A%2F%2Fexample.com", actual.getContent());
     }
+
+    @Test
+    public void createTokenRequest_withCorrelationId() throws Exception
+    {
+        final String resource = "a8860e8f-ca7d-4efe-b80d-4affab13d4ba";
+        final String clientId = "f7e11bcd-b50b-4869-ad88-8bdd6cbc8473";
+        final UUID correlationId = UUID.fromString("519a4fa6-c18f-4230-8290-6c57407656c9");
+        // authorization codes can be pretty long
+        final String authorizationCode =
+            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+                "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+                "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+                "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+                "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+                "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+                "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+                "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+        final URI redirectUri = URI.create("https://example.com");
+
+        final StringContent actual = AzureAuthority.createTokenRequest(resource, clientId, authorizationCode, redirectUri, correlationId);
+
+        Assert.assertEquals(
+            "resource=a8860e8f-ca7d-4efe-b80d-4affab13d4ba" +
+                "&client_id=f7e11bcd-b50b-4869-ad88-8bdd6cbc8473" +
+                "&grant_type=authorization_code" +
+                "&code=" + authorizationCode +
+                "&redirect_uri=https%3A%2F%2Fexample.com" +
+                "&client-request-id=519a4fa6-c18f-4230-8290-6c57407656c9" +
+                "&return-client-request-id=true", actual.getContent());
+    }
 }

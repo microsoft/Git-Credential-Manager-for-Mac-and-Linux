@@ -275,7 +275,7 @@ class AzureAuthority implements IAzureAuthority
         qs.put(OAuthParameter.GRANT_TYPE, OAuthParameter.AUTHORIZATION_CODE);
         qs.put(OAuthParameter.CODE, authorizationCode);
         qs.put(OAuthParameter.REDIRECT_URI, redirectUri.toString());
-        if (correlationId != null && Guid.Empty.equals(correlationId))
+        if (correlationId != null && !Guid.Empty.equals(correlationId))
         {
             qs.put(OAuthParameter.CORRELATION_ID, correlationId.toString());
             qs.put(OAuthParameter.REQUEST_CORRELATION_ID_IN_RESPONSE, "true");
