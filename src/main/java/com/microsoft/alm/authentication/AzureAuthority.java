@@ -95,13 +95,13 @@ class AzureAuthority implements IAzureAuthority
 
         Trace.writeLine("AzureAuthority::acquireToken");
 
-        final UUID correlationId = /* TODO: 449239: does this actually help against CSRF? */ null;
+        final UUID correlationId = null;
         TokenPair tokens = null;
         queryParameters = ObjectExtensions.coalesce(queryParameters, StringHelper.Empty);
 
         // TODO: 449243: check _adalTokenCache first, then attempt to acquire token from refresh token
 
-        final String authorizationCode = acquireAuthorizationCode(resource, clientId, redirectUri, correlationId, queryParameters);
+        final String authorizationCode = acquireAuthorizationCode(resource, clientId, redirectUri, queryParameters);
         if (authorizationCode == null)
         {
             Trace.writeLine("   token acquisition failed.");
@@ -123,8 +123,6 @@ class AzureAuthority implements IAzureAuthority
             client.ensureOK(connection);
             final String responseContent = HttpClient.readToString(connection);
             tokens = new TokenPair(responseContent);
-
-            // TODO: 449239: verify correlationId in access token response
 
             // TODO: 449201: store access + refresh tokens to _adalTokenCache
 
@@ -167,8 +165,9 @@ class AzureAuthority implements IAzureAuthority
         throw new NotImplementedException(449243);
     }
 
-    String acquireAuthorizationCode(final String resource, final String clientId, final URI redirectUri, final UUID correlationId, final String queryParameters)
+    String acquireAuthorizationCode(final String resource, final String clientId, final URI redirectUri, final String queryParameters)
     {
+        final UUID correlationId = UUID.randomUUID();
         String authorizationCode = null;
         try
         {
