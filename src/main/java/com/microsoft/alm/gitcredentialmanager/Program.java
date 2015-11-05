@@ -397,6 +397,7 @@ public class Program
             final Process gitProcess;
             try
             {
+                // TODO: 457304: Add option to configure for global or system
                 gitProcess = new ProcessBuilder("git", "config", "--global", "credential.helper", "!java -Ddebug=false -jar /TODO/path/to/git-credential-manager-1.0.1-SNAPSHOT.jar").start();
                 gitProcess.waitFor();
             }
@@ -411,12 +412,22 @@ public class Program
         }
     }
 
+    /**
+     * Call JavaFxProvider to check Java and JavaFX requirements
+     *
+     * @return if requirements are met
+     */
     private boolean checkJavaRequirements()
     {
         return Provider.JAVA_FX.checkRequirements().isEmpty() ? true : false;
     }
 
-    protected boolean checkGitRequirements()
+    /**
+     * Checks if git version can be found and if it is the correct version
+     *
+     * @return if git requirements are met
+     */
+    private boolean checkGitRequirements()
     {
         try
         {
@@ -440,11 +451,18 @@ public class Program
         }
     }
 
+    /**
+     * Parses git version response for major and minor version and checks if it's 1.9 or above
+     *
+     * @param gitResponse the output from 'git --version'
+     * @return if the git version meets the requirement
+     */
     protected boolean isValidGitVersion(String gitResponse)
     {
         // if git responded with a version then parse it for the version number
         if (gitResponse != null)
         {
+            // TODO: 450002: Detect "Apple Git" and warn the user
             // git version numbers are in the form of x.y.z and we only need x.y to ensure the requirements are met
             final Pattern pattern = Pattern.compile(".*?(\\d+[.]\\d+)[.]");
             final Matcher matcher = pattern.matcher(gitResponse);
@@ -476,6 +494,11 @@ public class Program
         return false;
     }
 
+    /**
+     * Checks if the OS meets the requirements to run installation
+     *
+     * @return if OS requirements are met
+     */
     protected boolean checkOsRequirements()
     {
         final String osName = System.getProperty("os.name");
