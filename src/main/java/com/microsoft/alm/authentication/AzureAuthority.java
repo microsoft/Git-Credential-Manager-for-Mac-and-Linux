@@ -167,23 +167,19 @@ class AzureAuthority implements IAzureAuthority
 
     String acquireAuthorizationCode(final String resource, final String clientId, final URI redirectUri, final String queryParameters)
     {
-        final UUID correlationId = UUID.randomUUID();
+        final String expectedState = UUID.randomUUID().toString();
         String authorizationCode = null;
         try
         {
-            final URI authorizationEndpoint = createAuthorizationEndpointUri(authorityHostUrl, resource, clientId, redirectUri, UserIdentifier.ANY_USER, correlationId, PromptBehavior.ALWAYS, queryParameters);
+            final URI authorizationEndpoint = createAuthorizationEndpointUri(authorityHostUrl, resource, clientId, redirectUri, UserIdentifier.ANY_USER, expectedState, PromptBehavior.ALWAYS, queryParameters);
             final AuthorizationResponse response = _userAgent.requestAuthorizationCode(authorizationEndpoint, redirectUri);
             authorizationCode = response.getCode();
-            if (correlationId != null)
+            // verify that the authorization response gave us the state we sent in the authz endpoint URI
+            final String actualState = response.getState();
+            if (!expectedState.equals(actualState))
             {
-                // verify authorization response gave us the state we sent in the authorization endpoint URI
-                final String expectedState = correlationId.toString();
-                final String actualState = response.getState();
-                if (!expectedState.equals(actualState))
-                {
-                    // the states are somehow different; better to assume malice and ignore the auth. code
-                    authorizationCode = null;
-                }
+                // the states are somehow different; better to assume malice and ignore the authz code
+                authorizationCode = null;
             }
         }
         catch (final AuthorizationException ignored)
@@ -192,7 +188,7 @@ class AzureAuthority implements IAzureAuthority
         return authorizationCode;
     }
 
-    static URI createAuthorizationEndpointUri(final String authorityHostUrl, final String resource, final String clientId, final URI redirectUri, final UserIdentifier userId, final UUID correlationId, final PromptBehavior promptBehavior, final String queryParameters)
+    static URI createAuthorizationEndpointUri(final String authorityHostUrl, final String resource, final String clientId, final URI redirectUri, final UserIdentifier userId, final String state, final PromptBehavior promptBehavior, final String queryParameters)
     {
         final QueryString qs = new QueryString();
         qs.put(OAuthParameter.RESOURCE, resource);
@@ -207,9 +203,9 @@ class AzureAuthority implements IAzureAuthority
             qs.put(OAuthParameter.LOGIN_HINT, userId.getId());
         }
 
-        if (correlationId != null && !Guid.Empty.equals(correlationId))
+        if (state != null)
         {
-            qs.put(OAuthParameter.CORRELATION_ID, correlationId.toString());
+            qs.put(OAuthParameter.STATE, state);
         }
 
         String promptValue = null;
