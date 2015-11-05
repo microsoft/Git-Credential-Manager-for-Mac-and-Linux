@@ -95,13 +95,13 @@ class AzureAuthority implements IAzureAuthority
 
         Trace.writeLine("AzureAuthority::acquireToken");
 
-        final UUID correlationId = /* TODO: 449239: does this actually help against CSRF? */ null;
+        final UUID correlationId = null;
         TokenPair tokens = null;
         queryParameters = ObjectExtensions.coalesce(queryParameters, StringHelper.Empty);
 
         // TODO: 449243: check _adalTokenCache first, then attempt to acquire token from refresh token
 
-        final String authorizationCode = acquireAuthorizationCode(resource,  clientId,  redirectUri,  correlationId, queryParameters);
+        final String authorizationCode = acquireAuthorizationCode(resource, clientId, redirectUri, queryParameters);
         if (authorizationCode == null)
         {
             Trace.writeLine("   token acquisition failed.");
@@ -123,8 +123,6 @@ class AzureAuthority implements IAzureAuthority
             client.ensureOK(connection);
             final String responseContent = HttpClient.readToString(connection);
             tokens = new TokenPair(responseContent);
-
-            // TODO: 449239: verify correlationId in access token response
 
             // TODO: 449201: store access + refresh tokens to _adalTokenCache
 
@@ -167,14 +165,22 @@ class AzureAuthority implements IAzureAuthority
         throw new NotImplementedException(449243);
     }
 
-    String acquireAuthorizationCode(final String resource, final String clientId, final URI redirectUri, final UUID correlationId, final String queryParameters)
+    String acquireAuthorizationCode(final String resource, final String clientId, final URI redirectUri, final String queryParameters)
     {
+        final String expectedState = UUID.randomUUID().toString();
         String authorizationCode = null;
         try
         {
-            final URI authorizationEndpoint = createAuthorizationEndpointUri(authorityHostUrl, resource, clientId, redirectUri, UserIdentifier.ANY_USER, correlationId, PromptBehavior.ALWAYS, queryParameters);
+            final URI authorizationEndpoint = createAuthorizationEndpointUri(authorityHostUrl, resource, clientId, redirectUri, UserIdentifier.ANY_USER, expectedState, PromptBehavior.ALWAYS, queryParameters);
             final AuthorizationResponse response = _userAgent.requestAuthorizationCode(authorizationEndpoint, redirectUri);
             authorizationCode = response.getCode();
+            // verify that the authorization response gave us the state we sent in the authz endpoint URI
+            final String actualState = response.getState();
+            if (!expectedState.equals(actualState))
+            {
+                // the states are somehow different; better to assume malice and ignore the authz code
+                authorizationCode = null;
+            }
         }
         catch (final AuthorizationException ignored)
         {
@@ -182,7 +188,7 @@ class AzureAuthority implements IAzureAuthority
         return authorizationCode;
     }
 
-    static URI createAuthorizationEndpointUri(final String authorityHostUrl, final String resource, final String clientId, final URI redirectUri, final UserIdentifier userId, final UUID correlationId, final PromptBehavior promptBehavior, final String queryParameters)
+    static URI createAuthorizationEndpointUri(final String authorityHostUrl, final String resource, final String clientId, final URI redirectUri, final UserIdentifier userId, final String state, final PromptBehavior promptBehavior, final String queryParameters)
     {
         final QueryString qs = new QueryString();
         qs.put(OAuthParameter.RESOURCE, resource);
@@ -197,9 +203,9 @@ class AzureAuthority implements IAzureAuthority
             qs.put(OAuthParameter.LOGIN_HINT, userId.getId());
         }
 
-        if (correlationId != null && !Guid.Empty.equals(correlationId))
+        if (state != null)
         {
-            qs.put(OAuthParameter.CORRELATION_ID, correlationId.toString());
+            qs.put(OAuthParameter.STATE, state);
         }
 
         String promptValue = null;
@@ -264,7 +270,7 @@ class AzureAuthority implements IAzureAuthority
         qs.put(OAuthParameter.GRANT_TYPE, OAuthParameter.AUTHORIZATION_CODE);
         qs.put(OAuthParameter.CODE, authorizationCode);
         qs.put(OAuthParameter.REDIRECT_URI, redirectUri.toString());
-        if (correlationId != null && Guid.Empty.equals(correlationId))
+        if (correlationId != null && !Guid.Empty.equals(correlationId))
         {
             qs.put(OAuthParameter.CORRELATION_ID, correlationId.toString());
             qs.put(OAuthParameter.REQUEST_CORRELATION_ID_IN_RESPONSE, "true");

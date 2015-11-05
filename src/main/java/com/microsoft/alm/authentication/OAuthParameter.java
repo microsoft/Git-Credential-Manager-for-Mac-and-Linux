@@ -13,6 +13,7 @@ class OAuthParameter
     static final String RESOURCE = "resource";
     static final String CODE = "code";
     static final String LOGIN_HINT = "login_hint";
+    static final String STATE = "state";
 
     static final String CORRELATION_ID = "client-request-id"; // correlation id is not standard oauth2 parameter
     static final String REQUEST_CORRELATION_ID_IN_RESPONSE = "return-client-request-id"; // not standard oauth2 parameter
