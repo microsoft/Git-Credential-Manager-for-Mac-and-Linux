@@ -101,7 +101,7 @@ class AzureAuthority implements IAzureAuthority
 
         // TODO: 449243: check _adalTokenCache first, then attempt to acquire token from refresh token
 
-        final String authorizationCode = acquireAuthorizationCode(resource,  clientId,  redirectUri,  correlationId, queryParameters);
+        final String authorizationCode = acquireAuthorizationCode(resource, clientId, redirectUri, correlationId, queryParameters);
         if (authorizationCode == null)
         {
             Trace.writeLine("   token acquisition failed.");
