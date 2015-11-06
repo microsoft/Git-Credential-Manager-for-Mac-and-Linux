@@ -27,6 +27,10 @@ import com.microsoft.alm.helpers.StringHelper;
 import com.microsoft.alm.helpers.Trace;
 import com.microsoft.alm.oauth2.useragent.Provider;
 import com.microsoft.alm.oauth2.useragent.Version;
+import com.microsoft.alm.oauth2.useragent.subprocess.DefaultProcessFactory;
+import com.microsoft.alm.oauth2.useragent.subprocess.ProcessCoordinator;
+import com.microsoft.alm.oauth2.useragent.subprocess.TestableProcess;
+import com.microsoft.alm.oauth2.useragent.subprocess.TestableProcessFactory;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -400,10 +404,11 @@ public class Program
         final String osName = System.getProperty("os.name");
         final String osVersion = System.getProperty("os.version");
         final List<Provider> providers = Provider.PROVIDERS;
-        install(osName, osVersion, standardOut, providers);
+        final TestableProcessFactory processFactory = new DefaultProcessFactory();
+        install(osName, osVersion, standardOut, providers, processFactory);
     }
 
-    static void install(final String osName, final String osVersion, final PrintStream standardOut, final List<Provider> providers)
+    static void install(final String osName, final String osVersion, final PrintStream standardOut, final List<Provider> providers, final TestableProcessFactory processFactory)
     {
         List<String> missedRequirements = new ArrayList<String>();
         missedRequirements.addAll(checkUserAgentProviderRequirements(providers));
@@ -412,15 +417,39 @@ public class Program
 
         if (missedRequirements.isEmpty())
         {
-            final Process gitProcess;
             try
             {
                 // TODO: 457304: Add option to configure for global or system
                 // TODO: test with spaces in JAR path
+                // TODO: uninstall ourselves first, possibly both from global and system, because
+                // we don't want another version of ourselves answering credential requests, too!
                 final URL resourceURL = Program.class.getResource("");
                 final String pathToJar = determinePathToJar(resourceURL);
-                gitProcess = new ProcessBuilder("git", "config", "--global", "credential.helper", "!java -Ddebug=false -jar " + pathToJar).start();
-                gitProcess.waitFor();
+                final TestableProcess process = processFactory.create("git", "config", "--global", "credential.helper", "!java -Ddebug=false -jar " + pathToJar);
+                final ProcessCoordinator coordinator = new ProcessCoordinator(process);
+                final int exitCode = coordinator.waitFor();
+                String message;
+                switch (exitCode)
+                {
+                    case 0:
+                        message = null;
+                        break;
+                    case 3:
+                        // TODO: 457304: Be specific as to which config file
+                        message = "The 'global' Git config file is invalid.";
+                        break;
+                    case 4:
+                        // TODO: 457304: Be specific as to which config file
+                        message = "Can not write to the 'global' Git config file.";
+                        break;
+                    default:
+                        message = "Unexpected exit code '" + exitCode + "' received from `git config`.";
+                        break;
+                }
+                if (message != null)
+                {
+                    throw new Error(message);
+                }
             }
             catch (IOException e)
             {
