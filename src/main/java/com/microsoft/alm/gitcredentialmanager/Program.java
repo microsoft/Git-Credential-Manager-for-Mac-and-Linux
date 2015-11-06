@@ -397,7 +397,10 @@ public class Program
     };
     private void install()
     {
-        install(System.getProperty("os.name"), System.getProperty("os.version"), standardOut, Provider.PROVIDERS);
+        final String osName = System.getProperty("os.name");
+        final String osVersion = System.getProperty("os.version");
+        final List<Provider> providers = Provider.PROVIDERS;
+        install(osName, osVersion, standardOut, providers);
     }
 
     static void install(final String osName, final String osVersion, final PrintStream standardOut, final List<Provider> providers)
