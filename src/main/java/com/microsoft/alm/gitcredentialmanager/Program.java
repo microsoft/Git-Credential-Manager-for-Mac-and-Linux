@@ -431,6 +431,7 @@ public class Program
                     "git",
                     "config",
                     "--" + configLocation,
+                    "--add",
                     "credential.helper",
                     "!java -Ddebug=false -jar " + pathToJar,
                 };
