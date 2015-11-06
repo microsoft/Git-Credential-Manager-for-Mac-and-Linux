@@ -426,6 +426,7 @@ public class Program
                 // we don't want another version of ourselves answering credential requests, too!
                 final URL resourceURL = Program.class.getResource("");
                 final String pathToJar = determinePathToJar(resourceURL);
+                final String gcmCommandLine = "!java -Ddebug=false -jar " + pathToJar;
                 final String[] command =
                 {
                     "git",
@@ -433,7 +434,7 @@ public class Program
                     "--" + configLocation,
                     "--add",
                     "credential.helper",
-                    "!java -Ddebug=false -jar " + pathToJar,
+                    gcmCommandLine,
                 };
                 final TestableProcess process = processFactory.create(command);
                 final ProcessCoordinator coordinator = new ProcessCoordinator(process);
