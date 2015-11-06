@@ -499,9 +499,8 @@ public class Program
                     bufferedReader.close();
                 }
             }
-            catch (IOException e)
+            catch (final IOException ignored)
             {
-                throw new Error(e);
             }
         }
     }
