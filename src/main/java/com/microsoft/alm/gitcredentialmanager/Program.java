@@ -515,38 +515,35 @@ public class Program
     protected static List<String> isValidGitVersion(String gitResponse)
     {
         final String GitNotFound = "Git is a requirement for installation and cannot be found. Please check that Git is installed and is added to your PATH";
-
+        final List<String> result = new ArrayList<String>();
         // if git responded with a version then parse it for the version number
         if (gitResponse != null)
         {
             // TODO: 450002: Detect "Apple Git" and warn the user
             // git version numbers are in the form of x.y.z and we only need x.y to ensure the requirements are met
-            Version version;
+            Version version = null;
             try
             {
                 version = Version.parseVersion(gitResponse);
             }
             catch (final IllegalArgumentException ignored)
             {
-                return Arrays.asList(GitNotFound);
+                result.add(GitNotFound);
             }
-            if (version.getMajor() > 1)
+            if (version != null)
             {
-                return Collections.emptyList();
-            }
-            else if (version.getMajor() == 1 && version.getMinor() >= 9)
-            {
-                return Collections.emptyList();
-            }
-            else
-            {
-                return Arrays.asList("Git version " + version.getMajor() + "." + version.getMinor() + " was found but version 1.9 or above is required.");
+                if (version.getMajor() < 1
+                    || (version.getMajor() == 1 && version.getMinor() < 9))
+                {
+                    result.add("Git version " + version.getMajor() + "." + version.getMinor() + " was found but version 1.9 or above is required.");
+                }
             }
         }
         else
         {
-            return Arrays.asList(GitNotFound);
+            result.add(GitNotFound);
         }
+        return result;
     }
 
     /**
