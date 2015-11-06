@@ -420,6 +420,7 @@ public class Program
             try
             {
                 // TODO: 457304: Add option to configure for global or system
+                final String configLocation = "global";
                 // TODO: test with spaces in JAR path
                 // TODO: uninstall ourselves first, possibly both from global and system, because
                 // we don't want another version of ourselves answering credential requests, too!
@@ -429,7 +430,7 @@ public class Program
                 {
                     "git",
                     "config",
-                    "--global",
+                    "--" + configLocation,
                     "credential.helper",
                     "!java -Ddebug=false -jar " + pathToJar,
                 };
@@ -443,12 +444,10 @@ public class Program
                         message = null;
                         break;
                     case 3:
-                        // TODO: 457304: Be specific as to which config file
-                        message = "The 'global' Git config file is invalid.";
+                        message = "The '" + configLocation + "' Git config file is invalid.";
                         break;
                     case 4:
-                        // TODO: 457304: Be specific as to which config file
-                        message = "Can not write to the 'global' Git config file.";
+                        message = "Can not write to the '" + configLocation + "' Git config file.";
                         break;
                     default:
                         message = "Unexpected exit code '" + exitCode + "' received from `git config`.";
