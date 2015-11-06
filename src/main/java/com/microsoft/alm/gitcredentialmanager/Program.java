@@ -425,7 +425,15 @@ public class Program
                 // we don't want another version of ourselves answering credential requests, too!
                 final URL resourceURL = Program.class.getResource("");
                 final String pathToJar = determinePathToJar(resourceURL);
-                final TestableProcess process = processFactory.create("git", "config", "--global", "credential.helper", "!java -Ddebug=false -jar " + pathToJar);
+                final String[] command =
+                {
+                    "git",
+                    "config",
+                    "--global",
+                    "credential.helper",
+                    "!java -Ddebug=false -jar " + pathToJar,
+                };
+                final TestableProcess process = processFactory.create(command);
                 final ProcessCoordinator coordinator = new ProcessCoordinator(process);
                 final int exitCode = coordinator.waitFor();
                 String message;
