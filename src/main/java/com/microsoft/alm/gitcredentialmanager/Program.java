@@ -478,13 +478,13 @@ public class Program
             final String gitResponse = bufferedReader.readLine();
             return isValidGitVersion(gitResponse);
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
-            return Arrays.asList("An IOException was hit while trying to determine the Git version: " + e.getMessage());
+            throw new Error(e);
         }
-        catch (InterruptedException e)
+        catch (final InterruptedException e)
         {
-            return Arrays.asList("An InterruptedException was hit while trying to determine the Git version: " + e.getMessage());
+            throw new Error(e);
         }
         finally
         {
