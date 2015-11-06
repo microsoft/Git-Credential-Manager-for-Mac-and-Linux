@@ -41,10 +41,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -397,13 +397,13 @@ public class Program
     };
     private void install()
     {
-        install(System.getProperty("os.name"), System.getProperty("os.version"), standardOut);
+        install(System.getProperty("os.name"), System.getProperty("os.version"), standardOut, Provider.PROVIDERS);
     }
 
-    static void install(final String osName, final String osVersion, final PrintStream standardOut)
+    static void install(final String osName, final String osVersion, final PrintStream standardOut, final List<Provider> providers)
     {
         List<String> missedRequirements = new ArrayList<String>();
-        missedRequirements.addAll(checkJavaRequirements());
+        missedRequirements.addAll(checkUserAgentProviderRequirements(providers));
         missedRequirements.addAll(checkGitRequirements());
         missedRequirements.addAll(checkOsRequirements(osName, osVersion));
 
@@ -450,13 +450,44 @@ public class Program
     }
 
     /**
-     * Call JavaFxProvider to check Java and JavaFX requirements
+     * Asks all the supplied {@link Provider} implementations to check their requirements and
+     * report only if all of them are missing something.
      *
-     * @return if requirements are met
+     * @param providers a list of {@link Provider} implementations to interrogate
+     * @return a list of requirements, per provider,
+     *          if no single user agent provider had all its requirements satisfied
      */
-    private static List<String> checkJavaRequirements()
+    static List<String> checkUserAgentProviderRequirements(final List<Provider> providers)
     {
-        return Provider.JAVA_FX.checkRequirements();
+        final List<String> results = new ArrayList<String>();
+        final LinkedHashMap<Provider, List<String>> requirementsByProvider = new LinkedHashMap<Provider, List<String>>();
+        int numberOfProvidersWithSatisfiedRequirements = 0;
+        for (final Provider provider : providers)
+        {
+            final List<String> requirements = provider.checkRequirements();
+            if (requirements == null || requirements.isEmpty())
+            {
+                numberOfProvidersWithSatisfiedRequirements++;
+            }
+            else
+            {
+                requirementsByProvider.put(provider, requirements);
+            }
+        }
+        if (numberOfProvidersWithSatisfiedRequirements == 0)
+        {
+            for (final Map.Entry<Provider, List<String>> entry : requirementsByProvider.entrySet())
+            {
+                final Provider provider = entry.getKey();
+                final List<String> requirements = entry.getValue();
+                results.add("The " + provider.getClassName() + " user agent provider has the following unmet requirements:");
+                for (final String requirement : requirements)
+                {
+                    results.add(" - " + requirement);
+                }
+            }
+        }
+        return results;
     }
 
     /**

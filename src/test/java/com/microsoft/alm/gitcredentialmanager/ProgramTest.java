@@ -4,6 +4,7 @@
 package com.microsoft.alm.gitcredentialmanager;
 
 import com.microsoft.alm.helpers.Trace;
+import com.microsoft.alm.oauth2.useragent.Provider;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -12,6 +13,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.util.Arrays;
+import java.util.List;
 
 public class ProgramTest
 {
@@ -93,5 +96,89 @@ public class ProgramTest
     @Test public void checkOsRequirements_invalidOs()
     {
         Assert.assertEquals(1, Program.checkOsRequirements("Windows", "1.1.1").size());
+    }
+
+    private static final Provider TestProviderFoo = new Provider("foo")
+    {
+        @Override public List<String> checkRequirements()
+        {
+            return null;
+        }
+
+        @Override public void augmentProcessParameters(List<String> list, List<String> list1)
+        {
+
+        }
+    };
+    private static final Provider TestProviderBar = new Provider("bar")
+    {
+        @Override public List<String> checkRequirements()
+        {
+            return null;
+        }
+
+        @Override public void augmentProcessParameters(List<String> list, List<String> list1)
+        {
+
+        }
+    };
+    private static final Provider TestProviderPateChinois = new Provider("Pâté Chinois")
+    {
+        @Override public List<String> checkRequirements()
+        {
+            return Arrays.asList("steak", "blé d'inde", "patates");
+        }
+
+        @Override public void augmentProcessParameters(List<String> list, List<String> list1)
+        {
+
+        }
+    };
+    private static final Provider TestProviderBananaNutChocolateCake = new Provider("Banana Nut Chocolate Cake")
+    {
+        @Override public List<String> checkRequirements()
+        {
+            return Arrays.asList("bananas", "nuts", "chocolate");
+        }
+
+        @Override public void augmentProcessParameters(List<String> list, List<String> list1)
+        {
+
+        }
+    };
+
+    @Test public void checkUserAgentProviderRequirements_allFine() throws Exception
+    {
+        final List<Provider> input = Arrays.asList(TestProviderFoo, TestProviderBar);
+
+        final List<String> actual = Program.checkUserAgentProviderRequirements(input);
+
+        Assert.assertEquals(0, actual.size());
+    }
+
+    @Test public void checkUserAgentProviderRequirements_allWrong() throws Exception
+    {
+        final List<Provider> input = Arrays.asList(TestProviderPateChinois, TestProviderBananaNutChocolateCake);
+
+        final List<String> actual = Program.checkUserAgentProviderRequirements(input);
+
+        Assert.assertEquals("The Pâté Chinois user agent provider has the following unmet requirements:", actual.get(0));
+        Assert.assertEquals(" - steak", actual.get(1));
+        Assert.assertEquals(" - blé d'inde", actual.get(2));
+        Assert.assertEquals(" - patates", actual.get(3));
+        Assert.assertEquals("The Banana Nut Chocolate Cake user agent provider has the following unmet requirements:", actual.get(4));
+        Assert.assertEquals(" - bananas", actual.get(5));
+        Assert.assertEquals(" - nuts", actual.get(6));
+        Assert.assertEquals(" - chocolate", actual.get(7));
+        Assert.assertEquals(8, actual.size());
+    }
+
+    @Test public void checkUserAgentProviderRequirements_oneFineOneWrong() throws Exception
+    {
+        final List<Provider> input = Arrays.asList(TestProviderFoo, TestProviderPateChinois);
+
+        final List<String> actual = Program.checkUserAgentProviderRequirements(input);
+
+        Assert.assertEquals(0, actual.size());
     }
 }
