@@ -25,6 +25,7 @@ import com.microsoft.alm.helpers.NotImplementedException;
 import com.microsoft.alm.helpers.Path;
 import com.microsoft.alm.helpers.StringHelper;
 import com.microsoft.alm.helpers.Trace;
+import com.microsoft.alm.helpers.UriHelper;
 import com.microsoft.alm.oauth2.useragent.Provider;
 import com.microsoft.alm.oauth2.useragent.Version;
 import com.microsoft.alm.oauth2.useragent.subprocess.DefaultProcessFactory;
@@ -39,8 +40,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -487,9 +490,18 @@ public class Program
     {
         final String packageName = Program.class.getPackage().getName();
         final String resourcePath = resourceURL.getPath();
+        final String decodedResourcePath;
+        try
+        {
+            decodedResourcePath = URLDecoder.decode(resourcePath, UriHelper.UTF_8);
+        }
+        catch (final UnsupportedEncodingException e)
+        {
+            throw new Error(e);
+        }
         final String packagePath = packageName.replace(".", "/");
         final String resourceSuffix = "!/" + packagePath + "/";
-        String jarPath = resourcePath.replace(resourceSuffix, "");
+        String jarPath = decodedResourcePath.replace(resourceSuffix, "");
         jarPath = jarPath.replace("file:", "");
         return jarPath;
     }

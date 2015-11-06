@@ -193,4 +193,14 @@ public class ProgramTest
         final String expected = "/home/example/git-credential-manager/git-credential-manager-1.0.0.jar";
         Assert.assertEquals(expected, actual);
     }
+
+    @Test public void determinePathToJar_withSpaces() throws Exception
+    {
+        final URL jarUrl = URI.create("file:/home/example/with%20spaces/git-credential-manager-1.0.0.jar!/com/microsoft/alm/gitcredentialmanager/").toURL();
+
+        final String actual = Program.determinePathToJar(jarUrl);
+
+        final String expected = "/home/example/with spaces/git-credential-manager-1.0.0.jar";
+        Assert.assertEquals(expected, actual);
+    }
 }
