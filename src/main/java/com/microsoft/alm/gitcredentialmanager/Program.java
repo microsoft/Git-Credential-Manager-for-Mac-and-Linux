@@ -26,6 +26,7 @@ import com.microsoft.alm.helpers.Path;
 import com.microsoft.alm.helpers.StringHelper;
 import com.microsoft.alm.helpers.Trace;
 import com.microsoft.alm.oauth2.useragent.Provider;
+import com.microsoft.alm.oauth2.useragent.Version;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -33,15 +34,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.io.Reader;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Program
 {
@@ -392,24 +397,56 @@ public class Program
     };
     private void install()
     {
-        if (checkJavaRequirements() && checkGitRequirements() && checkOsRequirements())
+        install(System.getProperty("os.name"), System.getProperty("os.version"), standardOut);
+    }
+
+    static void install(final String osName, final String osVersion, final PrintStream standardOut)
+    {
+        List<String> missedRequirements = new ArrayList<String>();
+        missedRequirements.addAll(checkJavaRequirements());
+        missedRequirements.addAll(checkGitRequirements());
+        missedRequirements.addAll(checkOsRequirements(osName, osVersion));
+
+        if (missedRequirements.isEmpty())
         {
             final Process gitProcess;
             try
             {
                 // TODO: 457304: Add option to configure for global or system
-                gitProcess = new ProcessBuilder("git", "config", "--global", "credential.helper", "!java -Ddebug=false -jar /TODO/path/to/git-credential-manager-1.0.1-SNAPSHOT.jar").start();
+                gitProcess = new ProcessBuilder("git", "config", "--global", "credential.helper", "!java -Ddebug=false -jar " + getJarPath()).start();
                 gitProcess.waitFor();
             }
             catch (IOException e)
             {
-                standardOut.println("An IOException was hit while trying to set the git credential.helper configuration: " + e.getMessage());
+                throw new Error(e);
             }
             catch (InterruptedException e)
             {
-                standardOut.println("An InterruptedException was hit while trying to set the git credential.helper configuration: " + e.getMessage());
+                throw new Error(e);
             }
         }
+        else
+        {
+            standardOut.println("Installation failed due to the following requirement issues:");
+            for (String msg : missedRequirements)
+            {
+                standardOut.println(msg);
+            }
+        }
+    }
+
+    /**
+     * Determines the path of the running jar
+     *
+     * @return Jar path
+     */
+    private static String getJarPath()
+    {
+        final URL jarUrl = Program.class.getResource("");
+        final String programPath = jarUrl.getPath();
+        String jarPath = programPath.substring(0, programPath.indexOf(".jar") + 4);
+        jarPath = jarPath.replace("file:", "");
+        return jarPath;
     }
 
     /**
@@ -417,9 +454,9 @@ public class Program
      *
      * @return if requirements are met
      */
-    private boolean checkJavaRequirements()
+    private static List<String> checkJavaRequirements()
     {
-        return Provider.JAVA_FX.checkRequirements().isEmpty() ? true : false;
+        return Provider.JAVA_FX.checkRequirements();
     }
 
     /**
@@ -427,27 +464,45 @@ public class Program
      *
      * @return if git requirements are met
      */
-    private boolean checkGitRequirements()
+    private static List<String> checkGitRequirements()
     {
+        Reader inputStream = null;
+        BufferedReader bufferedReader = null;
         try
         {
             // finding git version via commandline
             final Process gitProcess = new ProcessBuilder("git", "--version").start();
             gitProcess.waitFor();
-            final BufferedReader br = new BufferedReader(new InputStreamReader(gitProcess.getInputStream()));
-            final String gitResponse = br.readLine();
+            inputStream = new InputStreamReader(gitProcess.getInputStream());
+            bufferedReader = new BufferedReader(inputStream);
+            final String gitResponse = bufferedReader.readLine();
             return isValidGitVersion(gitResponse);
         }
         catch (IOException e)
         {
-            standardOut.println("An IOException was hit while trying to determine the Git version: " + e.getMessage());
-            return false;
+            return Arrays.asList("An IOException was hit while trying to determine the Git version: " + e.getMessage());
         }
         catch (InterruptedException e)
         {
-            standardOut.println("An InterruptedException was hit while trying to determine the Git version: " + e.getMessage());
-            e.printStackTrace();
-            return false;
+            return Arrays.asList("An InterruptedException was hit while trying to determine the Git version: " + e.getMessage());
+        }
+        finally
+        {
+            try
+            {
+                if (inputStream != null)
+                {
+                    inputStream.close();
+                }
+                if (bufferedReader != null)
+                {
+                    bufferedReader.close();
+                }
+            }
+            catch (IOException e)
+            {
+                throw new Error(e);
+            }
         }
     }
 
@@ -457,41 +512,41 @@ public class Program
      * @param gitResponse the output from 'git --version'
      * @return if the git version meets the requirement
      */
-    protected boolean isValidGitVersion(String gitResponse)
+    protected static List<String> isValidGitVersion(String gitResponse)
     {
+        final String GitNotFound = "Git is a requirement for installation and cannot be found. Please check that Git is installed and is added to your PATH";
+
         // if git responded with a version then parse it for the version number
         if (gitResponse != null)
         {
             // TODO: 450002: Detect "Apple Git" and warn the user
             // git version numbers are in the form of x.y.z and we only need x.y to ensure the requirements are met
-            final Pattern pattern = Pattern.compile(".*?(\\d+[.]\\d+)[.]");
-            final Matcher matcher = pattern.matcher(gitResponse);
-            if (matcher.find())
+            Version version;
+            try
             {
-                final String gitVersionString = matcher.group(1);
-                final double gitVersion = Double.valueOf(gitVersionString);
-                if (gitVersion >= 1.9)
-                {
-                    return true;
-                }
-                else
-                {
-                    standardOut.println("Git version " + gitVersion + " was found but version 1.9 or above is required.");
-                    standardOut.println("Please update Git to version 1.9 or above before installation.");
-                }
+                version = Version.parseVersion(gitResponse);
+            }
+            catch (final IllegalArgumentException ignored)
+            {
+                return Arrays.asList(GitNotFound);
+            }
+            if (version.getMajor() > 1)
+            {
+                return Collections.emptyList();
+            }
+            else if (version.getMajor() == 1 && version.getMinor() >= 9)
+            {
+                return Collections.emptyList();
             }
             else
             {
-                standardOut.println("The version of Git installed cannot be found.");
-                standardOut.println("Please check that Git is installed and is added to your PATH");
+                return Arrays.asList("Git version " + version.getMajor() + "." + version.getMinor() + " was found but version 1.9 or above is required.");
             }
         }
         else
         {
-            standardOut.println("Git is a requirement for installation and cannot be found.");
-            standardOut.println("Please check that Git is installed and is added to your PATH");
+            return Arrays.asList(GitNotFound);
         }
-        return false;
     }
 
     /**
@@ -499,44 +554,46 @@ public class Program
      *
      * @return if OS requirements are met
      */
-    protected boolean checkOsRequirements()
+    protected static List<String> checkOsRequirements(final String osName, final String osVersion)
     {
-        final String osName = System.getProperty("os.name");
         if (Provider.isMac(osName))
         {
-            final String osVersionString = System.getProperty("os.version");
-            final String[] versionArray = osVersionString.split("\\.");
-            final int majorVersion = Integer.parseInt(versionArray[0]);
-            final int minorVersion = Integer.parseInt(versionArray[1]);
-            final int revision = Integer.parseInt(versionArray[2]);
-
-            if (majorVersion < 10)
+            Version version = Version.parseVersion(osVersion);
+            List<String> badVersionMessage = Arrays.asList("The version of Mac OS X running is " + version.getMajor() + "." + version.getMinor() + "." + version.getPatch() +
+                    " which does not meet the minimum version of 10.10.5 needed for installation. Please upgrade to Mac OS X 10.10.5 or above to proceed.");
+            if (version.getMajor() > 10)
             {
-                return false;
+                return Collections.emptyList();
             }
-            else if (minorVersion < 10)
+            else if (version.getMajor() < 10)
             {
-                return false;
+                return badVersionMessage;
             }
-            else if (revision < 5)
+            else if (version.getMinor() > 10)
             {
-                return false;
+                return Collections.emptyList();
+            }
+            else if (version.getMinor() < 10)
+            {
+                return badVersionMessage;
+            }
+            else if (version.getPatch() >= 5)
+            {
+                return Collections.emptyList();
             }
             else
             {
-                return true;
+                return badVersionMessage;
             }
         }
         else if (Provider.isLinux(osName))
         {
             // only needs to be a desktop env which is already checked within checkJavaRequirements()
-            return true;
+            return Collections.emptyList();
         }
         else
         {
-            standardOut.println("Git Credential Manager only runs on Mac OS X and Linux.");
-            standardOut.println("The operating system detected is " + osName + " which is not supported");
-            return false;
+            return Arrays.asList("Git Credential Manager only runs on Mac OS X and Linux. The operating system detected is " + osName + " which is not supported");
         }
     }
 

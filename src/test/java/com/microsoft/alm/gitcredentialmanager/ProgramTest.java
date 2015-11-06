@@ -5,7 +5,6 @@ package com.microsoft.alm.gitcredentialmanager;
 
 import com.microsoft.alm.helpers.Trace;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -16,16 +15,6 @@ import java.io.PrintStream;
 
 public class ProgramTest
 {
-    private final ByteArrayOutputStream OUTPUT_STREAM = new ByteArrayOutputStream();
-    private Program program;
-
-    @Before
-    public void setup()
-	{
-        OUTPUT_STREAM.reset();
-        program = new Program(null, new PrintStream(OUTPUT_STREAM), null);
-    }
-
     @Ignore("This test requires user intervention and must be run manually.")
     @Test public void get() throws Exception
     {
@@ -57,58 +46,52 @@ public class ProgramTest
     }
 
     @Test public void isValidGitVersion_happy()
-	{
+    {
         // greater version
-        Assert.assertTrue(program.isValidGitVersion("git version 2.4.9"));
+        Assert.assertEquals(0, Program.isValidGitVersion("git version 2.4.9").size());
 
         // min version
-        Assert.assertTrue(program.isValidGitVersion("git version 1.9.0"));
+        Assert.assertEquals(0, Program.isValidGitVersion("git version 1.9.0").size());
     }
 
     @Test public void isValidGitVersion_badVersion()
-	{
-        Assert.assertFalse(program.isValidGitVersion("git version 1.8.3"));
+    {
+        Assert.assertEquals(1, Program.isValidGitVersion("git version 1.8.3").size());
     }
 
     @Test public void isValidGitVersion_noResponse()
-	{
-        Assert.assertFalse(program.isValidGitVersion(null));
+    {
+        Assert.assertEquals(1, Program.isValidGitVersion(null).size());
     }
 
     @Test public void isValidGitVersion_noGitFound()
-	{
-        Assert.assertFalse(program.isValidGitVersion("-bash: git: command not found"));
+    {
+        Assert.assertEquals(1, Program.isValidGitVersion("-bash: git: command not found").size());
     }
 
     @Test public void checkOsRequirements_macOsHappy()
-	{
-        System.setProperty("os.name", "Mac OS X");
-        System.setProperty("os.version", "10.10.5");
-        Assert.assertTrue(program.checkOsRequirements());
+    {
+        Assert.assertEquals(0, Program.checkOsRequirements("Mac OS X", "10.10.5").size());
+
+        Assert.assertEquals(0, Program.checkOsRequirements("Mac OS X", "11.1.1").size());
     }
 
     @Test public void checkOsRequirements_macOsBadVersion()
-	{
-        System.setProperty("os.name", "Mac OS X");
-        System.setProperty("os.version", "10.10.1");
-        Assert.assertFalse(program.checkOsRequirements());
+    {
+        Assert.assertEquals(1, Program.checkOsRequirements("Mac OS X", "10.10.1").size());
 
-        System.setProperty("os.version", "10.9.5");
-        Assert.assertFalse(program.checkOsRequirements());
+        Assert.assertEquals(1, Program.checkOsRequirements("Mac OS X", "10.9.5").size());
 
-        System.setProperty("os.version", "9.10.5");
-        Assert.assertFalse(program.checkOsRequirements());
+        Assert.assertEquals(1, Program.checkOsRequirements("Mac OS X", "9.10.5").size());
     }
 
     @Test public void checkOsRequirements_linuxOsHappy()
-	{
-        System.setProperty("os.name", "Linux");
-        Assert.assertTrue(program.checkOsRequirements());
+    {
+        Assert.assertEquals(0, Program.checkOsRequirements("Linux", "1.1.1").size());
     }
 
     @Test public void checkOsRequirements_invalidOs()
-	{
-        System.setProperty("os.name", "Windows");
-        Assert.assertFalse(program.checkOsRequirements());
+    {
+        Assert.assertEquals(1, Program.checkOsRequirements("Windows", "1.1.1").size());
     }
 }
