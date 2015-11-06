@@ -13,6 +13,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.net.URI;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
@@ -180,5 +182,15 @@ public class ProgramTest
         final List<String> actual = Program.checkUserAgentProviderRequirements(input);
 
         Assert.assertEquals(0, actual.size());
+    }
+
+    @Test public void determinePathToJar_typical() throws Exception
+    {
+        final URL jarUrl = URI.create("file:/home/example/git-credential-manager/git-credential-manager-1.0.0.jar!/com/microsoft/alm/gitcredentialmanager/").toURL();
+
+        final String actual = Program.determinePathToJar(jarUrl);
+
+        final String expected = "/home/example/git-credential-manager/git-credential-manager-1.0.0.jar";
+        Assert.assertEquals(expected, actual);
     }
 }

@@ -413,7 +413,10 @@ public class Program
             try
             {
                 // TODO: 457304: Add option to configure for global or system
-                gitProcess = new ProcessBuilder("git", "config", "--global", "credential.helper", "!java -Ddebug=false -jar " + getJarPath()).start();
+                // TODO: test with spaces in JAR path
+                final URL resourceURL = Program.class.getResource("");
+                final String pathToJar = determinePathToJar(resourceURL);
+                gitProcess = new ProcessBuilder("git", "config", "--global", "credential.helper", "!java -Ddebug=false -jar " + pathToJar).start();
                 gitProcess.waitFor();
             }
             catch (IOException e)
@@ -436,15 +439,16 @@ public class Program
     }
 
     /**
-     * Determines the path of the running jar
+     * Determines the path of the JAR, given a URL to a resource inside the current JAR.
      *
-     * @return Jar path
      */
-    private static String getJarPath()
+    static String determinePathToJar(final URL resourceURL)
     {
-        final URL jarUrl = Program.class.getResource("");
-        final String programPath = jarUrl.getPath();
-        String jarPath = programPath.substring(0, programPath.indexOf(".jar") + 4);
+        final String packageName = Program.class.getPackage().getName();
+        final String resourcePath = resourceURL.getPath();
+        final String packagePath = packageName.replace(".", "/");
+        final String resourceSuffix = "!/" + packagePath + "/";
+        String jarPath = resourcePath.replace(resourceSuffix, "");
         jarPath = jarPath.replace("file:", "");
         return jarPath;
     }
