@@ -165,6 +165,7 @@ public class Program
         actions.put("store", Store);
         actions.put("version", PrintVersion);
         actions.put("install", Install);
+        actions.put("uninstall", Uninstall);
 
         for (final String arg : args)
         {
@@ -468,6 +469,20 @@ public class Program
         final ProcessCoordinator coordinator = new ProcessCoordinator(process);
         final int exitCode = coordinator.waitFor();
         checkGitConfigExitCode(configLocation, exitCode);
+    }
+
+    private final Callable<Void> Uninstall = new Callable<Void>()
+    {
+        @Override public Void call()
+        {
+            uninstall();
+            return null;
+        }
+    };
+    private void uninstall()
+    {
+        final TestableProcessFactory processFactory = new DefaultProcessFactory();
+        uninstall(processFactory);
     }
 
     static void uninstall(final TestableProcessFactory processFactory)
