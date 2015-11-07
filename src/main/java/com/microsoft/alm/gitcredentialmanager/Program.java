@@ -426,11 +426,7 @@ public class Program
             {
                 // TODO: 457304: Add option to configure for global or system
                 final String configLocation = "global";
-                // TODO: 457304: unconfigure from both global and system (if we can!), to be sure
-                if (isGitConfigured(processFactory, configLocation))
-                {
-                    unconfigureGit(processFactory, configLocation);
-                }
+                uninstall(processFactory);
                 configureGit(processFactory, configLocation);
             }
             catch (IOException e)
@@ -472,6 +468,27 @@ public class Program
         final ProcessCoordinator coordinator = new ProcessCoordinator(process);
         final int exitCode = coordinator.waitFor();
         checkGitConfigExitCode(configLocation, exitCode);
+    }
+
+    static void uninstall(final TestableProcessFactory processFactory)
+    {
+        try
+        {
+            final String configLocation = "global";
+            // TODO: 457304: unconfigure from both global and system (if we can!), to be sure
+            if (isGitConfigured(processFactory, configLocation))
+            {
+                unconfigureGit(processFactory, configLocation);
+            }
+        }
+        catch (IOException e)
+        {
+            throw new Error(e);
+        }
+        catch (InterruptedException e)
+        {
+            throw new Error(e);
+        }
     }
 
     static boolean isGitConfigured(final TestableProcessFactory processFactory, final String configLocation) throws IOException, InterruptedException
