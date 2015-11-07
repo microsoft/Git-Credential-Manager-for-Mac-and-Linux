@@ -107,9 +107,11 @@ public class ProgramTest
         Assert.assertEquals(0, Program.checkOsRequirements("Linux", "1.1.1").size());
     }
 
-    @Test public void checkOsRequirements_invalidOs()
+    @Test public void checkOsRequirements_unsupportedOs()
     {
         Assert.assertEquals(1, Program.checkOsRequirements("Windows", "1.1.1").size());
+
+        Assert.assertEquals(1, Program.checkOsRequirements("Unknown", "1.1.1").size());
     }
 
     private static final Provider TestProviderFoo = new Provider("foo")
