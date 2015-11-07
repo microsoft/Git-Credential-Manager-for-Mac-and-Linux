@@ -426,24 +426,7 @@ public class Program
                 final String configLocation = "global";
                 // TODO: uninstall ourselves first, possibly both from global and system, because
                 // we don't want another version of ourselves answering credential requests, too!
-                final URL resourceURL = Program.class.getResource("");
-                final String pathToJar = determinePathToJar(resourceURL);
-                // quote path to JAR, in case it contains spaces
-                // i.e. !java -Ddebug=false -jar "/home/example/with spaces/gcm.jar"
-                final String gcmCommandLine = "!java -Ddebug=false -jar \"" + pathToJar + "\"";
-                final String[] command =
-                {
-                    "git",
-                    "config",
-                    "--" + configLocation,
-                    "--add",
-                    "credential.helper",
-                    gcmCommandLine,
-                };
-                final TestableProcess process = processFactory.create(command);
-                final ProcessCoordinator coordinator = new ProcessCoordinator(process);
-                final int exitCode = coordinator.waitFor();
-                checkGitConfigExitCode(configLocation, exitCode);
+                configureGit(processFactory, configLocation);
             }
             catch (IOException e)
             {
@@ -462,6 +445,28 @@ public class Program
                 standardOut.println(msg);
             }
         }
+    }
+
+    static void configureGit(final TestableProcessFactory processFactory, final String configLocation) throws IOException, InterruptedException
+    {
+        final URL resourceURL = Program.class.getResource("");
+        final String pathToJar = determinePathToJar(resourceURL);
+        // quote path to JAR, in case it contains spaces
+        // i.e. !java -Ddebug=false -jar "/home/example/with spaces/gcm.jar"
+        final String gcmCommandLine = "!java -Ddebug=false -jar \"" + pathToJar + "\"";
+        final String[] command =
+        {
+            "git",
+            "config",
+            "--" + configLocation,
+            "--add",
+            "credential.helper",
+            gcmCommandLine,
+        };
+        final TestableProcess process = processFactory.create(command);
+        final ProcessCoordinator coordinator = new ProcessCoordinator(process);
+        final int exitCode = coordinator.waitFor();
+        checkGitConfigExitCode(configLocation, exitCode);
     }
 
     static void checkGitConfigExitCode(final String configLocation, final int exitCode)
