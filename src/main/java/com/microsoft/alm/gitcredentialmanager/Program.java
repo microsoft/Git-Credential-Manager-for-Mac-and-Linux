@@ -39,7 +39,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -418,7 +417,7 @@ public class Program
     {
         List<String> missedRequirements = new ArrayList<String>();
         missedRequirements.addAll(checkUserAgentProviderRequirements(providers));
-        missedRequirements.addAll(checkGitRequirements());
+        missedRequirements.addAll(checkGitRequirements(processFactory));
         missedRequirements.addAll(checkOsRequirements(osName, osVersion));
 
         if (missedRequirements.isEmpty())
@@ -636,18 +635,15 @@ public class Program
      *
      * @return if git requirements are met
      */
-    private static List<String> checkGitRequirements()
+    static List<String> checkGitRequirements(final TestableProcessFactory processFactory)
     {
-        Reader inputStream = null;
-        BufferedReader bufferedReader = null;
         try
         {
             // finding git version via commandline
-            final Process gitProcess = new ProcessBuilder("git", "--version").start();
-            gitProcess.waitFor();
-            inputStream = new InputStreamReader(gitProcess.getInputStream());
-            bufferedReader = new BufferedReader(inputStream);
-            final String gitResponse = bufferedReader.readLine();
+            final TestableProcess gitProcess = processFactory.create("git", "--version");
+            final ProcessCoordinator coordinator = new ProcessCoordinator(gitProcess);
+            coordinator.waitFor();
+            final String gitResponse = coordinator.getStdOut();
             return isValidGitVersion(gitResponse);
         }
         catch (final IOException e)
@@ -657,23 +653,6 @@ public class Program
         catch (final InterruptedException e)
         {
             throw new Error(e);
-        }
-        finally
-        {
-            try
-            {
-                if (inputStream != null)
-                {
-                    inputStream.close();
-                }
-                if (bufferedReader != null)
-                {
-                    bufferedReader.close();
-                }
-            }
-            catch (final IOException ignored)
-            {
-            }
         }
     }
 
