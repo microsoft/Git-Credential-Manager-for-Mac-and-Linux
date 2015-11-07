@@ -729,8 +729,8 @@ public class Program
         }
         else if (Provider.isLinux(osName))
         {
-            // only needs to be a desktop env which is already checked within checkJavaRequirements()
-            // do nothing
+            // only needs a desktop env; already checked by checkUserAgentProviderRequirements()
+            // TODO: check for supported major distributions and versions (Ubuntu 14+, Fedora 22+, etc.)
         }
         else
         {
