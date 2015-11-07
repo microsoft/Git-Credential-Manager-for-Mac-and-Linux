@@ -710,29 +710,23 @@ public class Program
             final Version version = Version.parseVersion(osVersion);
             final String badVersionMessage = "The version of Mac OS X running is " + version.getMajor() + "." + version.getMinor() + "." + version.getPatch() +
                     " which does not meet the minimum version of 10.10.5 needed for installation. Please upgrade to Mac OS X 10.10.5 or above to proceed.";
-            if (version.getMajor() > 10)
-            {
-                // do nothing
-            }
-            else if (version.getMajor() < 10)
+            if (version.getMajor() < 10)
             {
                 result.add(badVersionMessage);
             }
-            else if (version.getMinor() > 10)
+            else if (version.getMajor() == 10)
             {
-                // do nothing
-            }
-            else if (version.getMinor() < 10)
-            {
-                result.add(badVersionMessage);
-            }
-            else if (version.getPatch() >= 5)
-            {
-                // do nothing
-            }
-            else
-            {
-                result.add(badVersionMessage);
+                if (version.getMinor() < 10)
+                {
+                    result.add(badVersionMessage);
+                }
+                else if (version.getMinor() == 10)
+                {
+                    if (version.getPatch() < 5)
+                    {
+                        result.add(badVersionMessage);
+                    }
+                }
             }
         }
         else if (Provider.isLinux(osName))
