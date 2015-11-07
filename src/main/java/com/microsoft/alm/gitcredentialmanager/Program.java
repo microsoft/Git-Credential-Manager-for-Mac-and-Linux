@@ -424,12 +424,13 @@ public class Program
             {
                 // TODO: 457304: Add option to configure for global or system
                 final String configLocation = "global";
-                // TODO: test with spaces in JAR path
                 // TODO: uninstall ourselves first, possibly both from global and system, because
                 // we don't want another version of ourselves answering credential requests, too!
                 final URL resourceURL = Program.class.getResource("");
                 final String pathToJar = determinePathToJar(resourceURL);
-                final String gcmCommandLine = "!java -Ddebug=false -jar " + pathToJar;
+                // quote path to JAR, in case it contains spaces
+                // i.e. !java -Ddebug=false -jar "/home/example/with spaces/gcm.jar"
+                final String gcmCommandLine = "!java -Ddebug=false -jar \"" + pathToJar + "\"";
                 final String[] command =
                 {
                     "git",
