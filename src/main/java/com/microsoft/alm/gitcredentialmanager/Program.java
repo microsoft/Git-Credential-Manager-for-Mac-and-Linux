@@ -443,26 +443,7 @@ public class Program
                 final TestableProcess process = processFactory.create(command);
                 final ProcessCoordinator coordinator = new ProcessCoordinator(process);
                 final int exitCode = coordinator.waitFor();
-                String message;
-                switch (exitCode)
-                {
-                    case 0:
-                        message = null;
-                        break;
-                    case 3:
-                        message = "The '" + configLocation + "' Git config file is invalid.";
-                        break;
-                    case 4:
-                        message = "Can not write to the '" + configLocation + "' Git config file.";
-                        break;
-                    default:
-                        message = "Unexpected exit code '" + exitCode + "' received from `git config`.";
-                        break;
-                }
-                if (message != null)
-                {
-                    throw new Error(message);
-                }
+                checkGitConfigExitCode(configLocation, exitCode);
             }
             catch (IOException e)
             {
@@ -480,6 +461,30 @@ public class Program
             {
                 standardOut.println(msg);
             }
+        }
+    }
+
+    static void checkGitConfigExitCode(final String configLocation, final int exitCode)
+    {
+        String message;
+        switch (exitCode)
+        {
+            case 0:
+                message = null;
+                break;
+            case 3:
+                message = "The '" + configLocation + "' Git config file is invalid.";
+                break;
+            case 4:
+                message = "Can not write to the '" + configLocation + "' Git config file.";
+                break;
+            default:
+                message = "Unexpected exit code '" + exitCode + "' received from `git config`.";
+                break;
+        }
+        if (message != null)
+        {
+            throw new Error(message);
         }
     }
 
