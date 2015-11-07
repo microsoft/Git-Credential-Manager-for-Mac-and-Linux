@@ -734,7 +734,7 @@ public class Program
         }
         else
         {
-            result.add("Git Credential Manager only runs on Mac OS X and Linux. The operating system detected is " + osName + " which is not supported");
+            result.add("The Git Credential Manager for Mac and Linux is only supported on, well, Mac OS X and Linux. The operating system detected is " + osName + ", which is not supported.");
         }
         return result;
     }
