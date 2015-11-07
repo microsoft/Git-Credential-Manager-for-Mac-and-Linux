@@ -62,6 +62,8 @@ public class Program
     private static final String ProgramFolderName = "git-credential-manager";
     private static final VsoTokenScope VsoCredentialScope = VsoTokenScope.CodeWrite;
     private static final String AbortAuthenticationProcessResponse = "quit=true";
+    private static final String CredentialHelperSection = "credential.helper";
+    private static final String CredentialHelperValueRegex = "git-credential-manager-[0-9]+\\.[0-9]+\\.[0-9]+(-SNAPSHOT)?.jar";
 
     private final InputStream standardIn;
     private final PrintStream standardOut;
@@ -463,7 +465,7 @@ public class Program
             "config",
             "--" + configLocation,
             "--add",
-            "credential.helper",
+            CredentialHelperSection,
             gcmCommandLine,
         };
         final TestableProcess process = processFactory.create(command);
@@ -480,8 +482,8 @@ public class Program
                 "config",
                 "--" + configLocation,
                 "--get",
-                "credential.helper",
-                "git-credential-manager-[0-9]+\\.[0-9]+\\.[0-9]+(-SNAPSHOT)?.jar",
+                CredentialHelperSection,
+                CredentialHelperValueRegex,
             };
         final TestableProcess process = processFactory.create(command);
         final ProcessCoordinator coordinator = new ProcessCoordinator(process);
@@ -499,8 +501,8 @@ public class Program
                 "config",
                 "--" + configLocation,
                 "--unset",
-                "credential.helper",
-                "git-credential-manager-[0-9]+\\.[0-9]+\\.[0-9]+(-SNAPSHOT)?.jar",
+                CredentialHelperSection,
+                CredentialHelperValueRegex,
             };
         final TestableProcess process = processFactory.create(command);
         final ProcessCoordinator coordinator = new ProcessCoordinator(process);
