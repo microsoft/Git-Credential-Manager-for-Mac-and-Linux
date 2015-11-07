@@ -5,14 +5,19 @@ package com.microsoft.alm.gitcredentialmanager;
 
 import com.microsoft.alm.helpers.Trace;
 import com.microsoft.alm.oauth2.useragent.Provider;
+import com.microsoft.alm.oauth2.useragent.subprocess.TestableProcess;
+import com.microsoft.alm.oauth2.useragent.subprocess.TestableProcessFactory;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
@@ -57,6 +62,46 @@ public class ProgramTest
 
         // min version
         Assert.assertEquals(0, Program.isValidGitVersion("git version 1.9.0").size());
+    }
+
+    @Test public void checkGitRequirements() throws UnsupportedEncodingException
+    {
+        final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        final ByteArrayInputStream errorStream = new ByteArrayInputStream("".getBytes("UTF-8"));
+        final ByteArrayInputStream inputStream = new ByteArrayInputStream("git version 2.6.2\n".getBytes("UTF-8"));
+        final TestableProcess process = new TestableProcess()
+        {
+            @Override public InputStream getErrorStream()
+            {
+                return errorStream;
+            }
+
+            @Override public InputStream getInputStream()
+            {
+                return inputStream;
+            }
+
+            @Override public OutputStream getOutputStream()
+            {
+                return outputStream;
+            }
+
+            @Override public int waitFor() throws InterruptedException
+            {
+                return 0;
+            }
+        };
+        final TestableProcessFactory processFactory = new TestableProcessFactory()
+        {
+            @Override public TestableProcess create(final String... strings) throws IOException
+            {
+                return process;
+            }
+        };
+
+        final List<String> actual = Program.checkGitRequirements(processFactory);
+
+        Assert.assertEquals(0, actual.size());
     }
 
     @Test public void isValidGitVersion_badVersion()

@@ -644,7 +644,8 @@ public class Program
             final ProcessCoordinator coordinator = new ProcessCoordinator(gitProcess);
             coordinator.waitFor();
             final String gitResponse = coordinator.getStdOut();
-            return isValidGitVersion(gitResponse);
+            final String trimmedResponse = gitResponse.trim();
+            return isValidGitVersion(trimmedResponse);
         }
         catch (final IOException e)
         {
@@ -662,8 +663,10 @@ public class Program
      * @param gitResponse the output from 'git --version'
      * @return if the git version meets the requirement
      */
-    protected static List<String> isValidGitVersion(String gitResponse)
+    protected static List<String> isValidGitVersion(final String gitResponse)
     {
+        Trace.writeLine("Program::isValidGitVersion");
+        Trace.writeLine("  gitResponse:" + gitResponse);
         final String GitNotFound = "Git is a requirement for installation and cannot be found. Please check that Git is installed and is added to your PATH";
         final List<String> result = new ArrayList<String>();
         // if git responded with a version then parse it for the version number
@@ -678,6 +681,7 @@ public class Program
             }
             catch (final IllegalArgumentException ignored)
             {
+                Trace.writeLine("  " + ignored.getMessage());
                 result.add(GitNotFound);
             }
             if (version != null)
