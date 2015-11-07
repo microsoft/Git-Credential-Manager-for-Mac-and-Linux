@@ -698,6 +698,10 @@ public class Program
 
     /**
      * Checks if the OS meets the requirements to run installation
+     *
+     * @param osName the name of the operating system, as retrieved from the os.name property.
+     * @param osVersion the version of the operating system, as retrieved from the os.version property.
+     * @return a list of strings representing unmet requirements.
      */
     protected static List<String> checkOsRequirements(final String osName, final String osVersion)
     {
