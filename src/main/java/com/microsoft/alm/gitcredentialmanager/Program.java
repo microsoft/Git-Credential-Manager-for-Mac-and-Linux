@@ -703,45 +703,48 @@ public class Program
      */
     protected static List<String> checkOsRequirements(final String osName, final String osVersion)
     {
+        final ArrayList<String> result = new ArrayList<String>();
+
         if (Provider.isMac(osName))
         {
-            Version version = Version.parseVersion(osVersion);
-            List<String> badVersionMessage = Arrays.asList("The version of Mac OS X running is " + version.getMajor() + "." + version.getMinor() + "." + version.getPatch() +
-                    " which does not meet the minimum version of 10.10.5 needed for installation. Please upgrade to Mac OS X 10.10.5 or above to proceed.");
+            final Version version = Version.parseVersion(osVersion);
+            final String badVersionMessage = "The version of Mac OS X running is " + version.getMajor() + "." + version.getMinor() + "." + version.getPatch() +
+                    " which does not meet the minimum version of 10.10.5 needed for installation. Please upgrade to Mac OS X 10.10.5 or above to proceed.";
             if (version.getMajor() > 10)
             {
-                return Collections.emptyList();
+                // do nothing
             }
             else if (version.getMajor() < 10)
             {
-                return badVersionMessage;
+                result.add(badVersionMessage);
             }
             else if (version.getMinor() > 10)
             {
-                return Collections.emptyList();
+                // do nothing
             }
             else if (version.getMinor() < 10)
             {
-                return badVersionMessage;
+                result.add(badVersionMessage);
             }
             else if (version.getPatch() >= 5)
             {
-                return Collections.emptyList();
+                // do nothing
             }
             else
             {
-                return badVersionMessage;
+                result.add(badVersionMessage);
             }
         }
         else if (Provider.isLinux(osName))
         {
             // only needs to be a desktop env which is already checked within checkJavaRequirements()
-            return Collections.emptyList();
+            // do nothing
         }
         else
         {
-            return Arrays.asList("Git Credential Manager only runs on Mac OS X and Linux. The operating system detected is " + osName + " which is not supported");
+            result.add("Git Credential Manager only runs on Mac OS X and Linux. The operating system detected is " + osName + " which is not supported");
         }
+        return result;
     }
 
     private void initialize(
