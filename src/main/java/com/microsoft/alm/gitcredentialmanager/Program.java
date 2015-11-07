@@ -424,8 +424,11 @@ public class Program
             {
                 // TODO: 457304: Add option to configure for global or system
                 final String configLocation = "global";
-                // TODO: uninstall ourselves first, possibly both from global and system, because
-                // we don't want another version of ourselves answering credential requests, too!
+                // TODO: 457304: unconfigure from both global and system (if we can!), to be sure
+                if (isGitConfigured(processFactory, configLocation))
+                {
+                    unconfigureGit(processFactory, configLocation);
+                }
                 configureGit(processFactory, configLocation);
             }
             catch (IOException e)
@@ -463,6 +466,42 @@ public class Program
             "credential.helper",
             gcmCommandLine,
         };
+        final TestableProcess process = processFactory.create(command);
+        final ProcessCoordinator coordinator = new ProcessCoordinator(process);
+        final int exitCode = coordinator.waitFor();
+        checkGitConfigExitCode(configLocation, exitCode);
+    }
+
+    static boolean isGitConfigured(final TestableProcessFactory processFactory, final String configLocation) throws IOException, InterruptedException
+    {
+        final String[] command =
+            {
+                "git",
+                "config",
+                "--" + configLocation,
+                "--get",
+                "credential.helper",
+                "git-credential-manager-[0-9]+\\.[0-9]+\\.[0-9]+(-SNAPSHOT)?.jar",
+            };
+        final TestableProcess process = processFactory.create(command);
+        final ProcessCoordinator coordinator = new ProcessCoordinator(process);
+        coordinator.waitFor();
+        final String stdOut = coordinator.getStdOut();
+        final boolean result = stdOut.length() > 0;
+        return result;
+    }
+
+    static void unconfigureGit(final TestableProcessFactory processFactory, final String configLocation) throws IOException, InterruptedException
+    {
+        final String[] command =
+            {
+                "git",
+                "config",
+                "--" + configLocation,
+                "--unset",
+                "credential.helper",
+                "git-credential-manager-[0-9]+\\.[0-9]+\\.[0-9]+(-SNAPSHOT)?.jar",
+            };
         final TestableProcess process = processFactory.create(command);
         final ProcessCoordinator coordinator = new ProcessCoordinator(process);
         final int exitCode = coordinator.waitFor();
