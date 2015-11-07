@@ -698,8 +698,6 @@ public class Program
 
     /**
      * Checks if the OS meets the requirements to run installation
-     *
-     * @return if OS requirements are met
      */
     protected static List<String> checkOsRequirements(final String osName, final String osVersion)
     {
