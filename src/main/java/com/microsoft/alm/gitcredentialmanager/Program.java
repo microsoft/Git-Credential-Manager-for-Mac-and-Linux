@@ -732,6 +732,10 @@ public class Program
             // only needs a desktop env; already checked by checkUserAgentProviderRequirements()
             // TODO: check for supported major distributions and versions (Ubuntu 14+, Fedora 22+, etc.)
         }
+        else if (Provider.isWindows(osName))
+        {
+            result.add("It looks like you are running on Windows, please consider using the Git Credential Manager for Windows: https://github.com/Microsoft/Git-Credential-Manager-for-Windows");
+        }
         else
         {
             result.add("The Git Credential Manager for Mac and Linux is only supported on, well, Mac OS X and Linux. The operating system detected is " + osName + ", which is not supported.");
