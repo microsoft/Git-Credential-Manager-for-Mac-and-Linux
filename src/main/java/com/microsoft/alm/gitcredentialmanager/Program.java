@@ -25,6 +25,13 @@ import com.microsoft.alm.helpers.NotImplementedException;
 import com.microsoft.alm.helpers.Path;
 import com.microsoft.alm.helpers.StringHelper;
 import com.microsoft.alm.helpers.Trace;
+import com.microsoft.alm.helpers.UriHelper;
+import com.microsoft.alm.oauth2.useragent.Provider;
+import com.microsoft.alm.oauth2.useragent.Version;
+import com.microsoft.alm.oauth2.useragent.subprocess.DefaultProcessFactory;
+import com.microsoft.alm.oauth2.useragent.subprocess.ProcessCoordinator;
+import com.microsoft.alm.oauth2.useragent.subprocess.TestableProcess;
+import com.microsoft.alm.oauth2.useragent.subprocess.TestableProcessFactory;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -32,11 +39,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -47,6 +61,8 @@ public class Program
     private static final String ProgramFolderName = "git-credential-manager";
     private static final VsoTokenScope VsoCredentialScope = VsoTokenScope.CodeWrite;
     private static final String AbortAuthenticationProcessResponse = "quit=true";
+    private static final String CredentialHelperSection = "credential.helper";
+    private static final String CredentialHelperValueRegex = "git-credential-manager-[0-9]+\\.[0-9]+\\.[0-9]+(-SNAPSHOT)?.jar";
 
     private final InputStream standardIn;
     private final PrintStream standardOut;
@@ -147,6 +163,8 @@ public class Program
         actions.put("reject", Erase);
         actions.put("store", Store);
         actions.put("version", PrintVersion);
+        actions.put("install", Install);
+        actions.put("uninstall", Uninstall);
 
         for (final String arg : args)
         {
@@ -376,6 +394,370 @@ public class Program
         Trace.writeLine("Program::printVersion");
 
         standardOut.println(String.format("%1$s version %2$s", getTitle(), getVersion()));
+    }
+
+    private final Callable<Void> Install = new Callable<Void>()
+    {
+        @Override public Void call()
+        {
+            install();
+            return null;
+        }
+    };
+    private void install()
+    {
+        final String osName = System.getProperty("os.name");
+        final String osVersion = System.getProperty("os.version");
+        final List<Provider> providers = Provider.PROVIDERS;
+        final TestableProcessFactory processFactory = new DefaultProcessFactory();
+        install(osName, osVersion, standardOut, providers, processFactory);
+    }
+
+    static void install(final String osName, final String osVersion, final PrintStream standardOut, final List<Provider> providers, final TestableProcessFactory processFactory)
+    {
+        List<String> missedRequirements = new ArrayList<String>();
+        missedRequirements.addAll(checkUserAgentProviderRequirements(providers));
+        missedRequirements.addAll(checkGitRequirements(processFactory));
+        missedRequirements.addAll(checkOsRequirements(osName, osVersion));
+
+        if (missedRequirements.isEmpty())
+        {
+            try
+            {
+                // TODO: 457304: Add option to configure for global or system
+                final String configLocation = "global";
+                uninstall(processFactory);
+                configureGit(processFactory, configLocation);
+            }
+            catch (IOException e)
+            {
+                throw new Error(e);
+            }
+            catch (InterruptedException e)
+            {
+                throw new Error(e);
+            }
+        }
+        else
+        {
+            standardOut.println("Installation failed due to the following unmet requirements:");
+            for (String msg : missedRequirements)
+            {
+                standardOut.println(msg);
+            }
+            standardOut.println();
+            standardOut.println("If you think we are excluding many users with one or more of these requirements, please let us know.");
+        }
+    }
+
+    static void configureGit(final TestableProcessFactory processFactory, final String configLocation) throws IOException, InterruptedException
+    {
+        final URL resourceURL = Program.class.getResource("");
+        final String pathToJar = determinePathToJar(resourceURL);
+        // quote path to JAR, in case it contains spaces
+        // i.e. !java -Ddebug=false -jar "/home/example/with spaces/gcm.jar"
+        final String gcmCommandLine = "!java -Ddebug=false -jar \"" + pathToJar + "\"";
+        final String[] command =
+        {
+            "git",
+            "config",
+            "--" + configLocation,
+            "--add",
+            CredentialHelperSection,
+            gcmCommandLine,
+        };
+        final TestableProcess process = processFactory.create(command);
+        final ProcessCoordinator coordinator = new ProcessCoordinator(process);
+        final int exitCode = coordinator.waitFor();
+        checkGitConfigExitCode(configLocation, exitCode);
+    }
+
+    private final Callable<Void> Uninstall = new Callable<Void>()
+    {
+        @Override public Void call()
+        {
+            uninstall();
+            return null;
+        }
+    };
+    private void uninstall()
+    {
+        final TestableProcessFactory processFactory = new DefaultProcessFactory();
+        uninstall(processFactory);
+    }
+
+    static void uninstall(final TestableProcessFactory processFactory)
+    {
+        try
+        {
+            final String configLocation = "global";
+            // TODO: 457304: unconfigure from both global and system (if we can!), to be sure
+            if (isGitConfigured(processFactory, configLocation))
+            {
+                unconfigureGit(processFactory, configLocation);
+            }
+        }
+        catch (IOException e)
+        {
+            throw new Error(e);
+        }
+        catch (InterruptedException e)
+        {
+            throw new Error(e);
+        }
+    }
+
+    static boolean isGitConfigured(final TestableProcessFactory processFactory, final String configLocation) throws IOException, InterruptedException
+    {
+        final String[] command =
+            {
+                "git",
+                "config",
+                "--" + configLocation,
+                "--get",
+                CredentialHelperSection,
+                CredentialHelperValueRegex,
+            };
+        final TestableProcess process = processFactory.create(command);
+        final ProcessCoordinator coordinator = new ProcessCoordinator(process);
+        coordinator.waitFor();
+        final String stdOut = coordinator.getStdOut();
+        final boolean result = stdOut.length() > 0;
+        return result;
+    }
+
+    static void unconfigureGit(final TestableProcessFactory processFactory, final String configLocation) throws IOException, InterruptedException
+    {
+        final String[] command =
+            {
+                "git",
+                "config",
+                "--" + configLocation,
+                "--unset",
+                CredentialHelperSection,
+                CredentialHelperValueRegex,
+            };
+        final TestableProcess process = processFactory.create(command);
+        final ProcessCoordinator coordinator = new ProcessCoordinator(process);
+        final int exitCode = coordinator.waitFor();
+        checkGitConfigExitCode(configLocation, exitCode);
+    }
+
+    static void checkGitConfigExitCode(final String configLocation, final int exitCode)
+    {
+        String message;
+        switch (exitCode)
+        {
+            case 0:
+                message = null;
+                break;
+            case 3:
+                message = "The '" + configLocation + "' Git config file is invalid.";
+                break;
+            case 4:
+                message = "Can not write to the '" + configLocation + "' Git config file.";
+                break;
+            default:
+                message = "Unexpected exit code '" + exitCode + "' received from `git config`.";
+                break;
+        }
+        if (message != null)
+        {
+            throw new Error(message);
+        }
+    }
+
+    /**
+     * Determines the path of the JAR, given a URL to a resource inside the current JAR.
+     *
+     */
+    static String determinePathToJar(final URL resourceURL)
+    {
+        final String packageName = Program.class.getPackage().getName();
+        final String resourcePath = resourceURL.getPath();
+        final String decodedResourcePath;
+        try
+        {
+            decodedResourcePath = URLDecoder.decode(resourcePath, UriHelper.UTF_8);
+        }
+        catch (final UnsupportedEncodingException e)
+        {
+            throw new Error(e);
+        }
+        final String packagePath = packageName.replace(".", "/");
+        final String resourceSuffix = "!/" + packagePath + "/";
+        String jarPath = decodedResourcePath.replace(resourceSuffix, "");
+        jarPath = jarPath.replace("file:", "");
+        return jarPath;
+    }
+
+    /**
+     * Asks all the supplied {@link Provider} implementations to check their requirements and
+     * report only if all of them are missing something.
+     *
+     *
+     * For example, suppose we have support for both JavaFX- and SWT-based browsers:
+     * we just need to have one of those working on the user's computer.
+     *
+     * So, if they are running on Java 6, they can't use JavaFX, but that's fine,
+     * because they installed xulrunner and the SWT-based browser should work.
+     *
+     * @param providers a list of {@link Provider} implementations to interrogate
+     * @return a list of requirements, per provider,
+     *          if no single user agent provider had all its requirements satisfied
+     */
+    static List<String> checkUserAgentProviderRequirements(final List<Provider> providers)
+    {
+        final List<String> results = new ArrayList<String>();
+        final LinkedHashMap<Provider, List<String>> requirementsByProvider = new LinkedHashMap<Provider, List<String>>();
+        int numberOfProvidersWithSatisfiedRequirements = 0;
+        for (final Provider provider : providers)
+        {
+            final List<String> requirements = provider.checkRequirements();
+            if (requirements == null || requirements.isEmpty())
+            {
+                numberOfProvidersWithSatisfiedRequirements++;
+            }
+            else
+            {
+                requirementsByProvider.put(provider, requirements);
+            }
+        }
+        if (numberOfProvidersWithSatisfiedRequirements == 0)
+        {
+            for (final Map.Entry<Provider, List<String>> entry : requirementsByProvider.entrySet())
+            {
+                final Provider provider = entry.getKey();
+                final List<String> requirements = entry.getValue();
+                results.add("The " + provider.getClassName() + " user agent provider has the following unmet requirements:");
+                for (final String requirement : requirements)
+                {
+                    results.add(" - " + requirement);
+                }
+            }
+        }
+        return results;
+    }
+
+    /**
+     * Checks if git version can be found and if it is the correct version
+     *
+     * @return if git requirements are met
+     */
+    static List<String> checkGitRequirements(final TestableProcessFactory processFactory)
+    {
+        try
+        {
+            // finding git version via commandline
+            final TestableProcess gitProcess = processFactory.create("git", "--version");
+            final ProcessCoordinator coordinator = new ProcessCoordinator(gitProcess);
+            coordinator.waitFor();
+            final String gitResponse = coordinator.getStdOut();
+            final String trimmedResponse = gitResponse.trim();
+            return isValidGitVersion(trimmedResponse);
+        }
+        catch (final IOException e)
+        {
+            throw new Error(e);
+        }
+        catch (final InterruptedException e)
+        {
+            throw new Error(e);
+        }
+    }
+
+    /**
+     * Parses git version response for major and minor version and checks if it's 1.9 or above
+     *
+     * @param gitResponse the output from 'git --version'
+     * @return if the git version meets the requirement
+     */
+    protected static List<String> isValidGitVersion(final String gitResponse)
+    {
+        Trace.writeLine("Program::isValidGitVersion");
+        Trace.writeLine("  gitResponse:" + gitResponse);
+        final String GitNotFound = "Git is a requirement for installation and cannot be found. Please check that Git is installed and is added to your PATH";
+        final List<String> result = new ArrayList<String>();
+        // if git responded with a version then parse it for the version number
+        if (gitResponse != null)
+        {
+            // TODO: 450002: Detect "Apple Git" and warn the user
+            // git version numbers are in the form of x.y.z and we only need x.y to ensure the requirements are met
+            Version version = null;
+            try
+            {
+                version = Version.parseVersion(gitResponse);
+            }
+            catch (final IllegalArgumentException ignored)
+            {
+                Trace.writeLine("  " + ignored.getMessage());
+                result.add(GitNotFound);
+            }
+            if (version != null)
+            {
+                if (version.getMajor() < 1
+                    || (version.getMajor() == 1 && version.getMinor() < 9))
+                {
+                    result.add("Git version " + version.getMajor() + "." + version.getMinor() + " was found but version 1.9 or above is required.");
+                }
+            }
+        }
+        else
+        {
+            result.add(GitNotFound);
+        }
+        return result;
+    }
+
+    /**
+     * Checks if the OS meets the requirements to run installation
+     *
+     * @param osName the name of the operating system, as retrieved from the os.name property.
+     * @param osVersion the version of the operating system, as retrieved from the os.version property.
+     * @return a list of strings representing unmet requirements.
+     */
+    protected static List<String> checkOsRequirements(final String osName, final String osVersion)
+    {
+        final ArrayList<String> result = new ArrayList<String>();
+
+        if (Provider.isMac(osName))
+        {
+            final Version version = Version.parseVersion(osVersion);
+            final String badVersionMessage = "The version of Mac OS X running is " + version.getMajor() + "." + version.getMinor() + "." + version.getPatch() +
+                    " which does not meet the minimum version of 10.10.5 needed for installation. Please upgrade to Mac OS X 10.10.5 or above to proceed.";
+            if (version.getMajor() < 10)
+            {
+                result.add(badVersionMessage);
+            }
+            else if (version.getMajor() == 10)
+            {
+                if (version.getMinor() < 10)
+                {
+                    result.add(badVersionMessage);
+                }
+                else if (version.getMinor() == 10)
+                {
+                    if (version.getPatch() < 5)
+                    {
+                        result.add(badVersionMessage);
+                    }
+                }
+            }
+        }
+        else if (Provider.isLinux(osName))
+        {
+            // only needs a desktop env; already checked by checkUserAgentProviderRequirements()
+            // TODO: check for supported major distributions and versions (Ubuntu 14+, Fedora 22+, etc.)
+        }
+        else if (Provider.isWindows(osName))
+        {
+            result.add("It looks like you are running on Windows, please consider using the Git Credential Manager for Windows: https://github.com/Microsoft/Git-Credential-Manager-for-Windows");
+        }
+        else
+        {
+            result.add("The Git Credential Manager for Mac and Linux is only supported on, well, Mac OS X and Linux. The operating system detected is " + osName + ", which is not supported.");
+        }
+        return result;
     }
 
     private void initialize(
