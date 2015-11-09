@@ -440,11 +440,13 @@ public class Program
         }
         else
         {
-            standardOut.println("Installation failed due to the following requirement issues:");
+            standardOut.println("Installation failed due to the following unmet requirements:");
             for (String msg : missedRequirements)
             {
                 standardOut.println(msg);
             }
+            standardOut.println();
+            standardOut.println("If you think we are excluding many users with one or more of these requirements, please let us know.");
         }
     }
 
