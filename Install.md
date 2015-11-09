@@ -23,9 +23,9 @@ How to enable (or disable) debug mode
 -------------------------------------
 Debug mode will turn on tracing and assertions, producing a lot of output to `stderr`.  Only turn this on temporarily, when trying to isolate a defect.
 1. Retrieve the value of the `credential.helper` configuration:
- 
- ```git config --global --get credential.helper```
- 
+
+ ```git config --global --get credential.helper ${project.artifactId}```
+
  ...it should look like this:
  
  ```!java -Ddebug=false -jar /home/example/${project.artifactId}/${project.artifactId}-${project.version}.jar```
@@ -37,9 +37,9 @@ How to remove or uninstall
 We are sad to see you go!  Please give us some feedback on how we could do better next time.
 1. Retrieve the value of the `credential.helper` configuration:
  
- ```git config --global --get credential.helper```
+ ```git config --global --get credential.helper ${project.artifactId}```
 2. Delete the value of the `credential.helper` configuration:
  
- ```git config --global --unset credential.helper```
+ ```git config --global --unset credential.helper ${project.artifactId}```
 3. The value retrieved in _step 1_ contained the path to the JAR.  You can go delete that JAR.
 4. Archive the `insecureStore.xml` file from the `${project.artifactId}` sub-folder under your HOME folder.
