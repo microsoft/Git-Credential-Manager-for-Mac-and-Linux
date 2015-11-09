@@ -595,6 +595,13 @@ public class Program
      * Asks all the supplied {@link Provider} implementations to check their requirements and
      * report only if all of them are missing something.
      *
+     *
+     * For example, suppose we have support for both JavaFX- and SWT-based browsers:
+     * we just need to have one of those working on the user's computer.
+     *
+     * So, if they are running on Java 6, they can't use JavaFX, but that's fine,
+     * because they installed xulrunner and the SWT-based browser should work.
+     *
      * @param providers a list of {@link Provider} implementations to interrogate
      * @return a list of requirements, per provider,
      *          if no single user agent provider had all its requirements satisfied
