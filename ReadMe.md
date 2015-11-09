@@ -8,6 +8,6 @@ Once configured with Git, if Git needs credentials for reading from or writing t
 
 The GCM currently stores credentials in the file `insecureStore.xml`, located in the `${project.artifactId}` sub-folder under your HOME folder.  You can make this file more secure by turning on file or folder encryption, if your system supports it.  An upcoming release will use the operating system's secure storage facility when it's available.
 
-If you are connecting to a Git repository hosted in a VSO account, the GCM will open a web browser window so you can authenticate and authorize access to your account (via OAuth 2.0), allowing the credential manager to then use the access token to create a VSO Personal Access Token (PAT) scoped for `vso.code_write`, effectively granting the GCM permission to read and write to your Git repositories.
+If you are connecting to a Git repository hosted in a VSO account, the GCM will open a web browser window so you can authenticate and authorize access to your account (via OAuth 2.0), allowing the credential manager to then use the access token to create a VSO Personal Access Token (PAT) scoped for `vso.code_write`, effectively granting Git permission to read and write to your Git repositories hosted in VSO.
 
 If you are connecting to Git repositories hosted elsewhere, the GCM works a lot like [git-credential-store](http://git-scm.com/docs/git-credential-store) and will store & retrieve your username & password.
