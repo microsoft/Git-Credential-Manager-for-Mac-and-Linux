@@ -646,6 +646,12 @@ public class Program
      */
     static List<String> checkGitRequirements(final TestableProcessFactory processFactory)
     {
+        final String trimmedResponse = fetchGitVersion(processFactory);
+        return isValidGitVersion(trimmedResponse);
+    }
+
+    static String fetchGitVersion(final TestableProcessFactory processFactory)
+    {
         try
         {
             // finding git version via commandline
@@ -653,8 +659,7 @@ public class Program
             final ProcessCoordinator coordinator = new ProcessCoordinator(gitProcess);
             coordinator.waitFor();
             final String gitResponse = coordinator.getStdOut();
-            final String trimmedResponse = gitResponse.trim();
-            return isValidGitVersion(trimmedResponse);
+            return gitResponse.trim();
         }
         catch (final IOException e)
         {
