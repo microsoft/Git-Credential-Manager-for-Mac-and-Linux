@@ -194,6 +194,19 @@ public class Program
         standardOut.println();
         standardOut.println("      `git config --global credential.microsoft.visualstudio.com.authority AAD`");
         standardOut.println();
+        standardOut.println("   eraseosxkeychain   Enables a workaround when running on Mac OS X");
+        standardOut.println("                      and using 'Apple Git' (which includes the osxkeychain");
+        standardOut.println("                      credential helper, hardcoded before all other helpers).");
+        standardOut.println("                      The problem is osxkeychain may return expired or");
+        standardOut.println("                      revoked credentials, aborting the Git operation.");
+        standardOut.println("                      The workaround is to preemptively erase from osxkeychain");
+        standardOut.println("                      any Git credentials that can be refreshed or re-acquired");
+        standardOut.println("                      by this credential helper.");
+        standardOut.println("                      Defaults to FALSE. Ignored by Basic authority.");
+        standardOut.println("                      Does nothing if Apple Git on Mac OS X isn't detected.");
+        standardOut.println();
+        standardOut.println("      `git config --global credential.microsoft.visualstudio.com.eraseosxkeychain false`");
+        standardOut.println();
         standardOut.println("   interactive        Specifies if user can be prompted for credentials or not.");
         standardOut.println("                      Supports Auto, Always, or Never. Defaults to Auto.");
         standardOut.println("                      Only used by AAD and MSA authority.");
@@ -962,6 +975,20 @@ public class Program
             else if ("false".equalsIgnoreCase(entryRef.get().Value))
             {
                 operationArguments.WriteLog = false;
+            }
+        }
+
+        if (config.tryGetEntry(ConfigPrefix, operationArguments.TargetUri, "eraseosxkeychain", entryRef))
+        {
+            Trace.writeLine("   eraseosxkeychain = " + entryRef.get().Value);
+
+            if ("true".equalsIgnoreCase(entryRef.get().Value))
+            {
+                operationArguments.EraseOsxKeyChain = true;
+            }
+            else if ("false".equalsIgnoreCase(entryRef.get().Value))
+            {
+                operationArguments.EraseOsxKeyChain = false;
             }
         }
     }

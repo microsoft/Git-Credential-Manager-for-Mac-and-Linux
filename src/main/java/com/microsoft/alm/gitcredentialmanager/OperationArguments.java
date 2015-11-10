@@ -23,6 +23,7 @@ final class OperationArguments
         this.Interactivity = com.microsoft.alm.gitcredentialmanager.Interactivity.Auto;
         this.ValidateCredentials = true;
         this.WriteLog = false;
+        this.EraseOsxKeyChain = false;
 
         String protocol = null;
         String host = null;
@@ -95,6 +96,8 @@ final class OperationArguments
     public boolean ValidateCredentials;
 
     public boolean WriteLog;
+
+    public boolean EraseOsxKeyChain;
 
     public void setCredentials(final Credential credentials)
     {
