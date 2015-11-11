@@ -306,4 +306,31 @@ public class ProgramTest
         Assert.assertNotNull(actual);
         Assert.assertEquals(expectedPath, actual.getAbsolutePath());
     }
+
+    @Test public void findProgram_fromPathString_notFound() throws Exception
+    {
+        final String pathString = "/usr/bin:/usr/local/bin:/bin";
+        final File expectedFile = new File("/usr/sbin/git-credential-osxkeychain");
+        final String expectedPath = expectedFile.getAbsolutePath();
+        final String executableName = "git-credential-osxkeychain";
+        final Func<File, Boolean> isFile = new FakeFileChecker(expectedPath);
+
+        final File actual = Program.findProgram(pathString, ":", executableName, isFile);
+
+        Assert.assertEquals(null, actual);
+    }
+
+    @Test public void findProgram_fromPathString_found() throws Exception
+    {
+        final String pathString = "/usr/bin:/usr/local/bin:/bin";
+        final File expectedFile = new File("/usr/local/bin/git-credential-osxkeychain");
+        final String expectedPath = expectedFile.getAbsolutePath();
+        final String executableName = "git-credential-osxkeychain";
+        final Func<File, Boolean> isFile = new FakeFileChecker(expectedPath);
+
+        final File actual = Program.findProgram(pathString, ":", executableName, isFile);
+
+        Assert.assertNotNull(actual);
+        Assert.assertEquals(expectedPath, actual.getAbsolutePath());
+    }
 }

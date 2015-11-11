@@ -693,6 +693,13 @@ public class Program
         }
     }
 
+    static File findProgram(final String pathString, final String pathSeparator, final String executableName, final Func<File, Boolean> fileChecker)
+    {
+        final String[] partArray = pathString.split(pathSeparator);
+        final List<String> parts = Arrays.asList(partArray);
+        return findProgram(parts, executableName, fileChecker);
+    }
+
     static File findProgram(final List<String> directories, final String executableName, final Func<File, Boolean> fileChecker)
     {
         for (final String directoryString : directories)
