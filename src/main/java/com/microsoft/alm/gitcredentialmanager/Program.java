@@ -454,9 +454,13 @@ public class Program
     {
         final URL resourceURL = Program.class.getResource("");
         final String pathToJar = determinePathToJar(resourceURL);
+
+        final StringBuilder sb = new StringBuilder();
         // quote path to JAR, in case it contains spaces
         // i.e. !java -Ddebug=false -jar "/home/example/with spaces/gcm.jar"
-        final String gcmCommandLine = "!java -Ddebug=false -jar \"" + pathToJar + "\"";
+        sb.append("!java -Ddebug=false -jar ").append('"').append(pathToJar).append('"');
+        final String gcmCommandLine = sb.toString();
+
         final String[] command =
         {
             "git",
