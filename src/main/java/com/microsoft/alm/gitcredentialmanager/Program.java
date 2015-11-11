@@ -453,12 +453,15 @@ public class Program
     static void configureGit(final TestableProcessFactory processFactory, final String configLocation) throws IOException, InterruptedException
     {
         final URL resourceURL = Program.class.getResource("");
+        final String javaHome = System.getProperty("java.home");
+        final File javaExecutable = new File(javaHome, "bin/java");
+        final String pathToJava = javaExecutable.getAbsolutePath();
         final String pathToJar = determinePathToJar(resourceURL);
 
         final StringBuilder sb = new StringBuilder();
         // escape spaces (if any) in paths to java and path to JAR
         // i.e. !/usr/bin/jre\ 1.6/bin/java -Ddebug=false -jar /home/example/with\ spaces/gcm.jar
-        sb.append("!").append(escapeSpaces("java")).append(" -Ddebug=false -jar ");
+        sb.append("!").append(escapeSpaces(pathToJava)).append(" -Ddebug=false -jar ");
         sb.append(escapeSpaces(pathToJar));
         final String gcmCommandLine = sb.toString();
 
