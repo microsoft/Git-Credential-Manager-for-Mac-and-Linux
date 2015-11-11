@@ -47,7 +47,6 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,6 +63,7 @@ public class Program
     private static final String AbortAuthenticationProcessResponse = "quit=true";
     private static final String CredentialHelperSection = "credential.helper";
     private static final String CredentialHelperValueRegex = "git-credential-manager-[0-9]+\\.[0-9]+\\.[0-9]+(-SNAPSHOT)?.jar";
+    private static final DefaultFileChecker DefaultFileCheckerSingleton = new DefaultFileChecker();
 
     private final InputStream standardIn;
     private final PrintStream standardOut;
@@ -385,14 +385,54 @@ public class Program
         final AtomicReference<OperationArguments> operationArgumentsRef = new AtomicReference<OperationArguments>();
         final AtomicReference<IAuthentication> authenticationRef = new AtomicReference<IAuthentication>();
         initialize("store", operationArgumentsRef, authenticationRef);
-        store(operationArgumentsRef.get(), authenticationRef.get());
+
+        final String osName = System.getProperty("os.name");
+        final TestableProcessFactory processFactory = new DefaultProcessFactory();
+        final String pathString = System.getenv("PATH");
+        final String pathSeparator = File.pathSeparator;
+        store(operationArgumentsRef.get(), authenticationRef.get(), osName, processFactory, DefaultFileCheckerSingleton, pathString, pathSeparator);
     }
-    public static void store(final OperationArguments operationArguments, final IAuthentication authentication)
+    public static void store(final OperationArguments operationArguments, final IAuthentication authentication, final String osName, final TestableProcessFactory processFactory, final Func<File, Boolean> fileChecker, final String pathString, final String pathSeparator)
     {
         Debug.Assert(operationArguments.getUserName() != null, "The operationArguments.Username is null");
 
         final Credential credentials = new Credential(operationArguments.getUserName(), operationArguments.getPassword());
-        authentication.setCredentials(operationArguments.TargetUri, credentials);
+        if (authentication instanceof BasicAuthentication)
+        {
+            authentication.setCredentials(operationArguments.TargetUri, credentials);
+        }
+        else
+        {
+            if (operationArguments.EraseOsxKeyChain && Provider.isMac(osName))
+            {
+                final String gitResponse = fetchGitVersion(processFactory);
+                if (gitResponse.contains("Apple Git-"))
+                {
+                    // check for the presence of git-credential-osxkeychain by scanning PATH
+                    final File osxkeychainFile = findProgram(pathString, pathSeparator, "git-credential-osxkeychain", fileChecker);
+                    if (osxkeychainFile != null)
+                    {
+                        // erase these credentials from osxkeychain
+                        try
+                        {
+                            final String program = osxkeychainFile.getAbsolutePath();
+                            final TestableProcess process = processFactory.create(program, "erase");
+                            final ProcessCoordinator coordinator = new ProcessCoordinator(process);
+                            coordinator.print(operationArguments.toString());
+                            coordinator.waitFor();
+                        }
+                        catch (final IOException e)
+                        {
+                            throw new Error(e);
+                        }
+                        catch (final InterruptedException e)
+                        {
+                            throw new Error(e);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private final Callable<Void> PrintVersion = new Callable<Void>()
