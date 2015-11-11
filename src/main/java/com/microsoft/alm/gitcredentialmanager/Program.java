@@ -456,10 +456,10 @@ public class Program
         final String pathToJar = determinePathToJar(resourceURL);
 
         final StringBuilder sb = new StringBuilder();
-        // quote path to JAR, in case it contains spaces
-        // i.e. !java -Ddebug=false -jar "/home/example/with spaces/gcm.jar"
-        sb.append("!").append("java").append(" -Ddebug=false -jar ");
-        sb.append('"').append(pathToJar).append('"');
+        // escape spaces (if any) in paths to java and path to JAR
+        // i.e. !/usr/bin/jre\ 1.6/bin/java -Ddebug=false -jar /home/example/with\ spaces/gcm.jar
+        sb.append("!").append(escapeSpaces("java")).append(" -Ddebug=false -jar ");
+        sb.append(escapeSpaces(pathToJar));
         final String gcmCommandLine = sb.toString();
 
         final String[] command =
@@ -475,6 +475,11 @@ public class Program
         final ProcessCoordinator coordinator = new ProcessCoordinator(process);
         final int exitCode = coordinator.waitFor();
         checkGitConfigExitCode(configLocation, exitCode);
+    }
+
+    static String escapeSpaces(final String input)
+    {
+        return input.replace(" ", "\\ ");
     }
 
     private final Callable<Void> Uninstall = new Callable<Void>()
