@@ -3,6 +3,7 @@
 
 package com.microsoft.alm.gitcredentialmanager;
 
+import com.microsoft.alm.helpers.Func;
 import com.microsoft.alm.helpers.Trace;
 import com.microsoft.alm.oauth2.useragent.Provider;
 import com.microsoft.alm.oauth2.useragent.subprocess.TestableProcess;
@@ -13,6 +14,7 @@ import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -261,5 +263,47 @@ public class ProgramTest
 
         final String expected = "/home/example/with spaces/git-credential-manager-1.0.0.jar";
         Assert.assertEquals(expected, actual);
+    }
+
+    private static class FakeFileChecker implements Func<File, Boolean>
+    {
+        private final String expectedPath;
+        public FakeFileChecker(final String expectedPath)
+        {
+            this.expectedPath = expectedPath;
+        }
+        @Override public Boolean call(File file)
+        {
+            final String absolutePath = file.getAbsolutePath();
+            final boolean result = absolutePath.equals(expectedPath);
+            return result;
+        }
+    }
+
+    @Test public void findProgram_notFound() throws Exception
+    {
+        final List<String> directories = Arrays.asList("/usr/bin", "/usr/local/bin", "/bin");
+        final File expectedFile = new File("/usr/sbin/git-credential-osxkeychain");
+        final String expectedPath = expectedFile.getAbsolutePath();
+        final String executableName = "git-credential-osxkeychain";
+        final Func<File, Boolean> isFile = new FakeFileChecker(expectedPath);
+
+        final File actual = Program.findProgram(directories, executableName, isFile);
+
+        Assert.assertEquals(null, actual);
+    }
+
+    @Test public void findProgram_found() throws Exception
+    {
+        final List<String> directories = Arrays.asList("/usr/bin", "/usr/local/bin", "/bin");
+        final File expectedFile = new File("/usr/local/bin/git-credential-osxkeychain");
+        final String expectedPath = expectedFile.getAbsolutePath();
+        final String executableName = "git-credential-osxkeychain";
+        final Func<File, Boolean> isFile = new FakeFileChecker(expectedPath);
+
+        final File actual = Program.findProgram(directories, executableName, isFile);
+
+        Assert.assertNotNull(actual);
+        Assert.assertEquals(expectedPath, actual.getAbsolutePath());
     }
 }

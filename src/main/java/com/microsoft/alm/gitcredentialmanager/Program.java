@@ -19,6 +19,7 @@ import com.microsoft.alm.authentication.VsoTokenScope;
 import com.microsoft.alm.authentication.Where;
 import com.microsoft.alm.helpers.Debug;
 import com.microsoft.alm.helpers.Environment;
+import com.microsoft.alm.helpers.Func;
 import com.microsoft.alm.helpers.Guid;
 import com.microsoft.alm.helpers.IOHelper;
 import com.microsoft.alm.helpers.NotImplementedException;
@@ -682,6 +683,28 @@ public class Program
         {
             throw new Error(e);
         }
+    }
+
+    private static class DefaultFileChecker implements Func<File, Boolean>
+    {
+        @Override public Boolean call(final File file)
+        {
+            return file.isFile();
+        }
+    }
+
+    static File findProgram(final List<String> directories, final String executableName, final Func<File, Boolean> fileChecker)
+    {
+        for (final String directoryString : directories)
+        {
+            final File directory = new File(directoryString);
+            final File executableFile = new File(directory, executableName);
+            if (fileChecker.call(executableFile))
+            {
+                return executableFile;
+            }
+        }
+        return null;
     }
 
     /**
