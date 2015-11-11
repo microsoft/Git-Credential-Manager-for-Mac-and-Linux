@@ -77,6 +77,14 @@ Licensed under the MIT license. See License.txt in the project root. -->
           <include>ReleaseNotes.md</include>
         </includes>
       </resource>
+      <resource>
+        <directory>${basedir}</directory>
+        <targetPath>${project.build.directory}</targetPath>
+        <filtering>true</filtering>
+        <includes>
+          <include>git-credential-manager.rb</include>
+        </includes>
+      </resource>
     </resources>
     <plugins>
       <plugin>
