@@ -515,7 +515,8 @@ public class Program
         final StringBuilder sb = new StringBuilder();
         // escape spaces (if any) in paths to java and path to JAR
         // i.e. !/usr/bin/jre\ 1.6/bin/java -Ddebug=false -jar /home/example/with\ spaces/gcm.jar
-        sb.append("!").append(escapeSpaces(pathToJava)).append(" -Ddebug=false -jar ");
+        sb.append("!").append(escapeSpaces(pathToJava));
+        sb.append(" -Ddebug=false -jar ");
         sb.append(escapeSpaces(pathToJar));
         final String gcmCommandLine = sb.toString();
 
