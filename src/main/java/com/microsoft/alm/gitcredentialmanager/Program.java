@@ -511,6 +511,7 @@ public class Program
         final File javaExecutable = new File(javaHome, "bin/java");
         final String pathToJava = javaExecutable.getAbsolutePath();
         final String pathToJar = determinePathToJar(resourceURL);
+        final boolean isDebug = Debug.IsDebug;
 
         configureGit(processFactory, configLocation, pathToJava, pathToJar, isDebug);
     }
@@ -521,7 +522,7 @@ public class Program
         // escape spaces (if any) in paths to java and path to JAR
         // i.e. !/usr/bin/jre\ 1.6/bin/java -Ddebug=false -jar /home/example/with\ spaces/gcm.jar
         sb.append("!").append(escapeSpaces(pathToJava));
-        sb.append(" -Ddebug=").append("false").append(" -jar ");
+        sb.append(" -Ddebug=").append(isDebug).append(" -jar ");
         sb.append(escapeSpaces(pathToJar));
         final String gcmCommandLine = sb.toString();
 
