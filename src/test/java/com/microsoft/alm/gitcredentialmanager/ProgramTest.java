@@ -245,6 +245,46 @@ public class ProgramTest
         Assert.assertEquals(0, actual.size());
     }
 
+    @Test public void configureGit_perUserWithOpenJdkOnFedoraLinux() throws Exception
+    {
+        final TestableProcess process = new TestProcess("");
+        final TestableProcessFactory processFactory = new TestableProcessFactory()
+        {
+            @Override
+            public TestableProcess create(final String... strings) throws IOException
+            {
+                Assert.assertEquals("git", strings[0]);
+                Assert.assertEquals("config", strings[1]);
+                Assert.assertEquals("--global", strings[2]);
+                Assert.assertEquals("--add", strings[3]);
+                Assert.assertEquals("credential.helper", strings[4]);
+                Assert.assertEquals("!/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.65-3.b17.fc22.x86_64/bin/java -Ddebug=false -jar /usr/bin/git-credential-manager-1.1.0.jar", strings[5]);
+                return process;
+            }
+        };
+        Program.configureGit(processFactory, "global", "/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.65-3.b17.fc22.x86_64/bin/java", "/usr/bin/git-credential-manager-1.1.0.jar", false);
+    }
+
+    @Test public void configureGit_allUsersDebugWithOracleJdkOnMac() throws Exception
+    {
+        final TestableProcess process = new TestProcess("");
+        final TestableProcessFactory processFactory = new TestableProcessFactory()
+        {
+            @Override
+            public TestableProcess create(final String... strings) throws IOException
+            {
+                Assert.assertEquals("git", strings[0]);
+                Assert.assertEquals("config", strings[1]);
+                Assert.assertEquals("--system", strings[2]);
+                Assert.assertEquals("--add", strings[3]);
+                Assert.assertEquals("credential.helper", strings[4]);
+                Assert.assertEquals("!/System/Library/Frameworks/JavaVM.framework/Versions/Current/Commands/java -Ddebug=true -jar /usr/local/bin/git-credential-manager-1.1.0.jar", strings[5]);
+                return process;
+            }
+        };
+        Program.configureGit(processFactory, "system", "/System/Library/Frameworks/JavaVM.framework/Versions/Current/Commands/java", "/usr/local/bin/git-credential-manager-1.1.0.jar", true);
+    }
+
     @Test public void determinePathToJar_typical() throws Exception
     {
         final URL jarUrl = URI.create("file:/home/example/git-credential-manager/git-credential-manager-1.0.0.jar!/com/microsoft/alm/gitcredentialmanager/").toURL();

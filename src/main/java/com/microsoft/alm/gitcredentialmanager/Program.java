@@ -512,6 +512,11 @@ public class Program
         final String pathToJava = javaExecutable.getAbsolutePath();
         final String pathToJar = determinePathToJar(resourceURL);
 
+        configureGit(processFactory, configLocation, pathToJava, pathToJar, isDebug);
+    }
+
+    static void configureGit(final TestableProcessFactory processFactory, final String configLocation, final String pathToJava, final String pathToJar, final boolean isDebug) throws IOException, InterruptedException
+    {
         final StringBuilder sb = new StringBuilder();
         // escape spaces (if any) in paths to java and path to JAR
         // i.e. !/usr/bin/jre\ 1.6/bin/java -Ddebug=false -jar /home/example/with\ spaces/gcm.jar
