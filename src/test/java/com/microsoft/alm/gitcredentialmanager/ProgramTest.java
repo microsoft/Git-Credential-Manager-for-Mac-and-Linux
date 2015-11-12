@@ -68,31 +68,7 @@ public class ProgramTest
 
     @Test public void checkGitRequirements() throws UnsupportedEncodingException
     {
-        final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        final ByteArrayInputStream errorStream = new ByteArrayInputStream("".getBytes("UTF-8"));
-        final ByteArrayInputStream inputStream = new ByteArrayInputStream("git version 2.6.2\n".getBytes("UTF-8"));
-        final TestableProcess process = new TestableProcess()
-        {
-            @Override public InputStream getErrorStream()
-            {
-                return errorStream;
-            }
-
-            @Override public InputStream getInputStream()
-            {
-                return inputStream;
-            }
-
-            @Override public OutputStream getOutputStream()
-            {
-                return outputStream;
-            }
-
-            @Override public int waitFor() throws InterruptedException
-            {
-                return 0;
-            }
-        };
+        final TestableProcess process = new TestProcess("git version 2.6.2\n");
         final TestableProcessFactory processFactory = new TestableProcessFactory()
         {
             @Override public TestableProcess create(final String... strings) throws IOException
