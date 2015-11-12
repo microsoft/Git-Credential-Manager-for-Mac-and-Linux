@@ -222,6 +222,24 @@ Licensed under the MIT license. See License.txt in the project root. -->
           <additionalparam>-quiet</additionalparam>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>net.ju-n.maven.plugins</groupId>
+        <artifactId>checksum-maven-plugin</artifactId>
+        <version>1.2</version>
+        <executions>
+          <execution>
+            <phase>verify</phase>
+            <goals>
+              <goal>artifacts</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <algorithms>
+            <algorithm>SHA-256</algorithm>
+          </algorithms>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
