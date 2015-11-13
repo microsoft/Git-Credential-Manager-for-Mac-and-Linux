@@ -19,6 +19,7 @@ import com.microsoft.alm.authentication.VsoTokenScope;
 import com.microsoft.alm.authentication.Where;
 import com.microsoft.alm.helpers.Debug;
 import com.microsoft.alm.helpers.Environment;
+import com.microsoft.alm.helpers.Func;
 import com.microsoft.alm.helpers.Guid;
 import com.microsoft.alm.helpers.IOHelper;
 import com.microsoft.alm.helpers.NotImplementedException;
@@ -46,7 +47,6 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +63,7 @@ public class Program
     private static final String AbortAuthenticationProcessResponse = "quit=true";
     private static final String CredentialHelperSection = "credential.helper";
     private static final String CredentialHelperValueRegex = "git-credential-manager-[0-9]+\\.[0-9]+\\.[0-9]+(-SNAPSHOT)?.jar";
+    private static final DefaultFileChecker DefaultFileCheckerSingleton = new DefaultFileChecker();
 
     private final InputStream standardIn;
     private final PrintStream standardOut;
@@ -188,28 +189,41 @@ public class Program
 
         standardOut.println("usage: git credential <command> [<args>]");
         standardOut.println();
-        standardOut.println("   authority      Defines the type of authentication to be used.");
-        standardOut.println("                  Supports Auto, Basic, AAD, MSA, and Integrated.");
-        standardOut.println("                  Default is Auto.");
+        standardOut.println("   authority          Defines the type of authentication to be used.");
+        standardOut.println("                      Supports Auto, Basic, AAD, MSA, and Integrated.");
+        standardOut.println("                      Default is Auto.");
         standardOut.println();
         standardOut.println("      `git config --global credential.microsoft.visualstudio.com.authority AAD`");
         standardOut.println();
-        standardOut.println("   interactive    Specifies if user can be prompted for credentials or not.");
-        standardOut.println("                  Supports Auto, Always, or Never. Defaults to Auto.");
-        standardOut.println("                  Only used by AAD and MSA authority.");
+        standardOut.println("   eraseosxkeychain   Enables a workaround when running on Mac OS X");
+        standardOut.println("                      and using 'Apple Git' (which includes the osxkeychain");
+        standardOut.println("                      credential helper, hardcoded before all other helpers).");
+        standardOut.println("                      The problem is osxkeychain may return expired or");
+        standardOut.println("                      revoked credentials, aborting the Git operation.");
+        standardOut.println("                      The workaround is to preemptively erase from osxkeychain");
+        standardOut.println("                      any Git credentials that can be refreshed or re-acquired");
+        standardOut.println("                      by this credential helper.");
+        standardOut.println("                      Defaults to FALSE. Ignored by Basic authority.");
+        standardOut.println("                      Does nothing if Apple Git on Mac OS X isn't detected.");
+        standardOut.println();
+        standardOut.println("      `git config --global credential.microsoft.visualstudio.com.eraseosxkeychain false`");
+        standardOut.println();
+        standardOut.println("   interactive        Specifies if user can be prompted for credentials or not.");
+        standardOut.println("                      Supports Auto, Always, or Never. Defaults to Auto.");
+        standardOut.println("                      Only used by AAD and MSA authority.");
         standardOut.println();
         standardOut.println("      `git config --global credential.microsoft.visualstudio.com.interactive never`");
         standardOut.println();
-        standardOut.println("   validate       Causes validation of credentials before supplying them");
-        standardOut.println("                  to Git. Invalid credentials get a refresh attempt");
-        standardOut.println("                  before failing. Incurs some minor overhead.");
-        standardOut.println("                  Defaults to TRUE. Ignored by Basic authority.");
+        standardOut.println("   validate           Causes validation of credentials before supplying them");
+        standardOut.println("                      to Git. Invalid credentials get a refresh attempt");
+        standardOut.println("                      before failing. Incurs some minor overhead.");
+        standardOut.println("                      Defaults to TRUE. Ignored by Basic authority.");
         standardOut.println();
         standardOut.println("      `git config --global credential.microsoft.visualstudio.com.validate false`");
         standardOut.println();
-        standardOut.println("   writelog       Enables trace logging of all activities. Logs are written to");
-        standardOut.println("                  the .git/ folder at the root of the repository.");
-        standardOut.println("                  Defaults to FALSE.");
+        standardOut.println("   writelog           Enables trace logging of all activities. Logs are written to");
+        standardOut.println("                      the .git/ folder at the root of the repository.");
+        standardOut.println("                      Defaults to FALSE.");
         standardOut.println();
         standardOut.println("      `git config --global credential.writelog true`");
         standardOut.println();
@@ -371,14 +385,54 @@ public class Program
         final AtomicReference<OperationArguments> operationArgumentsRef = new AtomicReference<OperationArguments>();
         final AtomicReference<IAuthentication> authenticationRef = new AtomicReference<IAuthentication>();
         initialize("store", operationArgumentsRef, authenticationRef);
-        store(operationArgumentsRef.get(), authenticationRef.get());
+
+        final String osName = System.getProperty("os.name");
+        final TestableProcessFactory processFactory = new DefaultProcessFactory();
+        final String pathString = System.getenv("PATH");
+        final String pathSeparator = File.pathSeparator;
+        store(operationArgumentsRef.get(), authenticationRef.get(), osName, processFactory, DefaultFileCheckerSingleton, pathString, pathSeparator);
     }
-    public static void store(final OperationArguments operationArguments, final IAuthentication authentication)
+    public static void store(final OperationArguments operationArguments, final IAuthentication authentication, final String osName, final TestableProcessFactory processFactory, final Func<File, Boolean> fileChecker, final String pathString, final String pathSeparator)
     {
         Debug.Assert(operationArguments.getUserName() != null, "The operationArguments.Username is null");
 
         final Credential credentials = new Credential(operationArguments.getUserName(), operationArguments.getPassword());
-        authentication.setCredentials(operationArguments.TargetUri, credentials);
+        if (authentication instanceof BasicAuthentication)
+        {
+            authentication.setCredentials(operationArguments.TargetUri, credentials);
+        }
+        else
+        {
+            if (operationArguments.EraseOsxKeyChain && Provider.isMac(osName))
+            {
+                final String gitResponse = fetchGitVersion(processFactory);
+                if (gitResponse.contains("Apple Git-"))
+                {
+                    // check for the presence of git-credential-osxkeychain by scanning PATH
+                    final File osxkeychainFile = findProgram(pathString, pathSeparator, "git-credential-osxkeychain", fileChecker);
+                    if (osxkeychainFile != null)
+                    {
+                        // erase these credentials from osxkeychain
+                        try
+                        {
+                            final String program = osxkeychainFile.getAbsolutePath();
+                            final TestableProcess process = processFactory.create(program, "erase");
+                            final ProcessCoordinator coordinator = new ProcessCoordinator(process);
+                            coordinator.print(operationArguments.toString());
+                            coordinator.waitFor();
+                        }
+                        catch (final IOException e)
+                        {
+                            throw new Error(e);
+                        }
+                        catch (final InterruptedException e)
+                        {
+                            throw new Error(e);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private final Callable<Void> PrintVersion = new Callable<Void>()
@@ -646,6 +700,12 @@ public class Program
      */
     static List<String> checkGitRequirements(final TestableProcessFactory processFactory)
     {
+        final String trimmedResponse = fetchGitVersion(processFactory);
+        return isValidGitVersion(trimmedResponse);
+    }
+
+    static String fetchGitVersion(final TestableProcessFactory processFactory)
+    {
         try
         {
             // finding git version via commandline
@@ -653,8 +713,7 @@ public class Program
             final ProcessCoordinator coordinator = new ProcessCoordinator(gitProcess);
             coordinator.waitFor();
             final String gitResponse = coordinator.getStdOut();
-            final String trimmedResponse = gitResponse.trim();
-            return isValidGitVersion(trimmedResponse);
+            return gitResponse.trim();
         }
         catch (final IOException e)
         {
@@ -664,6 +723,35 @@ public class Program
         {
             throw new Error(e);
         }
+    }
+
+    private static class DefaultFileChecker implements Func<File, Boolean>
+    {
+        @Override public Boolean call(final File file)
+        {
+            return file.isFile();
+        }
+    }
+
+    static File findProgram(final String pathString, final String pathSeparator, final String executableName, final Func<File, Boolean> fileChecker)
+    {
+        final String[] partArray = pathString.split(pathSeparator);
+        final List<String> parts = Arrays.asList(partArray);
+        return findProgram(parts, executableName, fileChecker);
+    }
+
+    static File findProgram(final List<String> directories, final String executableName, final Func<File, Boolean> fileChecker)
+    {
+        for (final String directoryString : directories)
+        {
+            final File directory = new File(directoryString);
+            final File executableFile = new File(directory, executableName);
+            if (fileChecker.call(executableFile))
+            {
+                return executableFile;
+            }
+        }
+        return null;
     }
 
     /**
@@ -957,6 +1045,20 @@ public class Program
             else if ("false".equalsIgnoreCase(entryRef.get().Value))
             {
                 operationArguments.WriteLog = false;
+            }
+        }
+
+        if (config.tryGetEntry(ConfigPrefix, operationArguments.TargetUri, "eraseosxkeychain", entryRef))
+        {
+            Trace.writeLine("   eraseosxkeychain = " + entryRef.get().Value);
+
+            if ("true".equalsIgnoreCase(entryRef.get().Value))
+            {
+                operationArguments.EraseOsxKeyChain = true;
+            }
+            else if ("false".equalsIgnoreCase(entryRef.get().Value))
+            {
+                operationArguments.EraseOsxKeyChain = false;
             }
         }
     }
