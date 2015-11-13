@@ -240,6 +240,35 @@ Licensed under the MIT license. See License.txt in the project root. -->
           </algorithms>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.gmaven</groupId>
+        <artifactId>gmaven-plugin</artifactId>
+        <version>1.4</version>
+        <executions>
+          <execution>
+            <phase>verify</phase>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+            <configuration>
+              <!-- http://stackoverflow.com/a/9339405 -->
+              <properties>
+                <shaded_jar_checksum_file>${artifactId}-${version}.jar.sha256</shaded_jar_checksum_file>
+              </properties>
+              <source>
+                final String targetDir = project.build.directory;
+                final String shadedJarChecksumFile = project.properties.shaded_jar_checksum_file;
+                final File checksumFile = new File(targetDir, shadedJarChecksumFile);
+                final String checksum = checksumFile.getText();
+                final File homebrewScriptFile = new File(targetDir, "git-credential-manager.rb");
+                final String homebrewScript = homebrewScriptFile.getText();
+                final String finalHomebrewScript = homebrewScript.replace("TODO: insert SHA-256 of JAR here", checksum);
+                homebrewScriptFile.setText(finalHomebrewScript);
+              </source>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 

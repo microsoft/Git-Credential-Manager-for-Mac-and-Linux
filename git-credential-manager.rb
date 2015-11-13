@@ -2,7 +2,7 @@ class GitCredentialManager < Formula
   desc "Stores credentials for Git on Visual Studio Online (VSO)"
   homepage "${project.url}"
   url "https://github.com/Microsoft/Git-Credential-Manager-for-Mac-and-Linux/releases/download/git-credential-manager-${version}/git-credential-manager-${version}.jar"
-  sha256 "TBD"
+  sha256 "TODO: insert SHA-256 of JAR here"
 
   bottle :unneeded
 
