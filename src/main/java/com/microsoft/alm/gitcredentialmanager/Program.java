@@ -507,10 +507,18 @@ public class Program
     static void configureGit(final TestableProcessFactory processFactory, final String configLocation) throws IOException, InterruptedException
     {
         final URL resourceURL = Program.class.getResource("");
+        final String javaHome = System.getProperty("java.home");
+        final File javaExecutable = new File(javaHome, "bin/java");
+        final String pathToJava = javaExecutable.getAbsolutePath();
         final String pathToJar = determinePathToJar(resourceURL);
-        // quote path to JAR, in case it contains spaces
-        // i.e. !java -Ddebug=false -jar "/home/example/with spaces/gcm.jar"
-        final String gcmCommandLine = "!java -Ddebug=false -jar \"" + pathToJar + "\"";
+
+        final StringBuilder sb = new StringBuilder();
+        // escape spaces (if any) in paths to java and path to JAR
+        // i.e. !/usr/bin/jre\ 1.6/bin/java -Ddebug=false -jar /home/example/with\ spaces/gcm.jar
+        sb.append("!").append(escapeSpaces(pathToJava)).append(" -Ddebug=false -jar ");
+        sb.append(escapeSpaces(pathToJar));
+        final String gcmCommandLine = sb.toString();
+
         final String[] command =
         {
             "git",
@@ -524,6 +532,11 @@ public class Program
         final ProcessCoordinator coordinator = new ProcessCoordinator(process);
         final int exitCode = coordinator.waitFor();
         checkGitConfigExitCode(configLocation, exitCode);
+    }
+
+    static String escapeSpaces(final String input)
+    {
+        return input.replace(" ", "\\ ");
     }
 
     private final Callable<Void> Uninstall = new Callable<Void>()
