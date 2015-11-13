@@ -11,7 +11,7 @@ Licensed under the MIT license. See License.txt in the project root. -->
   <name>Git Credential Manager for Mac and Linux</name>
   <description>Stores credentials for Git version control securely.
     Provides secure logon for Visual Studio Online (visualstudio.com).</description>
-  <url>https://www.visualstudio.com/downloads/download-visual-studio-vs</url>
+  <url>http://java.visualstudio.com/Docs/tools/intro</url>
 
   <licenses>
     <license>
@@ -75,6 +75,14 @@ Licensed under the MIT license. See License.txt in the project root. -->
           <include>License.txt</include>
           <include>ReadMe.md</include>
           <include>ReleaseNotes.md</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>${basedir}</directory>
+        <targetPath>${project.build.directory}</targetPath>
+        <filtering>true</filtering>
+        <includes>
+          <include>git-credential-manager.rb</include>
         </includes>
       </resource>
     </resources>
