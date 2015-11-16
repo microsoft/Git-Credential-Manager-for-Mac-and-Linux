@@ -338,7 +338,7 @@ Licensed under the MIT license. See License.txt in the project root. -->
     <dependency>
       <groupId>com.microsoft.alm</groupId>
       <artifactId>oauth2-useragent</artifactId>
-      <version>0.5.1</version>
+      <version>0.5.3</version>
     </dependency>
 
     <dependency>
