@@ -3,6 +3,19 @@ Release Notes
 Every release is described here, from latest to earliest.
 
 
+Version 1.2.0
+-------------
+### Minor changes
+- Added Homebrew-based installation for Mac OS X.
+- Improved the self-installation to use the version of Java used when launching `install`.
+- Added a workaround for the _hardcoded_ `credential-osxkeychain` helper in "Apple Git" by erasing from the OS X Keychain any Git credentials managed by this program.
+    - **How to enable:** set the `eraseosxkeychain` Git configuration setting (under the `credential` section) to `true`.  Example: `git config --global credential.eraseosxkeychain true`
+
+### Known issues
+- Versions of Java before Oracle Java 7 Update 6 as well as default OpenJDK installations currently do not support OAuth 2.0 authentication & authorization with Visual Studio Online.
+    - **Workaround:** install Oracle Java 7 Update 6 (or later) or [build & install OpenJFX for OpenJDK 8](https://wiki.openjdk.java.net/display/OpenJFX/Building+OpenJFX).
+
+
 Version 1.1.0
 -------------
 ### Minor changes
