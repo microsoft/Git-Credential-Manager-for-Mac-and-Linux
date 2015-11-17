@@ -40,11 +40,11 @@ Starting with version 1.1.0, the GCM is capable of configuring Git automatically
     
 ### RPM installation
 
-1. Copy the `${project.artifactId}-${version.short}-${version.short}.noarch.rpm` file somewhere locally.
+1. Copy the `${project.artifactId}-${project.version}-1.noarch.rpm` file somewhere locally.
 2. Install the RPM running as the root user:
 
     ```
-    sudo rpm -i ${project.artifactId}-${version.short}-${version.short}.noarch.rpm
+    sudo rpm -i ${project.artifactId}-${project.version}-1.noarch.rpm
     ```
 3. Run ${project.artifactId} in `install` mode, which will check its requirements and then update the "global" Git configuration file (the one in your home folder):
 
@@ -92,7 +92,7 @@ We are sad to see you go!  Please give us some feedback on how we could do bette
 
 1. Retrieve the value of the `credential.helper` configuration: `git config --global --get credential.helper ${project.artifactId}`
 2. Launch the JAR in `uninstall` mode, which will update the "global" Git configuration file (the one in your home folder): `${project.artifactId} uninstall`
-3. Uninstall the ${project.artifactId} package with RPM: `sudo rpm -e ${project.artifactId}-${version.short}-${version.short}.noarch`
+3. Uninstall the ${project.artifactId} package with RPM: `sudo rpm -e ${project.artifactId}-${project.version}-1.noarch`
 4. Archive the `insecureStore.xml` file from the `${project.artifactId}` sub-folder under your HOME folder.
 
 ### Manual uninstallation
