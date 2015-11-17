@@ -294,6 +294,101 @@ Licensed under the MIT license. See License.txt in the project root. -->
           <footerHtmlFile>${project.basedir}/src/main/resources/markdown/html/footer.html</footerHtmlFile>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>1.9.1</version>
+        <executions>
+          <execution>
+            <id>regex-property</id>
+            <goals>
+              <goal>regex-property</goal>
+            </goals>
+            <configuration>
+              <name>version.short</name>
+              <value>${project.version}</value>
+              <regex>-SNAPSHOT</regex>
+              <replacement></replacement>
+              <failIfNoMatch>false</failIfNoMatch>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>rpm-maven-plugin</artifactId>
+        <version>2.1.4</version>
+        <executions>
+          <execution>
+            <id>generate-rpm</id>
+            <phase>package</phase>
+            <goals>
+              <goal>rpm</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <release>${version.short}</release>
+          <group>Development/Tools</group>
+          <defaultFilemode>755</defaultFilemode>
+          <summary>Git Credential Manager for Mac or Linux</summary>
+          <license>MIT License</license>
+          <url>${project.url}</url>
+          <targetOS>linux</targetOS>
+          <description>Store and retrieve credentials for accessing Git resources on Visual Studio Online (VSO)</description>
+          <mappings>
+            <mapping>
+              <directoryIncluded>false</directoryIncluded>
+              <directory>/usr/lib</directory>
+              <filemode>755</filemode>
+              <username>root</username>
+              <groupname>root</groupname>
+              <sources>
+                <source>
+                  <location>${project.build.directory}/git-credential-manager-${project.version}.jar</location>
+                </source>
+              </sources>
+            </mapping>
+          </mappings>
+          <preinstallScriptlet>
+            <script>echo "Installing Git Credential Manager..."</script>
+          </preinstallScriptlet>
+          <postinstallScriptlet>
+            <script>
+              chmod 755 /usr/bin/git-credential-manager > /usr/bin/git-credential-manager
+              echo '#!/bin/sh' >>  /usr/bin/git-credential-manager
+              echo '$JAVA_HOME/bin/java -jar "/usr/lib/git-credential-manager-${project.version}.jar" "$@"' >> /usr/bin/git-credential-manager
+              if [ "$(whoami)" != "root" ]; then
+                 out=`/usr/bin/git-credential-manager install`
+              else
+                 out=`sudo -E /usr/bin/git-credential-manager install`
+              fi
+              if [ -n "$out" ]; then
+                 echo "$out"
+                 echo "Please correct dependency issues and then reinstall rpm or just run 'git-credential-manager install'"
+              else
+                 echo "Git Credential Manager has been installed"
+              fi
+            </script>
+          </postinstallScriptlet>
+          <preremoveScriptlet>
+            <script>
+              echo "Uninstalling Git Credential Manager..."
+              if [ "$(whoami)" != "root" ]; then
+                 /usr/bin/git-credential-manager uninstall
+              else
+                 sudo -E /usr/bin/git-credential-manager uninstall
+              fi
+              rm /usr/bin/git-credential-manager
+            </script>
+          </preremoveScriptlet>
+          <postremoveScriptlet>
+            <script>
+              echo "Git Credential Manager has been uninstalled"
+            </script>
+          </postremoveScriptlet>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
