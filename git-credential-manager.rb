@@ -10,10 +10,7 @@ class GitCredentialManager < Formula
 
   def install
     libexec.install "git-credential-manager-#{version}.jar"
-    (bin/"git-credential-manager").write <<-EOS.undent
-      #!/bin/sh
-      java -jar "#{libexec}/git-credential-manager-#{version}.jar" "$@"
-    EOS
+    bin.write_jar_script libexec/"git-credential-manager-#{version}.jar", "git-credential-manager"
   end
 
   test do
