@@ -306,26 +306,6 @@ Licensed under the MIT license. See License.txt in the project root. -->
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <version>1.9.1</version>
-        <executions>
-          <execution>
-            <id>regex-property</id>
-            <goals>
-              <goal>regex-property</goal>
-            </goals>
-            <configuration>
-              <name>version.short</name>
-              <value>${project.version}</value>
-              <regex>-SNAPSHOT</regex>
-              <replacement></replacement>
-              <failIfNoMatch>false</failIfNoMatch>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
         <artifactId>rpm-maven-plugin</artifactId>
         <version>2.1.4</version>
         <executions>
@@ -338,10 +318,9 @@ Licensed under the MIT license. See License.txt in the project root. -->
           </execution>
         </executions>
         <configuration>
-          <release>${version.short}</release>
           <group>Development/Tools</group>
           <defaultFilemode>755</defaultFilemode>
-          <summary>Git Credential Manager for Mac or Linux</summary>
+          <summary>${project.name}</summary>
           <license>${project.license.name}</license>
           <url>${project.url}</url>
           <targetOS>linux</targetOS>
