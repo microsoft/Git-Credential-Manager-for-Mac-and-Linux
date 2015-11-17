@@ -21,19 +21,45 @@ Starting with version 1.1.0, the GCM is capable of configuring Git automatically
 1. Copy the `${project.artifactId}-${project.version}.jar` file somewhere safe and stable, such as `~/${project.artifactId}/`.
 2. Launch the JAR in `install` mode, which will check its requirements and then update the "global" Git configuration file (the one in your home folder):
 
-```
-java -jar /home/example/${project.artifactId}/${project.artifactId}-${project.version}.jar install
-```
+    ```
+    java -jar /home/example/${project.artifactId}/${project.artifactId}-${project.version}.jar install
+    ```
 
+### Homebrew installation
+
+1. Install the needed resources using Homebrew:
+
+    ```
+    brew install ${project.artifactId}
+    ```
+2. Run ${project.artifactId} in `install` mode, which will check its requirements and then update the "global" Git configuration file (the one in your home folder):
+
+    ```
+    ${project.artifactId} install
+    ```
+    
+### RPM installation
+
+1. Copy the `${project.artifactId}-${version.short}-${version.short}.noarch.rpm` file somewhere locally.
+2. Install the RPM running as the root user:
+
+    ```
+    sudo rpm -i ${project.artifactId}-${version.short}-${version.short}.noarch.rpm
+    ```
+3. Run ${project.artifactId} in `install` mode, which will check its requirements and then update the "global" Git configuration file (the one in your home folder):
+
+    ```
+    ${project.artifactId} install
+    ```
 
 ### Manual installation
 
 1. Copy the `${project.artifactId}-${project.version}.jar` file somewhere safe and stable, such as `~/${project.artifactId}/`.
 2. Configure the `credential.helper` setting to launch Java with the absolute path to the JAR (make sure you surround the whole value with 'single quotes'):
 
-```
-git config --global credential.helper '!java -Ddebug=false -jar /home/example/${project.artifactId}/${project.artifactId}-${project.version}.jar'
-```
+    ```
+    git config --global credential.helper '!java -Ddebug=false -jar /home/example/${project.artifactId}/${project.artifactId}-${project.version}.jar'
+    ```
 
 
 How to enable (or disable) debug mode
@@ -55,6 +81,19 @@ We are sad to see you go!  Please give us some feedback on how we could do bette
 3. The value retrieved in _step 1_ contained the path to the JAR.  You can go delete that JAR.
 4. Archive the `insecureStore.xml` file from the `${project.artifactId}` sub-folder under your HOME folder.
 
+### Homebrew uninstallation
+
+1. Retrieve the value of the `credential.helper` configuration: `git config --global --get credential.helper ${project.artifactId}`
+2. Launch the JAR in `uninstall` mode, which will update the "global" Git configuration file (the one in your home folder): `${project.artifactId} uninstall`
+3. Uninstall the ${project.artifactId} package with Homebrew: `brew uninstall ${project.artifactId}`
+4. Archive the `insecureStore.xml` file from the `${project.artifactId}` sub-folder under your HOME folder.
+
+### RPM uninstallation
+
+1. Retrieve the value of the `credential.helper` configuration: `git config --global --get credential.helper ${project.artifactId}`
+2. Launch the JAR in `uninstall` mode, which will update the "global" Git configuration file (the one in your home folder): `${project.artifactId} uninstall`
+3. Uninstall the ${project.artifactId} package with RPM: `sudo rpm -e ${project.artifactId}-${version.short}-${version.short}.noarch`
+4. Archive the `insecureStore.xml` file from the `${project.artifactId}` sub-folder under your HOME folder.
 
 ### Manual uninstallation
 
