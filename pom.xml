@@ -15,8 +15,8 @@ Licensed under the MIT license. See License.txt in the project root. -->
 
   <licenses>
     <license>
-      <name>MIT License</name>
-      <url>http://www.opensource.org/licenses/mit-license.php</url>
+      <name>${project.license.name}</name>
+      <url>${project.license.url}</url>
     </license>
   </licenses>
 
@@ -62,6 +62,8 @@ Licensed under the MIT license. See License.txt in the project root. -->
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.license.name>MIT License</project.license.name>
+    <project.license.url>http://www.opensource.org/licenses/mit-license.php</project.license.url>
   </properties>
 
   <build>
@@ -88,6 +90,14 @@ Licensed under the MIT license. See License.txt in the project root. -->
         <filtering>true</filtering>
         <includes>
           <include>git-credential-manager.rb</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>${basedir}</directory>
+        <targetPath>${project.build.directory}</targetPath>
+        <filtering>true</filtering>
+        <includes>
+          <include>git-credential-manager</include>
         </includes>
       </resource>
     </resources>
@@ -332,10 +342,10 @@ Licensed under the MIT license. See License.txt in the project root. -->
           <group>Development/Tools</group>
           <defaultFilemode>755</defaultFilemode>
           <summary>Git Credential Manager for Mac or Linux</summary>
-          <license>MIT License</license>
+          <license>${project.license.name}</license>
           <url>${project.url}</url>
           <targetOS>linux</targetOS>
-          <description>Store and retrieve credentials for accessing Git resources on Visual Studio Online (VSO)</description>
+          <description>${project.description}</description>
           <mappings>
             <mapping>
               <directoryIncluded>false</directoryIncluded>
@@ -349,42 +359,37 @@ Licensed under the MIT license. See License.txt in the project root. -->
                 </source>
               </sources>
             </mapping>
+            <mapping>
+              <directoryIncluded>false</directoryIncluded>
+              <directory>/usr/bin</directory>
+              <filemode>755</filemode>
+              <username>root</username>
+              <groupname>root</groupname>
+              <sources>
+                <source>
+                  <location>${project.build.directory}/git-credential-manager</location>
+                </source>
+              </sources>
+            </mapping>
           </mappings>
           <preinstallScriptlet>
-            <script>echo "Installing Git Credential Manager..."</script>
+            <script>
+              echo "Installing ${project.name}..."
+            </script>
           </preinstallScriptlet>
           <postinstallScriptlet>
             <script>
-              chmod 755 /usr/bin/git-credential-manager > /usr/bin/git-credential-manager
-              echo '#!/bin/sh' >>  /usr/bin/git-credential-manager
-              echo '$JAVA_HOME/bin/java -jar "/usr/lib/git-credential-manager-${project.version}.jar" "$@"' >> /usr/bin/git-credential-manager
-              if [ "$(whoami)" != "root" ]; then
-                 out=`/usr/bin/git-credential-manager install`
-              else
-                 out=`sudo -E /usr/bin/git-credential-manager install`
-              fi
-              if [ -n "$out" ]; then
-                 echo "$out"
-                 echo "Please correct dependency issues and then reinstall rpm or just run 'git-credential-manager install'"
-              else
-                 echo "Git Credential Manager has been installed"
-              fi
+              echo "${project.name} has been installed"
             </script>
           </postinstallScriptlet>
           <preremoveScriptlet>
             <script>
-              echo "Uninstalling Git Credential Manager..."
-              if [ "$(whoami)" != "root" ]; then
-                 /usr/bin/git-credential-manager uninstall
-              else
-                 sudo -E /usr/bin/git-credential-manager uninstall
-              fi
-              rm /usr/bin/git-credential-manager
+              echo "Uninstalling ${project.name}..."
             </script>
           </preremoveScriptlet>
           <postremoveScriptlet>
             <script>
-              echo "Git Credential Manager has been uninstalled"
+              echo "${project.name} has been uninstalled"
             </script>
           </postremoveScriptlet>
         </configuration>
