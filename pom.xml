@@ -71,10 +71,15 @@ Licensed under the MIT license. See License.txt in the project root. -->
         <targetPath>./</targetPath>
         <filtering>true</filtering>
         <includes>
-          <include>Install.md</include>
           <include>License.txt</include>
-          <include>ReadMe.md</include>
-          <include>ReleaseNotes.md</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>${project.basedir}</directory>
+        <targetPath>${project.build.directory}</targetPath>
+        <filtering>true</filtering>
+        <includes>
+          <include>*.md</include>
         </includes>
       </resource>
       <resource>
@@ -269,6 +274,26 @@ Licensed under the MIT license. See License.txt in the project root. -->
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>com.ruleoftech</groupId>
+        <artifactId>markdown-page-generator-plugin</artifactId>
+        <version>0.9</version>
+        <executions>
+          <execution>
+            <phase>compile</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <inputDirectory>${project.build.directory}</inputDirectory>
+          <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+          <pegdownExtensions>AUTOLINKS,FENCED_CODE_BLOCKS</pegdownExtensions>
+          <headerHtmlFile>${project.basedir}/src/main/resources/markdown/html/header.html</headerHtmlFile>
+          <footerHtmlFile>${project.basedir}/src/main/resources/markdown/html/footer.html</footerHtmlFile>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
@@ -313,7 +338,7 @@ Licensed under the MIT license. See License.txt in the project root. -->
     <dependency>
       <groupId>com.microsoft.alm</groupId>
       <artifactId>oauth2-useragent</artifactId>
-      <version>0.5.1</version>
+      <version>0.5.3</version>
     </dependency>
 
     <dependency>

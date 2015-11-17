@@ -3,18 +3,31 @@ Release Notes
 Every release is described here, from latest to earliest.
 
 
+Version 1.2.0
+-------------
+### Minor changes
+- Added Homebrew-based installation for Mac OS X.
+- Improved the self-installation to use the version of Java used when launching `install`.
+- Added a workaround for the _hardcoded_ `credential-osxkeychain` helper in "Apple Git" by erasing from the OS X Keychain any Git credentials managed by this program.
+    - **How to enable:** set the `eraseosxkeychain` Git configuration setting (under the `credential` section) to `true`.  Example: `git config --global credential.eraseosxkeychain true`
+
+### Known issues
+- Versions of Java before Oracle Java 7 Update 6 as well as default OpenJDK installations currently do not support OAuth 2.0 authentication & authorization with Visual Studio Online.
+    - **Workaround:** install Oracle Java 7 Update 6 (or later) or [build & install OpenJFX for OpenJDK 8](https://wiki.openjdk.java.net/display/OpenJFX/Building+OpenJFX).
+
+
 Version 1.1.0
 -------------
 ### Minor changes
 - Added support for Visual Studio Online (VSO) accounts associated with Microsoft Accounts (a.k.a. "MSA", "Windows Live ID", etc.).  The user experience should be the same as the VSO accounts associated with Azure Active Directory (AAD).
 - Added a self-install (with self-check) and self-uninstall.
-- Implemented (cross-site request forgery) CSRF prevention during the OAuth 2.0 authorization request as recommended by RFC 6749.
+- Implemented Cross-Site Request Forgery (CSRF) prevention during the OAuth 2.0 authorization request as recommended by RFC 6749.
 
 ### Known issues
 - When using with another credential helper (on Mac OS X, with the default Git distribution known as "Apple Git", the `credential-osxkeychain` helper is _hardcoded_), if the other helper is asked _before_ this one and the credentials are not valid (because they have expired or have been revoked), Git asks _all_ the helpers to erase whatever credentials they have for that server and then aborts with "Authentication failed".
- - **Workaround:** move the other helper(s) _after_ the GCM, disable the other helper(s) or, if the latter is not possible (it's not possible to disable the `credential-osxkeychain` helper on Mac when using "Apple Git"), then install another Git distribution.
+    - **Workaround:** move the other helper(s) _after_ the GCM, disable the other helper(s) or, if the latter is not possible (it's not possible to disable the `credential-osxkeychain` helper on Mac when using "Apple Git"), then install another Git distribution.
 - Versions of Java before Oracle Java 7 Update 6 as well as default OpenJDK installations currently do not support OAuth 2.0 authentication & authorization with Visual Studio Online.
- - **Workaround:** install Oracle Java 7 Update 6 (or later) or [build & install OpenJFX for OpenJDK 8](https://wiki.openjdk.java.net/display/OpenJFX/Building+OpenJFX).
+    - **Workaround:** install Oracle Java 7 Update 6 (or later) or [build & install OpenJFX for OpenJDK 8](https://wiki.openjdk.java.net/display/OpenJFX/Building+OpenJFX).
 
 
 Version 1.0.0
@@ -30,10 +43,10 @@ Version 1.0.0
 
 ### Known issues
 - When using with another credential helper (on Mac OS X, with the default Git distribution known as "Apple Git", the `credential-osxkeychain` helper is _hardcoded_), if the other helper is asked _before_ this one and the credentials are not valid (because they have expired or have been revoked), Git asks _all_ the helpers to erase whatever credentials they have for that server and then aborts with "Authentication failed".
- - **Workaround:** move the other helper(s) _after_ the GCM, disable the other helper(s) or, if the latter is not possible (it's not possible to disable the `credential-osxkeychain` helper on Mac when using "Apple Git"), then install another Git distribution.
+    - **Workaround:** move the other helper(s) _after_ the GCM, disable the other helper(s) or, if the latter is not possible (it's not possible to disable the `credential-osxkeychain` helper on Mac when using "Apple Git"), then install another Git distribution.
 - Visual Studio Online accounts not associated with Azure Active Directory (i.e. using a Microsoft Account) are not yet supported.
 - Versions of Java before Oracle Java 7 Update 6 as well as default OpenJDK installations currently do not support OAuth 2.0 authentication & authorization with Visual Studio Online.
- - **Workaround:** install Oracle Java 7 Update 6 (or later) or [build & install OpenJFX for OpenJDK 8](https://wiki.openjdk.java.net/display/OpenJFX/Building+OpenJFX).
+    - **Workaround:** install Oracle Java 7 Update 6 (or later) or [build & install OpenJFX for OpenJDK 8](https://wiki.openjdk.java.net/display/OpenJFX/Building+OpenJFX).
 
 
 Version 0.1.3
