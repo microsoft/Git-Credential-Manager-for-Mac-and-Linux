@@ -103,7 +103,7 @@ Licensed under the MIT license. See License.txt in the project root. -->
         </includes>
       </resource>
       <resource>
-        <directory>${basedir}</directory>
+        <directory>${basedir}/templates</directory>
         <targetPath>${project.build.directory}</targetPath>
         <filtering>true</filtering>
         <includes>
