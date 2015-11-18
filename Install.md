@@ -83,17 +83,23 @@ We are sad to see you go!  Please give us some feedback on how we could do bette
 
 ### Homebrew uninstallation
 
-1. Retrieve the value of the `credential.helper` configuration: `git config --global --get credential.helper ${project.artifactId}`
-2. Launch the JAR in `uninstall` mode, which will update the "global" Git configuration file (the one in your home folder): `${project.artifactId} uninstall`
-3. Uninstall the ${project.artifactId} package with Homebrew: `brew uninstall ${project.artifactId}`
-4. Archive the `insecureStore.xml` file from the `${project.artifactId}` sub-folder under your HOME folder.
+1. Run ${project.artifactId} in `uninstall` mode, which will update the "global" Git configuration file (the one in your home folder):
+
+    ```
+    ${project.artifactId} uninstall
+    ```
+2. Uninstall the ${project.artifactId} package with Homebrew: `brew uninstall ${project.artifactId}`
+3. Archive the `insecureStore.xml` file from the `${project.artifactId}` sub-folder under your HOME folder.
 
 ### RPM uninstallation
 
-1. Retrieve the value of the `credential.helper` configuration: `git config --global --get credential.helper ${project.artifactId}`
-2. Launch the JAR in `uninstall` mode, which will update the "global" Git configuration file (the one in your home folder): `${project.artifactId} uninstall`
-3. Uninstall the ${project.artifactId} package with RPM: `sudo rpm -e ${project.artifactId}-${project.version}-1.noarch`
-4. Archive the `insecureStore.xml` file from the `${project.artifactId}` sub-folder under your HOME folder.
+1. Run ${project.artifactId} in `uninstall` mode, which will update the "global" Git configuration file (the one in your home folder):
+
+    ```
+    ${project.artifactId} uninstall
+    ```
+2. Uninstall the ${project.artifactId} package with RPM: `sudo rpm -e ${project.artifactId}-${project.version}-1.noarch`
+3. Archive the `insecureStore.xml` file from the `${project.artifactId}` sub-folder under your HOME folder.
 
 ### Manual uninstallation
 
