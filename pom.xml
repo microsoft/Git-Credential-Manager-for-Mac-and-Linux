@@ -85,6 +85,14 @@ Licensed under the MIT license. See License.txt in the project root. -->
         </includes>
       </resource>
       <resource>
+        <directory>${project.basedir}/templates</directory>
+        <targetPath>${project.build.directory}</targetPath>
+        <filtering>true</filtering>
+        <includes>
+          <include>*.md</include>
+        </includes>
+      </resource>
+      <resource>
         <directory>${basedir}</directory>
         <targetPath>${project.build.directory}</targetPath>
         <filtering>true</filtering>
