@@ -69,7 +69,12 @@ Debug mode will turn on tracing and assertions, producing a lot of output to `st
 1. Retrieve the value of the `credential.helper` configuration:
 
     ```
-    git config --global --get credential.helper ${project.artifactId}` ...it should look like this: `!java -Ddebug=false -jar /home/example/${project.artifactId}/${project.artifactId}-${project.version}.jar
+    git config --global --get credential.helper ${project.artifactId}
+    ```
+    ...it should look like this:
+
+    ```
+    !java -Ddebug=false -jar /home/example/${project.artifactId}/${project.artifactId}-${project.version}.jar
     ```
 2. Set a new value for the `credential.helper` configuration (essentially repeating _manual installation step 2_, being careful with quoting and spaces), changing the value of the `debug` property to `true` (or `false` to disable).
 
