@@ -71,7 +71,7 @@ Licensed under the MIT license. See License.txt in the project root. -->
       <resource>
         <directory>${basedir}</directory>
         <targetPath>./</targetPath>
-        <filtering>true</filtering>
+        <filtering>false</filtering>
         <includes>
           <include>License.txt</include>
         </includes>
@@ -79,13 +79,23 @@ Licensed under the MIT license. See License.txt in the project root. -->
       <resource>
         <directory>${project.basedir}</directory>
         <targetPath>${project.build.directory}</targetPath>
-        <filtering>true</filtering>
+        <filtering>false</filtering>
         <includes>
-          <include>*.md</include>
+          <include>Contributing.md</include>
+          <include>ReleaseNotes.md</include>
         </includes>
       </resource>
       <resource>
-        <directory>${basedir}</directory>
+        <directory>${project.basedir}/templates</directory>
+        <targetPath>${project.build.directory}</targetPath>
+        <filtering>true</filtering>
+        <includes>
+          <include>Install.md</include>
+          <include>ReadMe.md</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>${basedir}/templates</directory>
         <targetPath>${project.build.directory}</targetPath>
         <filtering>true</filtering>
         <includes>
@@ -93,7 +103,7 @@ Licensed under the MIT license. See License.txt in the project root. -->
         </includes>
       </resource>
       <resource>
-        <directory>${basedir}</directory>
+        <directory>${basedir}/templates</directory>
         <targetPath>${project.build.directory}</targetPath>
         <filtering>true</filtering>
         <includes>

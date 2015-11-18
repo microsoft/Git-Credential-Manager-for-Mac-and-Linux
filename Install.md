@@ -18,11 +18,11 @@ Starting with version 1.1.0, the GCM is capable of configuring Git automatically
 
 ### Automatic installation (recommended)
 
-1. Copy the `${project.artifactId}-${project.version}.jar` file somewhere safe and stable, such as `~/${project.artifactId}/`.
+1. Copy the `git-credential-manager-1.2.0.jar` file somewhere safe and stable, such as `~/git-credential-manager/`.
 2. Launch the JAR in `install` mode, which will check its requirements and then update the "global" Git configuration file (the one in your home folder):
 
     ```
-    java -jar /home/example/${project.artifactId}/${project.artifactId}-${project.version}.jar install
+    java -jar /home/example/git-credential-manager/git-credential-manager-1.2.0.jar install
     ```
 
 ### Homebrew installation
@@ -30,35 +30,35 @@ Starting with version 1.1.0, the GCM is capable of configuring Git automatically
 1. Install the needed resources using Homebrew:
 
     ```
-    brew install ${project.artifactId}
+    brew install git-credential-manager
     ```
-2. Run ${project.artifactId} in `install` mode, which will check its requirements and then update the "global" Git configuration file (the one in your home folder):
+2. Run git-credential-manager in `install` mode, which will check its requirements and then update the "global" Git configuration file (the one in your home folder):
 
     ```
-    ${project.artifactId} install
+    git-credential-manager install
     ```
     
 ### RPM installation
 
-1. Copy the `${project.artifactId}-${project.version}-1.noarch.rpm` file somewhere locally.
+1. Copy the `git-credential-manager-1.2.0-1.noarch.rpm` file somewhere locally.
 2. Install the RPM running as the root user:
 
     ```
-    sudo rpm -i ${project.artifactId}-${project.version}-1.noarch.rpm
+    sudo rpm -i git-credential-manager-1.2.0-1.noarch.rpm
     ```
-3. Run ${project.artifactId} in `install` mode, which will check its requirements and then update the "global" Git configuration file (the one in your home folder):
+3. Run git-credential-manager in `install` mode, which will check its requirements and then update the "global" Git configuration file (the one in your home folder):
 
     ```
-    ${project.artifactId} install
+    git-credential-manager install
     ```
 
 ### Manual installation
 
-1. Copy the `${project.artifactId}-${project.version}.jar` file somewhere safe and stable, such as `~/${project.artifactId}/`.
+1. Copy the `git-credential-manager-1.2.0.jar` file somewhere safe and stable, such as `~/git-credential-manager/`.
 2. Configure the `credential.helper` setting to launch Java with the absolute path to the JAR (make sure you surround the whole value with 'single quotes'):
 
     ```
-    git config --global credential.helper '!java -Ddebug=false -jar /home/example/${project.artifactId}/${project.artifactId}-${project.version}.jar'
+    git config --global credential.helper '!java -Ddebug=false -jar /home/example/git-credential-manager/git-credential-manager-1.2.0.jar'
     ```
 
 
@@ -66,7 +66,7 @@ How to enable (or disable) debug mode
 -------------------------------------
 Debug mode will turn on tracing and assertions, producing a lot of output to `stderr`.  Only turn this on temporarily, when trying to isolate a defect.
 
-1. Retrieve the value of the `credential.helper` configuration: `git config --global --get credential.helper ${project.artifactId}` ...it should look like this: `!java -Ddebug=false -jar /home/example/${project.artifactId}/${project.artifactId}-${project.version}.jar`
+1. Retrieve the value of the `credential.helper` configuration: `git config --global --get credential.helper git-credential-manager` ...it should look like this: `!java -Ddebug=false -jar /home/example/git-credential-manager/git-credential-manager-1.2.0.jar`
 2. Set a new value for the `credential.helper` configuration (essentially repeating _manual installation step 2_, being careful with quoting and spaces), changing the value of the `debug` property to `true` (or `false` to disable).
 
 
@@ -76,34 +76,34 @@ We are sad to see you go!  Please give us some feedback on how we could do bette
 
 ### Automatic uninstallation (recommended)
 
-1. Retrieve the value of the `credential.helper` configuration: `git config --global --get credential.helper ${project.artifactId}`
-2. Launch the JAR in `uninstall` mode, which will update the "global" Git configuration file (the one in your home folder): `java -jar /home/example/${project.artifactId}/${project.artifactId}-${project.version}.jar uninstall`
+1. Retrieve the value of the `credential.helper` configuration: `git config --global --get credential.helper git-credential-manager`
+2. Launch the JAR in `uninstall` mode, which will update the "global" Git configuration file (the one in your home folder): `java -jar /home/example/git-credential-manager/git-credential-manager-1.2.0.jar uninstall`
 3. The value retrieved in _step 1_ contained the path to the JAR.  You can go delete that JAR.
-4. Archive the `insecureStore.xml` file from the `${project.artifactId}` sub-folder under your HOME folder.
+4. Archive the `insecureStore.xml` file from the `git-credential-manager` sub-folder under your HOME folder.
 
 ### Homebrew uninstallation
 
-1. Run ${project.artifactId} in `uninstall` mode, which will update the "global" Git configuration file (the one in your home folder):
+1. Run git-credential-manager in `uninstall` mode, which will update the "global" Git configuration file (the one in your home folder):
 
     ```
-    ${project.artifactId} uninstall
+    git-credential-manager uninstall
     ```
-2. Uninstall the ${project.artifactId} package with Homebrew: `brew uninstall ${project.artifactId}`
-3. Archive the `insecureStore.xml` file from the `${project.artifactId}` sub-folder under your HOME folder.
+2. Uninstall the git-credential-manager package with Homebrew: `brew uninstall git-credential-manager`
+3. Archive the `insecureStore.xml` file from the `git-credential-manager` sub-folder under your HOME folder.
 
 ### RPM uninstallation
 
-1. Run ${project.artifactId} in `uninstall` mode, which will update the "global" Git configuration file (the one in your home folder):
+1. Run git-credential-manager in `uninstall` mode, which will update the "global" Git configuration file (the one in your home folder):
 
     ```
-    ${project.artifactId} uninstall
+    git-credential-manager uninstall
     ```
-2. Uninstall the ${project.artifactId} package with RPM: `sudo rpm -e ${project.artifactId}-${project.version}-1.noarch`
-3. Archive the `insecureStore.xml` file from the `${project.artifactId}` sub-folder under your HOME folder.
+2. Uninstall the git-credential-manager package with RPM: `sudo rpm -e git-credential-manager-1.2.0-1.noarch`
+3. Archive the `insecureStore.xml` file from the `git-credential-manager` sub-folder under your HOME folder.
 
 ### Manual uninstallation
 
-1. Retrieve the value of the `credential.helper` configuration: `git config --global --get credential.helper ${project.artifactId}`
-2. Delete the value of the `credential.helper` configuration: `git config --global --unset credential.helper ${project.artifactId}`
+1. Retrieve the value of the `credential.helper` configuration: `git config --global --get credential.helper git-credential-manager`
+2. Delete the value of the `credential.helper` configuration: `git config --global --unset credential.helper git-credential-manager`
 3. The value retrieved in _step 1_ contained the path to the JAR.  You can go delete that JAR.
-4. Archive the `insecureStore.xml` file from the `${project.artifactId}` sub-folder under your HOME folder.
+4. Archive the `insecureStore.xml` file from the `git-credential-manager` sub-folder under your HOME folder.
