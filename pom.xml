@@ -358,7 +358,7 @@ Licensed under the MIT license. See License.txt in the project root. -->
                 <id>generate-rpm</id>
                 <phase>package</phase>
                 <goals>
-                  <goal>rpm</goal>
+                  <goal>attached-rpm</goal>
                 </goals>
               </execution>
             </executions>
