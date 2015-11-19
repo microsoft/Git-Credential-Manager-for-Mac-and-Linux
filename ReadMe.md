@@ -1,6 +1,13 @@
 Git Credential Manager for Mac and Linux
 ========================================
-The Git Credential Manager for Mac and Linux (GCM) is fairly simple. It stores and retrieves credentials for accessing Git resources on Visual Studio Team Services (VSTS) to and from a secure container.
+Stores credentials for Git version control securely.
+    Provides secure logon for Visual Studio Team Services (visualstudio.com).
+
+
+License
+-------
+This source code and artifacts are released under the terms of the [MIT License](http://www.opensource.org/licenses/mit-license.php). 
+
 
 How does it work?
 -----------------
@@ -11,3 +18,27 @@ The GCM currently stores credentials in the file `insecureStore.xml`, located in
 If you are connecting to a Git repository hosted in a VSTS account, the GCM will open a web browser window so you can authenticate and authorize access to your account (via OAuth 2.0), allowing the credential manager to then use the access token to create a VSTS Personal Access Token (PAT) scoped for `vso.code_write`, effectively granting Git permission to read and write to your Git repositories hosted in VSTS.
 
 If you are connecting to Git repositories hosted elsewhere, the GCM works a lot like [git-credential-store](http://git-scm.com/docs/git-credential-store) and will store & retrieve your username & password.
+
+
+How do I install it?
+--------------------
+Follow the instructions in [Install.md](Install.md) or [Install.html](Install.html).
+
+
+How do I build it?
+------------------
+If you have version 6 or better of the JDK, as well as version 3 or better of Maven, you're all set!  Run the following:
+
+    mvn clean verify
+
+This will download the dependencies, compile the code, run unit tests, and package everything.  You should end up with a file named something like `git-credential-manager-VERSION.jar` under the `target` sub-folder.
+
+
+How can I contribute?
+---------------------
+Please refer to [Contributing.md](Contibuting.md) or [Contributing.html](Contributing.html).
+
+
+How can I find out more?
+------------------------
+Visit the [Git Credential Manager](https://java.visualstudio.com/Docs/tools/gitcredentialmanager) page or browse the [source code on GitHub](https://github.com/Microsoft/Git-Credential-Manager-for-Mac-and-Linux).
