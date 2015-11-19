@@ -36,12 +36,28 @@ If you can't use any of the package managers, you can also download [${project.a
 ### Installing on Linux using RPM (recommended)
 
 1. Download [${project.artifactId}-${project.version}-1.noarch.rpm](https://github.com/Microsoft/Git-Credential-Manager-for-Mac-and-Linux/releases/download/${project.artifactId}-${project.version}/${project.artifactId}-${project.version}-1.noarch.rpm) and copy the file somewhere locally.
-2. Install the RPM:
+2. Download the [PGP key used to sign the RPM](https://java.visualstudio.com/Content/RPM-GPG-KEY-olivida.asc).
+3. Import the signing key into RPM's database:
+
+    ```
+    sudo rpm --import RPM-GPG-KEY-olivida.asc
+    ```
+4. Verify the GCM RPM:
+
+    ```
+    rpm --checksig --verbose ${project.artifactId}-${project.version}-1.noarch.rpm
+    ```
+    ...you should see a line (among those there) that is equal to the following:
+    
+    ```
+    V4 RSA/SHA256 Signature, key ID ba34dbc2: OK
+    ```
+5. Install the RPM:
 
     ```
     sudo rpm --install ${project.artifactId}-${project.version}-1.noarch.rpm
     ```
-3. Run the GCM in `install` mode, which will check its requirements and then update the "global" Git configuration file (the one in your home folder):
+6. Run the GCM in `install` mode, which will check its requirements and then update the "global" Git configuration file (the one in your home folder):
 
     ```
     ${project.artifactId} install
