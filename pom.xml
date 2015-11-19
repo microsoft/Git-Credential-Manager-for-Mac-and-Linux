@@ -419,6 +419,17 @@ Licensed under the MIT license. See License.txt in the project root. -->
             </configuration>
           </plugin>
         </plugins>
+        <resources>
+          <resource>
+            <directory>${project.build.directory}</directory>
+            <targetPath>${project.basedir}</targetPath>
+            <filtering>true</filtering>
+            <includes>
+              <include>Install.md</include>
+              <include>ReadMe.md</include>
+            </includes>
+          </resource>
+        </resources>
       </build>
     </profile>
   </profiles>
