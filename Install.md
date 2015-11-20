@@ -36,11 +36,11 @@ If you can't use any of the package managers, you can also download [git-credent
 ### Installing on Linux using RPM (recommended)
 
 1. Download [git-credential-manager-1.2.0-1.noarch.rpm](https://github.com/Microsoft/Git-Credential-Manager-for-Mac-and-Linux/releases/download/git-credential-manager-1.2.0/git-credential-manager-1.2.0-1.noarch.rpm) and copy the file somewhere locally.
-2. Download the [PGP key used to sign the RPM](https://java.visualstudio.com/Content/RPM-GPG-KEY-olivida.asc).
+2. Download the [PGP key used to sign the RPM](https://java.visualstudio.com/Content/RPM-GPG-KEY-olivida.txt).
 3. Import the signing key into RPM's database:
 
     ```
-    sudo rpm --import RPM-GPG-KEY-olivida.asc
+    sudo rpm --import RPM-GPG-KEY-olivida.txt
     ```
 4. Verify the GCM RPM:
 
