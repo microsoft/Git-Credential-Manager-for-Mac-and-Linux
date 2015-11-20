@@ -3,6 +3,20 @@ Release Notes
 Every release is described here, from latest to earliest.
 
 
+Version 1.3.0
+-------------
+### Minor changes
+- Improved the Homebrew-based installation.
+- Added a feature to enable "debug mode" during installation.
+- Added RPM-based installation for GNU/Linux.
+- Updated references from Visual Studio Online (VSO) to the new name: Visual Studio Team Services (VSTS).
+- Improved documentation.
+
+### Known issues
+- Versions of Java before Oracle Java 7 Update 6 as well as default OpenJDK installations currently do not support OAuth 2.0 authentication & authorization with Visual Studio Team Services.
+    - **Workaround:** install Oracle Java 7 Update 6 (or later) or [build & install OpenJFX for OpenJDK 8](https://wiki.openjdk.java.net/display/OpenJFX/Building+OpenJFX).
+
+
 Version 1.2.0
 -------------
 ### Minor changes
