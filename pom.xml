@@ -418,6 +418,25 @@ Licensed under the MIT license. See License.txt in the project root. -->
               </postremoveScriptlet>
             </configuration>
           </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <version>2.6</version>
+            <executions>
+              <execution>
+                <phase>verify</phase>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <attach>false</attach>
+              <descriptors>
+                <descriptor>src/assembly/artifacts.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </plugin>
         </plugins>
         <resources>
           <resource>
