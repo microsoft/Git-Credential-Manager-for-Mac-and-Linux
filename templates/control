@@ -1,0 +1,7 @@
+Package: ${project.artifactId}
+Version: ${project.version}
+Section: contrib/utils
+Priority: optional
+Architecture: all
+Maintainer: Microsoft http://www.microsoft.com/
+Description: ${project.description}
