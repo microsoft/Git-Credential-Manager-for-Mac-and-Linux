@@ -1,0 +1,29 @@
+* Fri Nov 20 2015 Oli Dagenais <olivida@microsoft.com> - 1.3.0
+- Improved the Homebrew-based installation.
+- Added a feature to enable "debug mode" during installation.
+- Added RPM-based installation for GNU/Linux.
+- Updated references from Visual Studio Online (VSO) to the new name: Visual Studio Team Services (VSTS).
+- Improved documentation.
+
+* Mon Nov 16 2015 Oli Dagenais <olivida@microsoft.com> - 1.2.0
+- Added Homebrew-based installation for Mac OS X.
+- Improved the self-installation to use the version of Java used when launching `install`.
+- Added a workaround for the _hardcoded_ `credential-osxkeychain` helper in "Apple Git" by erasing from the OS X Keychain any Git credentials managed by this program.
+
+* Mon Nov 09 2015 Oli Dagenais <olivida@microsoft.com> - 1.1.0
+- Added support for Visual Studio Online (VSO) accounts associated with Microsoft Accounts (a.k.a. "MSA", "Windows Live ID", etc.).  The user experience should be the same as the VSO accounts associated with Azure Active Directory (AAD).
+- Added a self-install (with self-check) and self-uninstall.
+- Implemented Cross-Site Request Forgery (CSRF) prevention during the OAuth 2.0 authorization request as recommended by RFC 6749.
+
+* Thu Oct 29 2015 Oli Dagenais <olivida@microsoft.com> - 1.0.0
+- Visual Studio Online (VSO) accounts associated with Azure Active Directory (AAD) are now supported.  Users will be presented with a web browser to participate in an [OAuth 2.0 flow](http://tools.ietf.org/html/rfc6749#section-4.1), allowing the credential manager to generate a VSO Personal Access Token (PAT) for use when pulling from and pushing to VSO Git repositories.
+- The `insecureStore.xml` file has been moved to its own folder (~/git-credential-manager/) and will now have permissions set so only the owner can read and write it.
+- The API has had all traces of asynchronous results removed.
+- A fatal error or an authentication failure now aborts the process, asking Git to stop invoking credential helpers.
+- Details of any fatal errors are now sent to _standard error_, making them visible without having turn on the debug mode.
+
+* Sun Oct 04 2015 Oli Dagenais <olivida@microsoft.com> - 0.1.3
+- Improvements to the documentation.
+
+* Tue Sep 29 2015 Oli Dagenais <olivida@microsoft.com> - 0.1.2
+- Initial release of C# port which supports Basic authority only and a plain-text credential store (`~/insecureStore.xml`) making it equivalent to the built-in git-credential-store.
