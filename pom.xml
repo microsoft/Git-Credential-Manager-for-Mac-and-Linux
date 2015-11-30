@@ -68,6 +68,7 @@ Licensed under the MIT license. See License.txt in the project root. -->
 
   <build>
     <extensions>
+      <!-- Needed for custom deb packaging https://github.com/tcurdt/jdeb/blob/master/docs/maven.md -->
       <extension>
         <groupId>org.vafer</groupId>
         <artifactId>jdeb</artifactId>
@@ -100,7 +101,6 @@ Licensed under the MIT license. See License.txt in the project root. -->
           <include>Install.md</include>
           <include>ReadMe.md</include>
           <include>git-credential-manager.rb</include>
-          <include>control</include>
         </includes>
       </resource>
       <resource>
@@ -450,7 +450,7 @@ Licensed under the MIT license. See License.txt in the project root. -->
                   <goal>jdeb</goal>
                 </goals>
                 <configuration>
-                  <controlDir>${project.build.directory}</controlDir>
+                  <controlDir>${project.basedir}/templates</controlDir>
                   <dataSet>
                     <data>
                       <src>${project.build.directory}/git-credential-manager-${project.version}.jar</src>
