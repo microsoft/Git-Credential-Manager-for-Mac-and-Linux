@@ -370,6 +370,7 @@ Licensed under the MIT license. See License.txt in the project root. -->
               <url>${project.url}</url>
               <targetOS>linux</targetOS>
               <description>${project.description}</description>
+              <changelogFile>${project.basedir}/changelog</changelogFile>
               <mappings>
                 <mapping>
                   <directoryIncluded>false</directoryIncluded>
