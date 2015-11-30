@@ -1,7 +1,8 @@
-Package: ${project.artifactId}
-Version: ${project.version}
+Package: [[artifactId]]
+Version: [[version]]
 Section: contrib/utils
 Priority: optional
 Architecture: all
+Depends: openjdk-7-jre | openjdk-8-jre | oracle-java7-jre | oracle-java8-jre, git (>=1.9)
 Maintainer: Microsoft http://www.microsoft.com/
-Description: ${project.description}
+Description: [[description]]
