@@ -67,6 +67,14 @@ Licensed under the MIT license. See License.txt in the project root. -->
   </properties>
 
   <build>
+    <extensions>
+      <!-- Needed for custom deb packaging https://github.com/tcurdt/jdeb/blob/master/docs/maven.md -->
+      <extension>
+        <groupId>org.vafer</groupId>
+        <artifactId>jdeb</artifactId>
+        <version>1.4</version>
+      </extension>
+    </extensions>
     <resources>
       <resource>
         <directory>${basedir}</directory>
@@ -92,13 +100,6 @@ Licensed under the MIT license. See License.txt in the project root. -->
         <includes>
           <include>Install.md</include>
           <include>ReadMe.md</include>
-        </includes>
-      </resource>
-      <resource>
-        <directory>${basedir}/templates</directory>
-        <targetPath>${project.build.directory}</targetPath>
-        <filtering>true</filtering>
-        <includes>
           <include>git-credential-manager.rb</include>
         </includes>
       </resource>
@@ -437,6 +438,42 @@ Licensed under the MIT license. See License.txt in the project root. -->
                 <descriptor>src/assembly/artifacts.xml</descriptor>
               </descriptors>
             </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.vafer</groupId>
+            <artifactId>jdeb</artifactId>
+            <version>1.4</version>
+            <executions>
+              <execution>
+                <phase>package</phase>
+                <goals>
+                  <goal>jdeb</goal>
+                </goals>
+                <configuration>
+                  <controlDir>${project.basedir}/templates</controlDir>
+                  <dataSet>
+                    <data>
+                      <src>${project.build.directory}/git-credential-manager-${project.version}.jar</src>
+                      <type>file</type>
+                      <mapper>
+                        <type>perm</type>
+                        <prefix>/usr/lib</prefix>
+                        <filemode>755</filemode>
+                      </mapper>
+                    </data>
+                    <data>
+                      <src>${project.build.directory}/git-credential-manager</src>
+                      <type>file</type>
+                      <mapper>
+                        <type>perm</type>
+                        <prefix>/usr/bin</prefix>
+                        <filemode>755</filemode>
+                      </mapper>
+                    </data>
+                  </dataSet>
+                </configuration>
+              </execution>
+            </executions>
           </plugin>
         </plugins>
         <resources>
