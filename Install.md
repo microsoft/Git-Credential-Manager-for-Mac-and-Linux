@@ -13,15 +13,14 @@ Great care was taken to avoid using any features of Java that would impact compa
 
 ## How to install
 On Mac OS X, installing via Homebrew is highly recommended.
-On Linux, if you have an RPM-based package manager, installing via the RPM is recommended.
-You will also soon have the option of installing via Linuxbrew.
+On Linux, it is recommended to use Linuxbrew or an RPM-based package manager if you can.
 
 If you can't use any of the package managers, you can also download [git-credential-manager-1.3.0.jar](https://github.com/Microsoft/Git-Credential-Manager-for-Mac-and-Linux/releases/download/git-credential-manager-1.3.0/git-credential-manager-1.3.0.jar) somewhere safe and stable, such as `~/git-credential-manager/`, and then follow the instructions for automatic or manual configuration.
 
 
-### Installing on Mac using Homebrew (recommended)
+### Installing on Mac using Homebrew or on Linux using Linuxbrew (recommended)
 
-1. Install the needed resources using Homebrew:
+1. Install the needed resources using Homebrew/Linuxbrew:
 
     ```
     brew install git-credential-manager
@@ -111,14 +110,14 @@ Debug mode will turn on tracing and assertions, producing a lot of output to `st
 ## How to remove or uninstall
 We are sad to see you go!  Please give us some feedback on how we could do better next time.
 
-### Uninstall from Mac using Homebrew
+### Uninstall from Mac using Homebrew or Linux using Linuxbrew
 
 1. Run the GCM in `uninstall` mode, which will update the "global" Git configuration file (the one in your home folder):
 
     ```
     git-credential-manager uninstall
     ```
-2. Uninstall the git-credential-manager package with Homebrew:
+2. Uninstall the git-credential-manager package with Homebrew/Linuxbrew:
 
     ```
     brew uninstall git-credential-manager
