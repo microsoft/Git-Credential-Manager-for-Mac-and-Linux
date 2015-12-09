@@ -1,0 +1,4 @@
+#/bin/bash
+
+# fake ping program to help WhereTest#app_ping pass
+# Inspired by https://github.com/nono/cozy-desktop/commit/26ab9df277d1cbf781e9e476d022988ab0113154

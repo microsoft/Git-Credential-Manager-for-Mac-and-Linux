@@ -4,11 +4,17 @@ addons:
   apt:
     packages:
     # http://packages.ubuntu.com/precise/ping
-    - inetutils-ping
+    # Commented out inetutils-ping because it's not in the whitelist
+    # https://github.com/travis-ci/apt-package-whitelist/pull/966
+    #- inetutils-ping
 # http://stackoverflow.com/questions/14694139/how-to-resolve-dependencies-between-modules-within-multi-module-project
 install: mvn compile org.apache.maven.plugins:maven-dependency-plugin:2.10:go-offline --batch-mode --show-version
-# We can't add '--offline' below because the dependency plugin misses some of the dependencies
-script: mvn clean verify --batch-mode
+script:
+  # add our bin folder to the PATH so our fake ping will be picked up when running under Travis CI
+  # Inspiration: https://github.com/nono/cozy-desktop/commit/26ab9df277d1cbf781e9e476d022988ab0113154
+  - export PATH="bin:$PATH"
+  # We can't add '--offline' below because the dependency plugin misses some of the dependencies
+  - mvn clean verify --batch-mode
 # https://docs.travis-ci.com/user/migrating-from-legacy/
 sudo: false
 jdk:
