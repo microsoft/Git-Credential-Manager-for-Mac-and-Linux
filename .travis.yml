@@ -1,0 +1,10 @@
+---
+language: java
+# http://stackoverflow.com/questions/14694139/how-to-resolve-dependencies-between-modules-within-multi-module-project
+install: mvn compile org.apache.maven.plugins:maven-dependency-plugin:2.10:go-offline --batch-mode --show-version
+# We can't add '--offline' below because the dependency plugin misses some of the dependencies
+script: mvn clean verify --batch-mode
+# https://docs.travis-ci.com/user/migrating-from-legacy/
+sudo: false
+jdk:
+  - openjdk6
