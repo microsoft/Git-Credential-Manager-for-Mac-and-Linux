@@ -5,7 +5,6 @@ package com.microsoft.alm.authentication;
 
 import com.microsoft.alm.helpers.BitConverter;
 import com.microsoft.alm.helpers.Guid;
-import com.microsoft.alm.gitcredentialmanager.InsecureStore;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -21,17 +20,17 @@ public class TokenTest
     @Test
     public void tokenStoreUrl() throws URISyntaxException
     {
-        tokenStoreTest(new SecretStore(new InsecureStore(), "test-token"), "http://dummy.url/for/testing", TokenString);
+        tokenStoreTest(new SecretCache("test-token"), "http://dummy.url/for/testing", TokenString);
     }
     @Test
     public void tokenStoreUrlWithParams() throws URISyntaxException
     {
-        tokenStoreTest(new SecretStore(new InsecureStore(), "test-token"), "http://dummy.url/for/testing?with=params", TokenString);
+        tokenStoreTest(new SecretCache("test-token"), "http://dummy.url/for/testing?with=params", TokenString);
     }
     @Test
     public void tokenStoreUnc() throws URISyntaxException
     {
-        tokenStoreTest(new SecretStore(new InsecureStore(), "test-token"), "file://unc/share/test", TokenString);
+        tokenStoreTest(new SecretCache("test-token"), "file://unc/share/test", TokenString);
     }
     @Test
     public void tokenCacheUrl() throws URISyntaxException
