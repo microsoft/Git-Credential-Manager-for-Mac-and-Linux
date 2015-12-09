@@ -8,6 +8,12 @@ License
 This source code and artifacts are released under the terms of the [${project.license.name}](${project.license.url}). 
 
 
+Build status
+------------
+This project has continuous integration hosted by Travis CI:
+[![Build Status](https://travis-ci.org/Microsoft/Git-Credential-Manager-for-Mac-and-Linux.svg?branch=master)](https://travis-ci.org/Microsoft/Git-Credential-Manager-for-Mac-and-Linux)
+
+
 How does it work?
 -----------------
 Once configured with Git, if Git needs credentials for reading from or writing to a Git remote, it sends a request to the program(s) configured as `credential.helper`, as described in [gitcredentials](http://git-scm.com/docs/gitcredentials.html).  If none of the credential helpers have valid credentials, Git will prompt for a username and password and then ask the credential helper(s) to save the values for later retrieval.
