@@ -42,7 +42,10 @@ public class InsecureStore implements ISecureStore
 
     /**
      * Creates an instance that only keeps the values in memory, never touching a file.
+     *
+     * @deprecated If you need an in-memory store, use SecretCache.
      */
+    @Deprecated
     public InsecureStore()
     {
         this(null);
@@ -126,7 +129,7 @@ public class InsecureStore implements ISecureStore
     {
         try
         {
-            final InsecureStore result = new InsecureStore();
+            final InsecureStore result = new InsecureStore(null);
             final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             final DocumentBuilder builder = dbf.newDocumentBuilder();
             final Document document = builder.parse(source);

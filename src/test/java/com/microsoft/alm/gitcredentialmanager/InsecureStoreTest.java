@@ -24,7 +24,7 @@ public class InsecureStoreTest
      */
     @Test public void delete_noMatchingTokenOrCredential()
     {
-        final InsecureStore cut = new InsecureStore();
+        final InsecureStore cut = new InsecureStore(null);
 
         cut.delete("foo");
     }
@@ -66,7 +66,7 @@ public class InsecureStoreTest
 
     @Test public void serialization_instanceToXmlToInstance()
     {
-        final InsecureStore input = new InsecureStore();
+        final InsecureStore input = new InsecureStore(null);
         final Token inputBravo = new Token("42", TokenType.Test);
         input.Tokens.put("alpha", null);
         input.Tokens.put("bravo", inputBravo);
