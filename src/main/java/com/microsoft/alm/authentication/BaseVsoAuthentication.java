@@ -6,7 +6,6 @@ package com.microsoft.alm.authentication;
 import com.microsoft.alm.helpers.Action;
 import com.microsoft.alm.helpers.Debug;
 import com.microsoft.alm.helpers.Guid;
-import com.microsoft.alm.gitcredentialmanager.InsecureStore;
 import com.microsoft.alm.helpers.HttpClient;
 import com.microsoft.alm.helpers.StringHelper;
 import com.microsoft.alm.helpers.Trace;
@@ -41,7 +40,7 @@ public abstract class BaseVsoAuthentication extends BaseAuthentication
         this.TokenScope = tokenScope;
         this.VsoIdeTokenCache = vsoIdeTokenCache;
         this.PersonalAccessTokenStore = personalAccessTokenStore;
-        this.AdaRefreshTokenStore = adaRefreshTokenStore != null ? adaRefreshTokenStore : new SecretStore(new InsecureStore() /* TODO: 449201: replace with an appropriate ISecureStore */, AdalRefreshPrefix);
+        this.AdaRefreshTokenStore = adaRefreshTokenStore != null ? adaRefreshTokenStore : new SecretCache(AdalRefreshPrefix);
         this.VsoAuthority = vsoAuthority;
     }
     /**
@@ -57,7 +56,7 @@ public abstract class BaseVsoAuthentication extends BaseAuthentication
             final ITokenStore adaRefreshTokenStore
     )
     {
-        this(tokenScope, personalAccessTokenStore, new SecretStore(new InsecureStore(), "registry") /* TODO: 449222: replace with a TokenRegistry implementation */, adaRefreshTokenStore, new VsoAzureAuthority());
+        this(tokenScope, personalAccessTokenStore, new SecretCache("registry"), adaRefreshTokenStore, new VsoAzureAuthority());
     }
     BaseVsoAuthentication(
             final ICredentialStore personalAccessTokenStore,
