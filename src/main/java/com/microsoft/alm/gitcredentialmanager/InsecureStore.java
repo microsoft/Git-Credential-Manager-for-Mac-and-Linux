@@ -6,7 +6,6 @@ package com.microsoft.alm.gitcredentialmanager;
 import com.microsoft.alm.authentication.Credential;
 import com.microsoft.alm.authentication.ISecureStore;
 import com.microsoft.alm.authentication.Token;
-import com.microsoft.alm.authentication.TokenType;
 import com.microsoft.alm.helpers.Guid;
 import com.microsoft.alm.helpers.IOHelper;
 import com.microsoft.alm.helpers.Trace;
@@ -32,7 +31,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 public class InsecureStore implements ISecureStore
 {
@@ -233,41 +231,10 @@ public class InsecureStore implements ISecureStore
             }
             else if ("value".equals(keyOrValueName))
             {
-                value = tokenFromXml(keyOrValueNode);
+                value = Token.fromXml(keyOrValueNode);
             }
         }
         result.Tokens.put(key, value);
-    }
-
-    static Token tokenFromXml(final Node tokenNode)
-    {
-        Token value;
-
-        String tokenValue = null;
-        TokenType tokenType = null;
-        UUID targetIdentity = Guid.Empty;
-
-        final NodeList propertyNodes = tokenNode.getChildNodes();
-        for (int v = 0; v < propertyNodes.getLength(); v++)
-        {
-            final Node propertyNode = propertyNodes.item(v);
-            final String propertyName = propertyNode.getNodeName();
-            if ("Type".equals(propertyName))
-            {
-                tokenType = TokenType.valueOf(TokenType.class, XmlHelper.getText(propertyNode));
-            }
-            else if ("Value".equals(propertyName))
-            {
-                tokenValue = XmlHelper.getText(propertyNode);
-            }
-            else if ("targetIdentity".equals(propertyName))
-            {
-                targetIdentity = UUID.fromString(XmlHelper.getText(propertyNode));
-            }
-        }
-        value = new Token(tokenValue, tokenType);
-        value.setTargetIdentity(targetIdentity);
-        return value;
     }
 
     void toXml(final OutputStream destination)

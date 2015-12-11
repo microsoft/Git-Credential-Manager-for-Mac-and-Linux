@@ -8,6 +8,9 @@ import com.microsoft.alm.helpers.Guid;
 import com.microsoft.alm.helpers.NotImplementedException;
 import com.microsoft.alm.helpers.StringHelper;
 import com.microsoft.alm.helpers.Trace;
+import com.microsoft.alm.helpers.XmlHelper;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import java.nio.ByteBuffer;
 import java.util.EnumSet;
@@ -92,6 +95,38 @@ public class Token extends Secret
     public final String Value;
 
     UUID targetIdentity = Guid.Empty;
+
+    public static Token fromXml(final Node tokenNode)
+    {
+        Token value;
+
+        String tokenValue = null;
+        TokenType tokenType = null;
+        UUID targetIdentity = Guid.Empty;
+
+        final NodeList propertyNodes = tokenNode.getChildNodes();
+        for (int v = 0; v < propertyNodes.getLength(); v++)
+        {
+            final Node propertyNode = propertyNodes.item(v);
+            final String propertyName = propertyNode.getNodeName();
+            if ("Type".equals(propertyName))
+            {
+                tokenType = TokenType.valueOf(TokenType.class, XmlHelper.getText(propertyNode));
+            }
+            else if ("Value".equals(propertyName))
+            {
+                tokenValue = XmlHelper.getText(propertyNode);
+            }
+            else if ("targetIdentity".equals(propertyName))
+            {
+                targetIdentity = UUID.fromString(XmlHelper.getText(propertyNode));
+            }
+        }
+        value = new Token(tokenValue, tokenType);
+        value.setTargetIdentity(targetIdentity);
+        return value;
+    }
+
     /**
      * @return The guid form Identity of the target
      */
