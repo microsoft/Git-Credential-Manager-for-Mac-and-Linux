@@ -6,7 +6,6 @@ package com.microsoft.alm.gitcredentialmanager;
 import com.microsoft.alm.authentication.Credential;
 import com.microsoft.alm.authentication.ISecureStore;
 import com.microsoft.alm.authentication.Token;
-import com.microsoft.alm.helpers.Guid;
 import com.microsoft.alm.helpers.IOHelper;
 import com.microsoft.alm.helpers.Trace;
 import com.microsoft.alm.helpers.XmlHelper;
@@ -260,7 +259,7 @@ public class InsecureStore implements ISecureStore
             final Token value = entry.getValue();
             if (value != null)
             {
-                final Element valueNode = tokenToXml(document, value);
+                final Element valueNode = value.toXml(document);
 
                 entryNode.appendChild(valueNode);
             }
@@ -268,30 +267,6 @@ public class InsecureStore implements ISecureStore
             tokensNode.appendChild(entryNode);
         }
         return tokensNode;
-    }
-
-    static Element tokenToXml(final Document document, final Token token)
-    {
-        final Element valueNode = document.createElement("value");
-
-        final Element typeNode = document.createElement("Type");
-        final Text typeValue = document.createTextNode(token.Type.toString());
-        typeNode.appendChild(typeValue);
-        valueNode.appendChild(typeNode);
-
-        final Element tokenValueNode = document.createElement("Value");
-        final Text valueValue = document.createTextNode(token.Value);
-        tokenValueNode.appendChild(valueValue);
-        valueNode.appendChild(tokenValueNode);
-
-        if (!Guid.Empty.equals(token.getTargetIdentity()))
-        {
-            final Element targetIdentityNode = document.createElement("targetIdentity");
-            final Text targetIdentityValue = document.createTextNode(token.getTargetIdentity().toString());
-            targetIdentityNode.appendChild(targetIdentityValue);
-            valueNode.appendChild(targetIdentityNode);
-        }
-        return valueNode;
     }
 
     private Element createCredentialsNode(final Document document)

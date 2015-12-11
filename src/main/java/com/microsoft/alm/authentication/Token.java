@@ -9,8 +9,11 @@ import com.microsoft.alm.helpers.NotImplementedException;
 import com.microsoft.alm.helpers.StringHelper;
 import com.microsoft.alm.helpers.Trace;
 import com.microsoft.alm.helpers.XmlHelper;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
 
 import java.nio.ByteBuffer;
 import java.util.EnumSet;
@@ -125,6 +128,30 @@ public class Token extends Secret
         value = new Token(tokenValue, tokenType);
         value.setTargetIdentity(targetIdentity);
         return value;
+    }
+
+    public Element toXml(final Document document)
+    {
+        final Element valueNode = document.createElement("value");
+
+        final Element typeNode = document.createElement("Type");
+        final Text typeValue = document.createTextNode(this.Type.toString());
+        typeNode.appendChild(typeValue);
+        valueNode.appendChild(typeNode);
+
+        final Element tokenValueNode = document.createElement("Value");
+        final Text valueValue = document.createTextNode(this.Value);
+        tokenValueNode.appendChild(valueValue);
+        valueNode.appendChild(tokenValueNode);
+
+        if (!Guid.Empty.equals(this.getTargetIdentity()))
+        {
+            final Element targetIdentityNode = document.createElement("targetIdentity");
+            final Text targetIdentityValue = document.createTextNode(this.getTargetIdentity().toString());
+            targetIdentityNode.appendChild(targetIdentityValue);
+            valueNode.appendChild(targetIdentityNode);
+        }
+        return valueNode;
     }
 
     /**
