@@ -6,8 +6,11 @@ package com.microsoft.alm.authentication;
 import com.microsoft.alm.helpers.ObjectExtensions;
 import com.microsoft.alm.helpers.StringHelper;
 import com.microsoft.alm.helpers.XmlHelper;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
 
 import javax.xml.bind.DatatypeConverter;
 import java.nio.charset.Charset;
@@ -76,6 +79,23 @@ public final class Credential extends Secret
         }
         value = new Credential(username, password);
         return value;
+    }
+
+    public Element toXml(final Document document)
+    {
+        final Element valueNode = document.createElement("value");
+
+        final Element passwordNode = document.createElement("Password");
+        final Text passwordValue = document.createTextNode(this.Password);
+        passwordNode.appendChild(passwordValue);
+        valueNode.appendChild(passwordNode);
+
+        final Element usernameNode = document.createElement("Username");
+        final Text usernameValue = document.createTextNode(this.Username);
+        usernameNode.appendChild(usernameValue);
+        valueNode.appendChild(usernameNode);
+
+        return valueNode;
     }
 
     /**

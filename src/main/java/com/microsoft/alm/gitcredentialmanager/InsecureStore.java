@@ -284,17 +284,7 @@ public class InsecureStore implements ISecureStore
             final Credential value = entry.getValue();
             if (value != null)
             {
-                final Element valueNode = document.createElement("value");
-
-                final Element passwordNode = document.createElement("Password");
-                final Text passwordValue = document.createTextNode(value.Password);
-                passwordNode.appendChild(passwordValue);
-                valueNode.appendChild(passwordNode);
-
-                final Element usernameNode = document.createElement("Username");
-                final Text usernameValue = document.createTextNode(value.Username);
-                usernameNode.appendChild(usernameValue);
-                valueNode.appendChild(usernameNode);
+                final Element valueNode = value.toXml(document);
 
                 entryNode.appendChild(valueNode);
             }
