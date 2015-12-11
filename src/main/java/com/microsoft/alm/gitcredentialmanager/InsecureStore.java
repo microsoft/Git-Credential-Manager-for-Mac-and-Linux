@@ -10,6 +10,7 @@ import com.microsoft.alm.authentication.TokenType;
 import com.microsoft.alm.helpers.Guid;
 import com.microsoft.alm.helpers.IOHelper;
 import com.microsoft.alm.helpers.Trace;
+import com.microsoft.alm.helpers.XmlHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -187,7 +188,7 @@ public class InsecureStore implements ISecureStore
             final String keyOrValueName = keyOrValueNode.getNodeName();
             if ("key".equals(keyOrValueName))
             {
-                key = getText(keyOrValueNode);
+                key = XmlHelper.getText(keyOrValueNode);
             }
             else if ("value".equals(keyOrValueName))
             {
@@ -203,11 +204,11 @@ public class InsecureStore implements ISecureStore
                     final String attributeName = valueNode.getNodeName();
                     if ("Password".equals(attributeName))
                     {
-                        password = getText(valueNode);
+                        password = XmlHelper.getText(valueNode);
                     }
                     else if ("Username".equals(attributeName))
                     {
-                        username = getText(valueNode);
+                        username = XmlHelper.getText(valueNode);
                     }
                 }
                 value = new Credential(username, password);
@@ -228,7 +229,7 @@ public class InsecureStore implements ISecureStore
             final String keyOrValueName = keyOrValueNode.getNodeName();
             if ("key".equals(keyOrValueName))
             {
-                key = getText(keyOrValueNode);
+                key = XmlHelper.getText(keyOrValueNode);
             }
             else if ("value".equals(keyOrValueName))
             {
@@ -253,44 +254,20 @@ public class InsecureStore implements ISecureStore
             final String propertyName = propertyNode.getNodeName();
             if ("Type".equals(propertyName))
             {
-                tokenType = TokenType.valueOf(TokenType.class, getText(propertyNode));
+                tokenType = TokenType.valueOf(TokenType.class, XmlHelper.getText(propertyNode));
             }
             else if ("Value".equals(propertyName))
             {
-                tokenValue = getText(propertyNode);
+                tokenValue = XmlHelper.getText(propertyNode);
             }
             else if ("targetIdentity".equals(propertyName))
             {
-                targetIdentity = UUID.fromString(getText(propertyNode));
+                targetIdentity = UUID.fromString(XmlHelper.getText(propertyNode));
             }
         }
         value = new Token(tokenValue, tokenType);
         value.setTargetIdentity(targetIdentity);
         return value;
-    }
-
-    // Adapted from http://docs.oracle.com/javase/tutorial/jaxp/dom/readingXML.html
-    private static String getText(final Node node) {
-        final StringBuilder result = new StringBuilder();
-        if (! node.hasChildNodes()) return "";
-
-        final NodeList list = node.getChildNodes();
-        for (int i=0; i < list.getLength(); i++) {
-            Node subnode = list.item(i);
-            if (subnode.getNodeType() == Node.TEXT_NODE) {
-                result.append(subnode.getNodeValue());
-            }
-            else if (subnode.getNodeType() == Node.CDATA_SECTION_NODE) {
-                result.append(subnode.getNodeValue());
-            }
-            else if (subnode.getNodeType() == Node.ENTITY_REFERENCE_NODE) {
-                // Recurse into the subtree for text
-                // (and ignore comments)
-                result.append(getText(subnode));
-            }
-        }
-
-        return result.toString();
     }
 
     void toXml(final OutputStream destination)
