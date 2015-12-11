@@ -190,29 +190,36 @@ public class InsecureStore implements ISecureStore
             }
             else if ("value".equals(keyOrValueName))
             {
-                String password = null;
-                String username = null;
-
-                final NodeList valueNodes = keyOrValueNode.getChildNodes();
-                for (int v = 0; v < valueNodes.getLength(); v++)
-                {
-                    final Node valueNode = valueNodes.item(v);
-                    if (valueNode.getNodeType() != Node.ELEMENT_NODE) continue;
-
-                    final String attributeName = valueNode.getNodeName();
-                    if ("Password".equals(attributeName))
-                    {
-                        password = XmlHelper.getText(valueNode);
-                    }
-                    else if ("Username".equals(attributeName))
-                    {
-                        username = XmlHelper.getText(valueNode);
-                    }
-                }
-                value = new Credential(username, password);
+                value = credentialFromXml(keyOrValueNode);
             }
         }
         result.Credentials.put(key, value);
+    }
+
+    static Credential credentialFromXml(final Node credentialNode)
+    {
+        Credential value;
+        String password = null;
+        String username = null;
+
+        final NodeList propertyNodes = credentialNode.getChildNodes();
+        for (int v = 0; v < propertyNodes.getLength(); v++)
+        {
+            final Node propertyNode = propertyNodes.item(v);
+            if (propertyNode.getNodeType() != Node.ELEMENT_NODE) continue;
+
+            final String propertyName = propertyNode.getNodeName();
+            if ("Password".equals(propertyName))
+            {
+                password = XmlHelper.getText(propertyNode);
+            }
+            else if ("Username".equals(propertyName))
+            {
+                username = XmlHelper.getText(propertyNode);
+            }
+        }
+        value = new Credential(username, password);
+        return value;
     }
 
     private static void loadToken(final InsecureStore result, final Node entryNode)
