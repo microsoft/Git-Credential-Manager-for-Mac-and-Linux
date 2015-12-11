@@ -3,8 +3,17 @@
 
 package com.microsoft.alm.helpers;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.ByteArrayOutputStream;
 
 public class XmlHelper
 {
@@ -30,5 +39,28 @@ public class XmlHelper
         }
 
         return result.toString();
+    }
+
+    public static String toString(final Document document)
+    {
+        try
+        {
+            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+            final TransformerFactory tf = TransformerFactory.newInstance();
+            final Transformer transformer = tf.newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty(OutputKeys.STANDALONE, "yes");
+            //http://johnsonsolutions.blogspot.ca/2007/08/xml-transformer-indent-doesnt-work-with.html
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+            transformer.transform(new DOMSource(document), new StreamResult(baos));
+
+            final String result = baos.toString();
+            return result;
+        }
+        catch (final TransformerException e)
+        {
+            throw new Error(e);
+        }
     }
 }
