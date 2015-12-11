@@ -5,6 +5,9 @@ package com.microsoft.alm.authentication;
 
 import com.microsoft.alm.helpers.ObjectExtensions;
 import com.microsoft.alm.helpers.StringHelper;
+import com.microsoft.alm.helpers.XmlHelper;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import javax.xml.bind.DatatypeConverter;
 import java.nio.charset.Charset;
@@ -48,6 +51,32 @@ public final class Credential extends Secret
      * Unique identifier of the user.
      */
     public final String Username;
+
+    public static Credential fromXml(final Node credentialNode)
+    {
+        Credential value;
+        String password = null;
+        String username = null;
+
+        final NodeList propertyNodes = credentialNode.getChildNodes();
+        for (int v = 0; v < propertyNodes.getLength(); v++)
+        {
+            final Node propertyNode = propertyNodes.item(v);
+            if (propertyNode.getNodeType() != Node.ELEMENT_NODE) continue;
+
+            final String propertyName = propertyNode.getNodeName();
+            if ("Password".equals(propertyName))
+            {
+                password = XmlHelper.getText(propertyNode);
+            }
+            else if ("Username".equals(propertyName))
+            {
+                username = XmlHelper.getText(propertyNode);
+            }
+        }
+        value = new Credential(username, password);
+        return value;
+    }
 
     /**
      * Compares an object to this {@link Credential} for equality.
