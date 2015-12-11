@@ -232,33 +232,41 @@ public class InsecureStore implements ISecureStore
             }
             else if ("value".equals(keyOrValueName))
             {
-                String tokenValue = null;
-                TokenType tokenType = null;
-                UUID targetIdentity = Guid.Empty;
-
-                final NodeList valueNodes = keyOrValueNode.getChildNodes();
-                for (int v = 0; v < valueNodes.getLength(); v++)
-                {
-                    final Node valueNode = valueNodes.item(v);
-                    final String attributeName = valueNode.getNodeName();
-                    if ("Type".equals(attributeName))
-                    {
-                        tokenType = TokenType.valueOf(TokenType.class, getText(valueNode));
-                    }
-                    else if ("Value".equals(attributeName))
-                    {
-                        tokenValue = getText(valueNode);
-                    }
-                    else if ("targetIdentity".equals(attributeName))
-                    {
-                        targetIdentity = UUID.fromString(getText(valueNode));
-                    }
-                }
-                value = new Token(tokenValue, tokenType);
-                value.setTargetIdentity(targetIdentity);
+                value = tokenFromXml(keyOrValueNode);
             }
         }
         result.Tokens.put(key, value);
+    }
+
+    static Token tokenFromXml(final Node tokenNode)
+    {
+        Token value;
+
+        String tokenValue = null;
+        TokenType tokenType = null;
+        UUID targetIdentity = Guid.Empty;
+
+        final NodeList propertyNodes = tokenNode.getChildNodes();
+        for (int v = 0; v < propertyNodes.getLength(); v++)
+        {
+            final Node propertyNode = propertyNodes.item(v);
+            final String propertyName = propertyNode.getNodeName();
+            if ("Type".equals(propertyName))
+            {
+                tokenType = TokenType.valueOf(TokenType.class, getText(propertyNode));
+            }
+            else if ("Value".equals(propertyName))
+            {
+                tokenValue = getText(propertyNode);
+            }
+            else if ("targetIdentity".equals(propertyName))
+            {
+                targetIdentity = UUID.fromString(getText(propertyNode));
+            }
+        }
+        value = new Token(tokenValue, tokenType);
+        value.setTargetIdentity(targetIdentity);
+        return value;
     }
 
     // Adapted from http://docs.oracle.com/javase/tutorial/jaxp/dom/readingXML.html
