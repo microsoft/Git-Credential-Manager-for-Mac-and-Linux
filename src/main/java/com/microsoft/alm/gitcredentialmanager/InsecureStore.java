@@ -260,25 +260,7 @@ public class InsecureStore implements ISecureStore
             final Token value = entry.getValue();
             if (value != null)
             {
-                final Element valueNode = document.createElement("value");
-
-                final Element typeNode = document.createElement("Type");
-                final Text typeValue = document.createTextNode(value.Type.toString());
-                typeNode.appendChild(typeValue);
-                valueNode.appendChild(typeNode);
-
-                final Element tokenValueNode = document.createElement("Value");
-                final Text valueValue = document.createTextNode(value.Value);
-                tokenValueNode.appendChild(valueValue);
-                valueNode.appendChild(tokenValueNode);
-
-                if (!Guid.Empty.equals(value.getTargetIdentity()))
-                {
-                    final Element targetIdentityNode = document.createElement("targetIdentity");
-                    final Text targetIdentityValue = document.createTextNode(value.getTargetIdentity().toString());
-                    targetIdentityNode.appendChild(targetIdentityValue);
-                    valueNode.appendChild(targetIdentityNode);
-                }
+                final Element valueNode = tokenToXml(document, value);
 
                 entryNode.appendChild(valueNode);
             }
@@ -286,6 +268,30 @@ public class InsecureStore implements ISecureStore
             tokensNode.appendChild(entryNode);
         }
         return tokensNode;
+    }
+
+    static Element tokenToXml(final Document document, final Token token)
+    {
+        final Element valueNode = document.createElement("value");
+
+        final Element typeNode = document.createElement("Type");
+        final Text typeValue = document.createTextNode(token.Type.toString());
+        typeNode.appendChild(typeValue);
+        valueNode.appendChild(typeNode);
+
+        final Element tokenValueNode = document.createElement("Value");
+        final Text valueValue = document.createTextNode(token.Value);
+        tokenValueNode.appendChild(valueValue);
+        valueNode.appendChild(tokenValueNode);
+
+        if (!Guid.Empty.equals(token.getTargetIdentity()))
+        {
+            final Element targetIdentityNode = document.createElement("targetIdentity");
+            final Text targetIdentityValue = document.createTextNode(token.getTargetIdentity().toString());
+            targetIdentityNode.appendChild(targetIdentityValue);
+            valueNode.appendChild(targetIdentityNode);
+        }
+        return valueNode;
     }
 
     private Element createCredentialsNode(final Document document)
