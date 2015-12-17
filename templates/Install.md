@@ -20,12 +20,17 @@ If you can't use any of the package managers, you can also download [${project.a
 
 ### Installing on Mac using Homebrew or on Linux using Linuxbrew (recommended)
 
-1. Install the needed resources using Homebrew/Linuxbrew:
+
+1. Update the Homebrew/Linuxbrew formulae to make sure you have the latest versions:
+    ```
+    brew update
+    ```
+2. Install the GCM formula:
 
     ```
     brew install ${project.artifactId}
     ```
-2. Run the GCM in `install` mode, which will check its requirements and then update the "global" Git configuration file (the one in your home folder):
+3. Run the GCM in `install` mode, which will check its requirements and then update the "global" Git configuration file (the one in your home folder):
 
     ```
     ${project.artifactId} install
