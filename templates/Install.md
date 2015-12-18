@@ -13,20 +13,24 @@ Great care was taken to avoid using any features of Java that would impact compa
 
 ## How to install
 On Mac OS X, installing via Homebrew is highly recommended.
-On Linux, if you have an RPM-based package manager, installing via the RPM is recommended.
-You will also soon have the option of installing via Linuxbrew.
+On Linux, it is recommended to use Linuxbrew or an RPM-based package manager if you can.
 
 If you can't use any of the package managers, you can also download [${project.artifactId}-${project.version}.jar](https://github.com/Microsoft/Git-Credential-Manager-for-Mac-and-Linux/releases/download/${project.artifactId}-${project.version}/${project.artifactId}-${project.version}.jar) somewhere safe and stable, such as `~/${project.artifactId}/`, and then follow the instructions for automatic or manual configuration.
 
 
-### Installing on Mac using Homebrew (recommended)
+### Installing on Mac using Homebrew or on Linux using Linuxbrew (recommended)
 
-1. Install the needed resources using Homebrew:
+
+1. Update the Homebrew/Linuxbrew formulae to make sure you have the latest versions:
+    ```
+    brew update
+    ```
+2. Install the GCM formula:
 
     ```
     brew install ${project.artifactId}
     ```
-2. Run the GCM in `install` mode, which will check its requirements and then update the "global" Git configuration file (the one in your home folder):
+3. Run the GCM in `install` mode, which will check its requirements and then update the "global" Git configuration file (the one in your home folder):
 
     ```
     ${project.artifactId} install
@@ -111,14 +115,14 @@ Debug mode will turn on tracing and assertions, producing a lot of output to `st
 ## How to remove or uninstall
 We are sad to see you go!  Please give us some feedback on how we could do better next time.
 
-### Uninstall from Mac using Homebrew
+### Uninstall from Mac using Homebrew or Linux using Linuxbrew
 
 1. Run the GCM in `uninstall` mode, which will update the "global" Git configuration file (the one in your home folder):
 
     ```
     ${project.artifactId} uninstall
     ```
-2. Uninstall the ${project.artifactId} package with Homebrew:
+2. Uninstall the ${project.artifactId} package with Homebrew/Linuxbrew:
 
     ```
     brew uninstall ${project.artifactId}
