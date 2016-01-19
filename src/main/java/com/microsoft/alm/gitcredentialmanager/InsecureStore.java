@@ -6,10 +6,9 @@ package com.microsoft.alm.gitcredentialmanager;
 import com.microsoft.alm.authentication.Credential;
 import com.microsoft.alm.authentication.ISecureStore;
 import com.microsoft.alm.authentication.Token;
-import com.microsoft.alm.authentication.TokenType;
-import com.microsoft.alm.helpers.Guid;
 import com.microsoft.alm.helpers.IOHelper;
 import com.microsoft.alm.helpers.Trace;
+import com.microsoft.alm.helpers.XmlHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -31,7 +30,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 public class InsecureStore implements ISecureStore
 {
@@ -187,30 +185,11 @@ public class InsecureStore implements ISecureStore
             final String keyOrValueName = keyOrValueNode.getNodeName();
             if ("key".equals(keyOrValueName))
             {
-                key = getText(keyOrValueNode);
+                key = XmlHelper.getText(keyOrValueNode);
             }
             else if ("value".equals(keyOrValueName))
             {
-                String password = null;
-                String username = null;
-
-                final NodeList valueNodes = keyOrValueNode.getChildNodes();
-                for (int v = 0; v < valueNodes.getLength(); v++)
-                {
-                    final Node valueNode = valueNodes.item(v);
-                    if (valueNode.getNodeType() != Node.ELEMENT_NODE) continue;
-
-                    final String attributeName = valueNode.getNodeName();
-                    if ("Password".equals(attributeName))
-                    {
-                        password = getText(valueNode);
-                    }
-                    else if ("Username".equals(attributeName))
-                    {
-                        username = getText(valueNode);
-                    }
-                }
-                value = new Credential(username, password);
+                value = Credential.fromXml(keyOrValueNode);
             }
         }
         result.Credentials.put(key, value);
@@ -228,61 +207,14 @@ public class InsecureStore implements ISecureStore
             final String keyOrValueName = keyOrValueNode.getNodeName();
             if ("key".equals(keyOrValueName))
             {
-                key = getText(keyOrValueNode);
+                key = XmlHelper.getText(keyOrValueNode);
             }
             else if ("value".equals(keyOrValueName))
             {
-                String tokenValue = null;
-                TokenType tokenType = null;
-                UUID targetIdentity = Guid.Empty;
-
-                final NodeList valueNodes = keyOrValueNode.getChildNodes();
-                for (int v = 0; v < valueNodes.getLength(); v++)
-                {
-                    final Node valueNode = valueNodes.item(v);
-                    final String attributeName = valueNode.getNodeName();
-                    if ("Type".equals(attributeName))
-                    {
-                        tokenType = TokenType.valueOf(TokenType.class, getText(valueNode));
-                    }
-                    else if ("Value".equals(attributeName))
-                    {
-                        tokenValue = getText(valueNode);
-                    }
-                    else if ("targetIdentity".equals(attributeName))
-                    {
-                        targetIdentity = UUID.fromString(getText(valueNode));
-                    }
-                }
-                value = new Token(tokenValue, tokenType);
-                value.setTargetIdentity(targetIdentity);
+                value = Token.fromXml(keyOrValueNode);
             }
         }
         result.Tokens.put(key, value);
-    }
-
-    // Adapted from http://docs.oracle.com/javase/tutorial/jaxp/dom/readingXML.html
-    private static String getText(final Node node) {
-        final StringBuilder result = new StringBuilder();
-        if (! node.hasChildNodes()) return "";
-
-        final NodeList list = node.getChildNodes();
-        for (int i=0; i < list.getLength(); i++) {
-            Node subnode = list.item(i);
-            if (subnode.getNodeType() == Node.TEXT_NODE) {
-                result.append(subnode.getNodeValue());
-            }
-            else if (subnode.getNodeType() == Node.CDATA_SECTION_NODE) {
-                result.append(subnode.getNodeValue());
-            }
-            else if (subnode.getNodeType() == Node.ENTITY_REFERENCE_NODE) {
-                // Recurse into the subtree for text
-                // (and ignore comments)
-                result.append(getText(subnode));
-            }
-        }
-
-        return result.toString();
     }
 
     void toXml(final OutputStream destination)
@@ -327,25 +259,7 @@ public class InsecureStore implements ISecureStore
             final Token value = entry.getValue();
             if (value != null)
             {
-                final Element valueNode = document.createElement("value");
-
-                final Element typeNode = document.createElement("Type");
-                final Text typeValue = document.createTextNode(value.Type.toString());
-                typeNode.appendChild(typeValue);
-                valueNode.appendChild(typeNode);
-
-                final Element tokenValueNode = document.createElement("Value");
-                final Text valueValue = document.createTextNode(value.Value);
-                tokenValueNode.appendChild(valueValue);
-                valueNode.appendChild(tokenValueNode);
-
-                if (!Guid.Empty.equals(value.getTargetIdentity()))
-                {
-                    final Element targetIdentityNode = document.createElement("targetIdentity");
-                    final Text targetIdentityValue = document.createTextNode(value.getTargetIdentity().toString());
-                    targetIdentityNode.appendChild(targetIdentityValue);
-                    valueNode.appendChild(targetIdentityNode);
-                }
+                final Element valueNode = value.toXml(document);
 
                 entryNode.appendChild(valueNode);
             }
@@ -370,17 +284,7 @@ public class InsecureStore implements ISecureStore
             final Credential value = entry.getValue();
             if (value != null)
             {
-                final Element valueNode = document.createElement("value");
-
-                final Element passwordNode = document.createElement("Password");
-                final Text passwordValue = document.createTextNode(value.Password);
-                passwordNode.appendChild(passwordValue);
-                valueNode.appendChild(passwordNode);
-
-                final Element usernameNode = document.createElement("Username");
-                final Text usernameValue = document.createTextNode(value.Username);
-                usernameNode.appendChild(usernameValue);
-                valueNode.appendChild(usernameNode);
+                final Element valueNode = value.toXml(document);
 
                 entryNode.appendChild(valueNode);
             }
