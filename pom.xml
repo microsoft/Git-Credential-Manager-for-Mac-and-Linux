@@ -267,11 +267,12 @@ Licensed under the MIT license. See License.txt in the project root. -->
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.codehaus.gmaven</groupId>
-        <artifactId>gmaven-plugin</artifactId>
-        <version>1.4</version>
+        <groupId>org.codehaus.gmavenplus</groupId>
+        <artifactId>gmavenplus-plugin</artifactId>
+        <version>1.5</version>
         <executions>
           <execution>
+            <id>gmavenplus-verify</id>
             <phase>verify</phase>
             <goals>
               <goal>execute</goal>
@@ -281,16 +282,18 @@ Licensed under the MIT license. See License.txt in the project root. -->
               <properties>
                 <shaded_jar_checksum_file>${artifactId}-${version}.jar.sha256</shaded_jar_checksum_file>
               </properties>
-              <source>
+              <scripts>
+                <script><![CDATA[
                 final String targetDir = project.build.directory;
-                final String shadedJarChecksumFile = project.properties.shaded_jar_checksum_file;
+                final String shadedJarChecksumFile = shaded_jar_checksum_file;
                 final File checksumFile = new File(targetDir, shadedJarChecksumFile);
                 final String checksum = checksumFile.getText();
                 final File homebrewScriptFile = new File(targetDir, "git-credential-manager.rb");
                 final String homebrewScript = homebrewScriptFile.getText();
                 final String finalHomebrewScript = homebrewScript.replace("TODO: insert SHA-256 of JAR here", checksum);
                 homebrewScriptFile.setText(finalHomebrewScript);
-              </source>
+                ]]></script>
+              </scripts>
             </configuration>
           </execution>
         </executions>
@@ -508,6 +511,12 @@ Licensed under the MIT license. See License.txt in the project root. -->
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
       <version>1.7</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-all</artifactId>
+      <version>2.4.5</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
