@@ -272,6 +272,12 @@ Licensed under the MIT license. See License.txt in the project root. -->
         <version>1.5</version>
         <executions>
           <execution>
+            <id>gmavenplus-test</id>
+            <goals>
+              <goal>testCompile</goal>
+            </goals>
+          </execution>
+          <execution>
             <id>gmavenplus-verify</id>
             <phase>verify</phase>
             <goals>
