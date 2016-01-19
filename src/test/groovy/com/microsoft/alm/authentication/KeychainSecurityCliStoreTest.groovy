@@ -4,7 +4,6 @@
 package com.microsoft.alm.authentication
 
 import groovy.transform.CompileStatic
-import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -13,8 +12,12 @@ import org.junit.Test;
 @CompileStatic
 public class KeychainSecurityCliStoreTest {
 
-    @Test
-    public void parse() {
-        Assert.assertEquals(4, 2 + 2);
+    @Test public void parseMetadataLine() {
+        def input = '''keychain: "/Users/chuck.norris/Library/Keychains/login.keychain"'''
+        def destination = [:]
+
+        KeychainSecurityCliStore.parseMetadataLine(input, destination)
+
+        assert ["keychain" : "/Users/chuck.norris/Library/Keychains/login.keychain"] == destination
     }
 }

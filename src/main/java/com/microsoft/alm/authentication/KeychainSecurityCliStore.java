@@ -7,6 +7,10 @@ import com.microsoft.alm.helpers.NotImplementedException;
 import com.microsoft.alm.oauth2.useragent.subprocess.DefaultProcessFactory;
 import com.microsoft.alm.oauth2.useragent.subprocess.TestableProcessFactory;
 
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class KeychainSecurityCliStore implements ISecureStore
 {
     static final String PREFIX = "gcm4ml:";
@@ -35,6 +39,23 @@ public class KeychainSecurityCliStore implements ISecureStore
     static String createServiceName(final String targetName)
     {
         return PREFIX + targetName;
+    }
+
+    private static final Pattern MetadataLinePattern = Pattern.compile
+    (
+    //   ^(\w+):\s"(.+)"
+        "^(\\w+):\\s\"(.+)\""
+    );
+
+    static void parseMetadataLine(final String line, final Map<String, Object> destination)
+    {
+        final Matcher matcher = MetadataLinePattern.matcher(line);
+        if (matcher.matches())
+        {
+            final String key = matcher.group(1);
+            final String value = matcher.group(2);
+            destination.put(key, value);
+        }
     }
 
     @Override
