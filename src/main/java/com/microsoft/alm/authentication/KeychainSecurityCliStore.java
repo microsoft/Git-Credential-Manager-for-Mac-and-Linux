@@ -4,10 +4,24 @@
 package com.microsoft.alm.authentication;
 
 import com.microsoft.alm.helpers.NotImplementedException;
+import com.microsoft.alm.oauth2.useragent.subprocess.DefaultProcessFactory;
+import com.microsoft.alm.oauth2.useragent.subprocess.TestableProcessFactory;
 
 public class KeychainSecurityCliStore implements ISecureStore
 {
     static final String PREFIX = "gcm4ml:";
+
+    private final TestableProcessFactory processFactory;
+
+    public KeychainSecurityCliStore()
+    {
+        this(new DefaultProcessFactory());
+    }
+
+    KeychainSecurityCliStore(final TestableProcessFactory processFactory)
+    {
+        this.processFactory = processFactory;
+    }
 
     /**
      * Adds a prefix to the target name to avoid a collision
