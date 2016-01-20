@@ -27,7 +27,7 @@ final class Global
             final String version = Global.class.getPackage().getImplementationVersion();
             userAgent = String.format("git-credential-manager (%1$s; %2$s; %3$s) %4$s/%5$s git-tools/%6$s",
                     System.getProperty("os.name"), // "Windows Server 2012 R2", "Mac OS X", "Linux"
-                    System.getProperty("os.version"), // "6.3", "10.10.5", "3.19.0-28-generic"
+                    System.getProperty("os.version"), // "6.3", "10.9.5", "3.19.0-28-generic"
                     System.getProperty("os.arch"), // "amd64", "x86_64", "amd64"
                     System.getProperty("java.vm.name"), // "Java HotSpot(TM) 64-Bit Server VM", "OpenJDK 64-Bit Server VM"
                     System.getProperty("java.runtime.version"), // "1.8.0_60-b27", "1.7.0_71-b14", "1.7.0_79-b14"
