@@ -58,6 +58,184 @@ public class KeychainSecurityCliStore implements ISecureStore
         }
     }
 
+    enum AttributeParsingState
+    {
+        Spaces,
+        StringKey,
+        HexKey,
+        BeforeType,
+        Type,
+        AfterType,
+        BeforeValue,
+        NullValue,
+        StringValue,
+        TimeDateValue,
+        ValueFinished,
+        ;
+    }
+
+    static void parseAttributeLine(final String line, final Map<String, Object> destination)
+    {
+        final String template = "Undefined transition '%1$s' from %2$s.";
+        final StringBuilder key = new StringBuilder();
+        final StringBuilder type = new StringBuilder();
+        final StringBuilder value = new StringBuilder();
+        boolean isNullValue = false;
+        AttributeParsingState state = AttributeParsingState.Spaces;
+        for (final char c : line.toCharArray())
+        {
+            switch (state)
+            {
+                case Spaces:
+                    switch (c)
+                    {
+                        case ' ':
+                            break;
+                        case '0':
+                            state = AttributeParsingState.HexKey;
+                            key.append(c);
+                            break;
+                        case '"':
+                            state = AttributeParsingState.StringKey;
+                            break;
+                        default:
+                            throw new Error(String.format(template, c, state));
+                    }
+                    break;
+                case HexKey:
+                    switch (c)
+                    {
+                        case ' ':
+                            state = AttributeParsingState.BeforeType;
+                            break;
+                        case 'x':
+                        case '0':
+                        case '1':
+                        case '2':
+                        case '3':
+                        case '4':
+                        case '5':
+                        case '6':
+                        case '7':
+                        case '8':
+                        case '9':
+                        case 'A':
+                        case 'B':
+                        case 'C':
+                        case 'D':
+                        case 'E':
+                        case 'F':
+                            key.append(c);
+                            break;
+                        default:
+                            throw new Error(String.format(template, c, state));
+                    }
+                    break;
+                case StringKey:
+                    switch (c)
+                    {
+                        case '"':
+                            state = AttributeParsingState.BeforeType;
+                            break;
+                        default:
+                            key.append(c);
+                            break;
+                    }
+                    break;
+                case BeforeType:
+                    switch (c)
+                    {
+                        case '<':
+                            state = AttributeParsingState.Type;
+                            break;
+                        default:
+                            throw new Error(String.format(template, c, state));
+                    }
+                    break;
+                case Type:
+                    switch (c)
+                    {
+                        case '>':
+                            state = AttributeParsingState.AfterType;
+                            break;
+                        default:
+                            type.append(c);
+                            break;
+                    }
+                    break;
+                case AfterType:
+                    switch (c)
+                    {
+                        case '=':
+                            state = AttributeParsingState.BeforeValue;
+                            break;
+                        default:
+                            throw new Error(String.format(template, c, state));
+                    }
+                    break;
+                case BeforeValue:
+                    switch (c)
+                    {
+                        case '<':
+                            state = AttributeParsingState.NullValue;
+                            isNullValue = true;
+                            value.append(c);
+                            break;
+                        case '0':
+                            // TODO: check that type was "timedate"
+                            state = AttributeParsingState.TimeDateValue;
+                            value.append(c);
+                            break;
+                        case '"':
+                            state = AttributeParsingState.StringValue;
+                            break;
+                        default:
+                            throw new Error(String.format(template, c, state));
+                    }
+                    break;
+                case NullValue:
+                    switch (c)
+                    {
+                        case '>':
+                            state = AttributeParsingState.ValueFinished;
+                            value.append(c);
+                            break;
+                        case 'N':
+                        case 'U':
+                        case 'L':
+                            value.append(c);
+                            break;
+                        default:
+                            throw new Error(String.format(template, c, state));
+                    }
+                    break;
+                case StringValue:
+                    // double quotes aren't escaped, so everything goes in as-is
+                    value.append(c);
+                    break;
+                case TimeDateValue:
+                    // we don't care about timedate for now, so just append as-is
+                    value.append(c);
+                    break;
+                case ValueFinished:
+                    throw new Error(String.format(template, c, state));
+            }
+        }
+        if (isNullValue)
+        {
+            destination.put(key.toString(), null);
+        }
+        else if ("blob".equals(type.toString()))
+        {
+            final int lastCharIndex = value.length() - 1;
+            value.deleteCharAt(lastCharIndex);
+            destination.put(key.toString(), value.toString());
+        }
+        // TODO: else if ("timedate".equals(type))
+        // TODO: else if ("uint32".equals(type))
+        // TODO: else if ("sint32".equals(type))
+    }
+
     @Override
     public void delete(final String targetName)
     {
