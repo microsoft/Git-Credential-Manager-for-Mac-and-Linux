@@ -3,10 +3,15 @@
 
 package com.microsoft.alm.authentication;
 
+import com.microsoft.alm.helpers.IOHelper;
 import com.microsoft.alm.helpers.NotImplementedException;
 import com.microsoft.alm.oauth2.useragent.subprocess.DefaultProcessFactory;
 import com.microsoft.alm.oauth2.useragent.subprocess.TestableProcessFactory;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,6 +44,45 @@ public class KeychainSecurityCliStore implements ISecureStore
     static String createServiceName(final String targetName)
     {
         return PREFIX + targetName;
+    }
+
+    static Map<String, Object> parseKeychainMetaData(final String metadata)
+    {
+        final Map<String, Object> result = new HashMap<String, Object>();
+        final StringReader sr = new StringReader(metadata);
+        final BufferedReader br = new BufferedReader(sr);
+        boolean parsingAttributes = false;
+        String line;
+        try
+        {
+            while ((line = br.readLine()) != null)
+            {
+                if (parsingAttributes)
+                {
+                    parseAttributeLine(line, result);
+                }
+                else
+                {
+                    if ("attributes:".equals(line))
+                    {
+                        parsingAttributes = true;
+                    }
+                    else
+                    {
+                        parseMetadataLine(line, result);
+                    }
+                }
+            }
+        }
+        catch (final IOException e)
+        {
+            throw new Error(e);
+        }
+        finally
+        {
+            IOHelper.closeQuietly(br);
+        }
+        return result;
     }
 
     private static final Pattern MetadataLinePattern = Pattern.compile
