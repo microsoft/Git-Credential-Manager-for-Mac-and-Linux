@@ -49,6 +49,12 @@ public class KeychainSecurityCliStore implements ISecureStore
     static Map<String, Object> parseKeychainMetaData(final String metadata)
     {
         final Map<String, Object> result = new HashMap<String, Object>();
+        parseKeychainMetaData(metadata, result);
+        return result;
+    }
+
+    static void parseKeychainMetaData(final String metadata, final Map<String, Object> result)
+    {
         final StringReader sr = new StringReader(metadata);
         final BufferedReader br = new BufferedReader(sr);
         boolean parsingAttributes = false;
@@ -82,7 +88,6 @@ public class KeychainSecurityCliStore implements ISecureStore
         {
             IOHelper.closeQuietly(br);
         }
-        return result;
     }
 
     private static final Pattern MetadataLinePattern = Pattern.compile
