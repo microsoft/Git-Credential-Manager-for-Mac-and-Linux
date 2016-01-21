@@ -12,14 +12,18 @@ import org.junit.Test;
 @CompileStatic
 public class KeychainSecurityCliStoreTest {
 
-    @Test public void parseKeychainMetaData_typical() {
-        def input = """\
-keychain: "/Users/chuck.norris/Library/Keychains/login.keychain"
+    static final String USER_NAME = "chuck.norris"
+    static final String PASSWORD = "roundhouse"
+    static final String VSTS_ACCOUNT = "https://example.visualstudio.com"
+    static final String TARGET_NAME = "git:${VSTS_ACCOUNT}"
+    static final String SERVICE_NAME = "gcm4ml:${TARGET_NAME}"
+    static final String SAMPLE_METADATA = """\
+keychain: "/Users/${USER_NAME}/Library/Keychains/login.keychain"
 class: "genp"
 attributes:
-    0x00000007 <blob>="gcm4ml:git:https://example.visualstudio.com"
+    0x00000007 <blob>="${SERVICE_NAME}"
     0x00000008 <blob>=<NULL>
-    "acct"<blob>="chuck.norris"
+    "acct"<blob>="${USER_NAME}"
     "cdat"<timedate>=0x32303135313030353139343332355A00  "20151005194325Z\\000"
     "crtr"<uint32>="aapl"
     "cusi"<sint32>=<NULL>
@@ -31,18 +35,20 @@ attributes:
     "nega"<sint32>=<NULL>
     "prot"<blob>=<NULL>
     "scrp"<sint32>=<NULL>
-    "svce"<blob>="gcm4ml:git:https://example.visualstudio.com"
+    "svce"<blob>="${SERVICE_NAME}"
     "type"<uint32>=<NULL>
 """
 
-        def actual = KeychainSecurityCliStore.parseKeychainMetaData(input)
+    @Test public void parseKeychainMetaData_typical() {
+
+        def actual = KeychainSecurityCliStore.parseKeychainMetaData(SAMPLE_METADATA)
 
         def expected = [
-            "keychain": "/Users/chuck.norris/Library/Keychains/login.keychain",
+            "keychain": "/Users/${USER_NAME}/Library/Keychains/login.keychain",
             "class": "genp",
-            "0x00000007": "gcm4ml:git:https://example.visualstudio.com",
+            "0x00000007": SERVICE_NAME,
             "0x00000008": null,
-            "acct": "chuck.norris",
+            "acct": USER_NAME,
             // Not supported: "cdat" : '0x32303135313030353139343332355A00  "20151005194325Z\\000"',
             // Not supported: "crtr" : "aapl",
             "cusi" : null,
@@ -54,7 +60,7 @@ attributes:
             "nega" : null,
             "prot" : null,
             "scrp" : null,
-            "svce" : "gcm4ml:git:https://example.visualstudio.com",
+            "svce" : SERVICE_NAME,
             "type" : null,
         ]
         assert expected == actual
