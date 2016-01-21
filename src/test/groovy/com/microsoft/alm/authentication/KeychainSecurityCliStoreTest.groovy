@@ -75,6 +75,15 @@ attributes:
         assert ["keychain" : "/Users/chuck.norris/Library/Keychains/login.keychain"] == destination
     }
 
+    @Test public void parseMetadataLine_containsDoubleQuote() {
+        def input = '''password: "A string with "double quotes" inside"'''
+        def destination = [:]
+
+        KeychainSecurityCliStore.parseMetadataLine(input, destination)
+
+        assert ["password" : 'A string with "double quotes" inside'] == destination
+    }
+
     @Test public void parseAttributeLine_stringKeyBlobString() {
         def input = '''    "acct"<blob>="chuck.norris"'''
         def destination = [:]
