@@ -3,7 +3,11 @@
 
 package com.microsoft.alm.authentication
 
+import com.microsoft.alm.helpers.StringHelper
+import com.microsoft.alm.oauth2.useragent.subprocess.DefaultProcessFactory
+import com.microsoft.alm.oauth2.useragent.subprocess.TestableProcessFactory
 import groovy.transform.CompileStatic
+import org.junit.Ignore
 import org.junit.Test;
 
 /**
@@ -28,6 +32,28 @@ attributes:
     "crtr"<uint32>="aapl"
     "cusi"<sint32>=<NULL>
     "desc"<blob>="Credential"
+    "gena"<blob>=<NULL>
+    "icmt"<blob>=<NULL>
+    "invi"<sint32>=<NULL>
+    "mdat"<timedate>=0x32303135313030353139343332355A00  "20151005194325Z\\000"
+    "nega"<sint32>=<NULL>
+    "prot"<blob>=<NULL>
+    "scrp"<sint32>=<NULL>
+    "svce"<blob>="${SERVICE_NAME}"
+    "type"<uint32>=<NULL>
+"""
+
+    static final String SAMPLE_TOKEN_METADATA = """\
+keychain: "/Users/${USER_NAME}/Library/Keychains/login.keychain"
+class: "genp"
+attributes:
+    0x00000007 <blob>="${SERVICE_NAME}"
+    0x00000008 <blob>=<NULL>
+    "acct"<blob>="Personal Access Token"
+    "cdat"<timedate>=0x32303135313030353139343332355A00  "20151005194325Z\\000"
+    "crtr"<uint32>="aapl"
+    "cusi"<sint32>=<NULL>
+    "desc"<blob>="Token"
     "gena"<blob>=<NULL>
     "icmt"<blob>=<NULL>
     "invi"<sint32>=<NULL>
@@ -127,5 +153,103 @@ attributes:
         KeychainSecurityCliStore.parseAttributeLine(input, destination)
 
         assert ["0x00000008" : null] == destination
+    }
+
+    @Test public void simulatedInteraction() {
+        def alpha = new FifoProcess(SAMPLE_CREDENTIAL_METADATA, "password has been deleted.")
+        alpha.with {
+            expectedCommand = ["/usr/bin/security", "delete-generic-password", "-s", SERVICE_NAME]
+        }
+
+        def bravo = new FifoProcess(StringHelper.Empty, "security: SecKeychainSearchCopyNext: The specified item could not be found in the keychain.")
+        bravo.with {
+            expectedCommand = ["/usr/bin/security", "delete-generic-password", "-s", SERVICE_NAME]
+            expectedExitCode = 44
+        }
+
+        def charlie = new FifoProcess(StringHelper.Empty)
+        charlie.with {
+            expectedCommand = ["/usr/bin/security", "add-generic-password", "-a", USER_NAME, "-s", SERVICE_NAME, "-w", PASSWORD, "-D", "Credential"]
+            expectedExitCode = 0
+        }
+
+        def delta = new FifoProcess(SAMPLE_CREDENTIAL_METADATA, """password: "${PASSWORD}"
+""")
+        delta.with {
+            expectedCommand = ["/usr/bin/security", "find-generic-password", "-s", SERVICE_NAME, "-D", "Credential", "-g"]
+            expectedExitCode = 0
+        }
+
+        def echo = new FifoProcess(SAMPLE_TOKEN_METADATA, "password has been deleted.")
+        echo.with {
+            expectedCommand = ["/usr/bin/security", "delete-generic-password", "-s", SERVICE_NAME]
+        }
+
+        def foxtrot = new FifoProcess(StringHelper.Empty, "security: SecKeychainSearchCopyNext: The specified item could not be found in the keychain.")
+        foxtrot.with {
+            expectedCommand = ["/usr/bin/security", "delete-generic-password", "-s", SERVICE_NAME]
+            expectedExitCode = 44
+        }
+
+        def golf = new FifoProcess(StringHelper.Empty)
+        golf.with {
+            expectedCommand = ["/usr/bin/security", "add-generic-password", "-a", "Personal Access Token", "-s", SERVICE_NAME, "-w", PASSWORD, "-D", "Token"]
+            expectedExitCode = 0
+        }
+
+        def hotel = new FifoProcess(SAMPLE_TOKEN_METADATA, """password: "${PASSWORD}"
+""")
+        hotel.with {
+            expectedCommand = ["/usr/bin/security", "find-generic-password", "-s", SERVICE_NAME, "-D", "Token", "-g"]
+            expectedExitCode = 0
+        }
+
+        def processFactory = new FifoProcessFactory(
+            alpha,
+            bravo,
+            charlie,
+            delta,
+            echo,
+            foxtrot,
+            golf,
+            hotel,
+        )
+        endToEndTest(processFactory)
+    }
+
+    @Ignore("Needs to be run manually, in interactive mode, because the Keychain needs a desktop")
+    @Test public void interactiveInteraction() {
+        def processFactory = new DefaultProcessFactory()
+        endToEndTest(processFactory)
+    }
+
+    static void endToEndTest(final TestableProcessFactory processFactory) {
+        final def store = new KeychainSecurityCliStore(processFactory)
+        final def credential = new Credential(USER_NAME, PASSWORD)
+
+        // potentially delete an old entry from a previous run of this test
+        store.delete(TARGET_NAME)
+        // there should be nothing there, yet this call should not fail
+        store.delete(TARGET_NAME)
+
+        store.writeCredential(TARGET_NAME, credential)
+
+        final def actualCredential = store.readCredentials(TARGET_NAME)
+
+        assert credential == actualCredential
+
+
+        final def token = new Token(PASSWORD, TokenType.Personal)
+
+        // potentially delete an old entry from a previous run of this test
+        store.delete(TARGET_NAME)
+        // there should be nothing there, yet this call should not fail
+        store.delete(TARGET_NAME)
+
+        store.writeToken(TARGET_NAME, token)
+
+        final def actualToken = store.readToken(TARGET_NAME)
+
+        assert token == actualToken
     }
 }

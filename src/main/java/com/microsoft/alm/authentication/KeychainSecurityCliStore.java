@@ -4,8 +4,9 @@
 package com.microsoft.alm.authentication;
 
 import com.microsoft.alm.helpers.IOHelper;
-import com.microsoft.alm.helpers.NotImplementedException;
 import com.microsoft.alm.oauth2.useragent.subprocess.DefaultProcessFactory;
+import com.microsoft.alm.oauth2.useragent.subprocess.ProcessCoordinator;
+import com.microsoft.alm.oauth2.useragent.subprocess.TestableProcess;
 import com.microsoft.alm.oauth2.useragent.subprocess.TestableProcessFactory;
 
 import java.io.BufferedReader;
@@ -13,12 +14,30 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class KeychainSecurityCliStore implements ISecureStore
 {
+    static final String SECURITY = "/usr/bin/security";
+    static final String DELETE_GENERIC_PASSWORD = "delete-generic-password";
+    static final String FIND_GENERIC_PASSWORD = "find-generic-password";
+    static final String ADD_GENERIC_PASSWORD = "add-generic-password";
+    static final String ACCOUNT_PARAMETER = "-a";
+    static final String ACCOUNT_METADATA = "acct";
+    static final String PASSWORD = "password";
     static final String PREFIX = "gcm4ml:";
+    private static final String SERVICE_PARAMETER = "-s";
+    private static final String KIND_PARAMETER = "-D";
+    private static final String PASSWORD_PARAMETER = "-w";
+
+    enum SecretKind
+    {
+        Credential,
+        Token,
+        ;
+    }
 
     private final TestableProcessFactory processFactory;
 
@@ -289,34 +308,142 @@ public class KeychainSecurityCliStore implements ISecureStore
     public void delete(final String targetName)
     {
         final String serviceName = createServiceName(targetName);
-        throw new NotImplementedException(421274);
+        try
+        {
+            final TestableProcess process = processFactory.create(
+                SECURITY,
+                DELETE_GENERIC_PASSWORD,
+                SERVICE_PARAMETER, serviceName
+            );
+            // we don't care about the exit code
+            process.waitFor();
+        }
+        catch (final IOException e)
+        {
+            throw new Error(e);
+        }
+        catch (final InterruptedException e)
+        {
+            throw new Error(e);
+        }
+    }
+
+    static void checkResult(final int result, final String stdOut, final String stdErr)
+    {
+        if (result != 0)
+        {
+            final String template = "%1$s exited with result %2$d.\nstdOut: %3$s\nstdErr: %4$s\n";
+            final String message = String.format(template, SECURITY, result, stdOut, stdErr);
+            throw new Error(message);
+        }
+    }
+
+    static Map<String, Object> read(final SecretKind secretKind, final TestableProcessFactory processFactory, final String serviceName)
+    {
+        final String stdOut, stdErr;
+        try
+        {
+            final TestableProcess process = processFactory.create(
+                SECURITY,
+                FIND_GENERIC_PASSWORD,
+                SERVICE_PARAMETER, serviceName,
+                KIND_PARAMETER, secretKind.name(),
+                "-g" // "Display the password for the item found"
+            );
+            final ProcessCoordinator coordinator = new ProcessCoordinator(process);
+            final int result = coordinator.waitFor();
+            stdOut = coordinator.getStdOut();
+            stdErr = coordinator.getStdErr();
+            checkResult(result, stdOut, stdErr);
+        }
+        catch (final IOException e)
+        {
+            throw new Error(e);
+        }
+        catch (final InterruptedException e)
+        {
+            throw new Error(e);
+        }
+
+        final Map<String, Object> metaData = parseKeychainMetaData(stdOut);
+        parseKeychainMetaData(stdErr,  metaData);
+
+        return metaData;
     }
 
     @Override
     public Credential readCredentials(final String targetName)
     {
         final String serviceName = createServiceName(targetName);
-        throw new NotImplementedException(421274);
+
+        final Map<String, Object> metaData = read(SecretKind.Credential, processFactory, serviceName);
+
+        final String userName = (String) metaData.get(ACCOUNT_METADATA);
+        final String password = (String) metaData.get(PASSWORD);
+
+        final Credential result = new Credential(userName, password);
+
+        return result;
     }
 
     @Override
     public Token readToken(final String targetName)
     {
         final String serviceName = createServiceName(targetName);
-        throw new NotImplementedException(421274);
+
+        final Map<String, Object> metaData = read(SecretKind.Token, processFactory, serviceName);
+
+        final String password = (String) metaData.get(PASSWORD);
+        final String typeName = (String) metaData.get(ACCOUNT_METADATA);
+
+        final Token result = new Token(password, typeName);
+
+        return result;
+    }
+
+    static void write(final SecretKind secretKind, final TestableProcessFactory processFactory, final String serviceName, final String accountName, final String password)
+    {
+        final String stdOut, stdErr;
+        try
+        {
+            final TestableProcess process = processFactory.create(
+                SECURITY,
+                ADD_GENERIC_PASSWORD,
+                ACCOUNT_PARAMETER, accountName,
+                SERVICE_PARAMETER, serviceName,
+                PASSWORD_PARAMETER, password,
+                KIND_PARAMETER, secretKind.name()
+            );
+            final ProcessCoordinator coordinator = new ProcessCoordinator(process);
+            final int result = coordinator.waitFor();
+            stdOut = coordinator.getStdOut();
+            stdErr = coordinator.getStdErr();
+            checkResult(result, stdOut, stdErr);
+        }
+        catch (final IOException e)
+        {
+            throw new Error(e);
+        }
+        catch (final InterruptedException e)
+        {
+            throw new Error(e);
+        }
     }
 
     @Override
     public void writeCredential(final String targetName, final Credential credentials)
     {
         final String serviceName = createServiceName(targetName);
-        throw new NotImplementedException(421274);
+        write(SecretKind.Credential, processFactory, serviceName, credentials.Username, credentials.Password);
     }
 
     @Override
     public void writeToken(final String targetName, final Token token)
     {
         final String serviceName = createServiceName(targetName);
-        throw new NotImplementedException(421274);
+        final AtomicReference<String> accountNameReference = new AtomicReference<String>();
+        Token.getFriendlyNameFromType(token.Type, accountNameReference);
+        final String accountName = accountNameReference.get();
+        write(SecretKind.Token, processFactory, serviceName, accountName, token.Value);
     }
 }
