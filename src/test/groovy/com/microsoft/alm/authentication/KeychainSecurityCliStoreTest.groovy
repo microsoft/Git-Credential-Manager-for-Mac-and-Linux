@@ -17,7 +17,7 @@ public class KeychainSecurityCliStoreTest {
     static final String VSTS_ACCOUNT = "https://example.visualstudio.com"
     static final String TARGET_NAME = "git:${VSTS_ACCOUNT}"
     static final String SERVICE_NAME = "gcm4ml:${TARGET_NAME}"
-    static final String SAMPLE_METADATA = """\
+    static final String SAMPLE_CREDENTIAL_METADATA = """\
 keychain: "/Users/${USER_NAME}/Library/Keychains/login.keychain"
 class: "genp"
 attributes:
@@ -27,7 +27,7 @@ attributes:
     "cdat"<timedate>=0x32303135313030353139343332355A00  "20151005194325Z\\000"
     "crtr"<uint32>="aapl"
     "cusi"<sint32>=<NULL>
-    "desc"<blob>=<NULL>
+    "desc"<blob>="Credential"
     "gena"<blob>=<NULL>
     "icmt"<blob>=<NULL>
     "invi"<sint32>=<NULL>
@@ -41,7 +41,7 @@ attributes:
 
     @Test public void parseKeychainMetaData_typical() {
 
-        def actual = KeychainSecurityCliStore.parseKeychainMetaData(SAMPLE_METADATA)
+        def actual = KeychainSecurityCliStore.parseKeychainMetaData(SAMPLE_CREDENTIAL_METADATA)
 
         def expected = [
             "keychain": "/Users/${USER_NAME}/Library/Keychains/login.keychain",
@@ -52,7 +52,7 @@ attributes:
             // Not supported: "cdat" : '0x32303135313030353139343332355A00  "20151005194325Z\\000"',
             // Not supported: "crtr" : "aapl",
             "cusi" : null,
-            "desc" : null,
+            "desc" : "Credential",
             "gena" : null,
             "icmt" : null,
             "invi" : null,
