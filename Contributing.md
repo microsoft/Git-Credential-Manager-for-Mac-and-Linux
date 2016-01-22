@@ -2,7 +2,18 @@ Contributing
 ============
 There are many ways to contribute.
 
-1. [Report defects and provide suggestions](https://github.com/Microsoft/Git-Credential-Manager-for-Mac-and-Linux/issues).
+1. [Report defects and provide suggestions](https://github.com/Microsoft/Git-Credential-Manager-for-Mac-and-Linux/issues). <br />
+    If you need to submit sensitive or confidential information, please encrypt your message and/or attachments using our [PGP key](https://java.visualstudio.com/Content/RPM-GPG-KEY-olivida.txt).
+    <dl>
+        <dt><strong>ID</strong></dt>
+        <dd>0xB206CE00</dd>
+        <dt><strong>Type</strong></dt>
+        <dd>RSA</dd>
+        <dt><strong>Size</strong></dt>
+        <dd>2048-bit</dd>
+        <dt><strong>Fingerprint</strong></dt>
+        <dd>0EFF 2F22 181A 7F25 5074  4130 E405 8033 BA34 DBC2</dd>
+    </dl>
 2. Review [pull requests](https://github.com/Microsoft/Git-Credential-Manager-for-Mac-and-Linux/pulls), even if it's just to verify that the defect was fixed or that the feature was implemented as intended.
 3. Contribute fixes and features:
     1. Fork this repository ( https://github.com/Microsoft/Git-Credential-Manager-for-Mac-and-Linux/fork ) and clone it.
