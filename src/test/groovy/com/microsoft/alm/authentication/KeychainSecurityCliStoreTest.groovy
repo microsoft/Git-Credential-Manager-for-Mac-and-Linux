@@ -156,63 +156,63 @@ attributes:
     }
 
     @Test public void simulatedInteraction() {
-        def alpha = new FifoProcess(SAMPLE_CREDENTIAL_METADATA, "password has been deleted.")
-        alpha.with {
+        def deleteCredentialSuccess = new FifoProcess(SAMPLE_CREDENTIAL_METADATA, "password has been deleted.")
+        deleteCredentialSuccess.with {
             expectedCommand = ["/usr/bin/security", "delete-generic-password", "-s", SERVICE_NAME]
         }
 
-        def bravo = new FifoProcess(StringHelper.Empty, "security: SecKeychainSearchCopyNext: The specified item could not be found in the keychain.")
-        bravo.with {
+        def deleteCredentialFailure = new FifoProcess(StringHelper.Empty, "security: SecKeychainSearchCopyNext: The specified item could not be found in the keychain.")
+        deleteCredentialFailure.with {
             expectedCommand = ["/usr/bin/security", "delete-generic-password", "-s", SERVICE_NAME]
             expectedExitCode = 44
         }
 
-        def charlie = new FifoProcess(StringHelper.Empty)
-        charlie.with {
+        def addCredential = new FifoProcess(StringHelper.Empty)
+        addCredential.with {
             expectedCommand = ["/usr/bin/security", "add-generic-password", "-a", USER_NAME, "-s", SERVICE_NAME, "-w", PASSWORD, "-D", "Credential"]
             expectedExitCode = 0
         }
 
-        def delta = new FifoProcess(SAMPLE_CREDENTIAL_METADATA, """password: "${PASSWORD}"
+        def findCredential = new FifoProcess(SAMPLE_CREDENTIAL_METADATA, """password: "${PASSWORD}"
 """)
-        delta.with {
+        findCredential.with {
             expectedCommand = ["/usr/bin/security", "find-generic-password", "-s", SERVICE_NAME, "-D", "Credential", "-g"]
             expectedExitCode = 0
         }
 
-        def echo = new FifoProcess(SAMPLE_TOKEN_METADATA, "password has been deleted.")
-        echo.with {
+        def deleteTokenSuccess = new FifoProcess(SAMPLE_TOKEN_METADATA, "password has been deleted.")
+        deleteTokenSuccess.with {
             expectedCommand = ["/usr/bin/security", "delete-generic-password", "-s", SERVICE_NAME]
         }
 
-        def foxtrot = new FifoProcess(StringHelper.Empty, "security: SecKeychainSearchCopyNext: The specified item could not be found in the keychain.")
-        foxtrot.with {
+        def deleteTokenFailure = new FifoProcess(StringHelper.Empty, "security: SecKeychainSearchCopyNext: The specified item could not be found in the keychain.")
+        deleteTokenFailure.with {
             expectedCommand = ["/usr/bin/security", "delete-generic-password", "-s", SERVICE_NAME]
             expectedExitCode = 44
         }
 
-        def golf = new FifoProcess(StringHelper.Empty)
-        golf.with {
+        def addToken = new FifoProcess(StringHelper.Empty)
+        addToken.with {
             expectedCommand = ["/usr/bin/security", "add-generic-password", "-a", "Personal Access Token", "-s", SERVICE_NAME, "-w", PASSWORD, "-D", "Token"]
             expectedExitCode = 0
         }
 
-        def hotel = new FifoProcess(SAMPLE_TOKEN_METADATA, """password: "${PASSWORD}"
+        def findToken = new FifoProcess(SAMPLE_TOKEN_METADATA, """password: "${PASSWORD}"
 """)
-        hotel.with {
+        findToken.with {
             expectedCommand = ["/usr/bin/security", "find-generic-password", "-s", SERVICE_NAME, "-D", "Token", "-g"]
             expectedExitCode = 0
         }
 
         def processFactory = new FifoProcessFactory(
-            alpha,
-            bravo,
-            charlie,
-            delta,
-            echo,
-            foxtrot,
-            golf,
-            hotel,
+            deleteCredentialSuccess,
+            deleteCredentialFailure,
+            addCredential,
+            findCredential,
+            deleteTokenSuccess,
+            deleteTokenFailure,
+            addToken,
+            findToken,
         )
         endToEndTest(processFactory)
     }
