@@ -406,6 +406,15 @@ public class KeychainSecurityCliStore implements ISecureStore
         final String stdOut, stdErr;
         try
         {
+            final TestableProcess deleteProcess = processFactory.create(
+                SECURITY,
+                DELETE_GENERIC_PASSWORD,
+                SERVICE_PARAMETER, serviceName,
+                KIND_PARAMETER, secretKind.name()
+            );
+            // we don't care about the exit code
+            deleteProcess.waitFor();
+
             final TestableProcess addProcess = processFactory.create(
                 SECURITY,
                 ADD_GENERIC_PASSWORD,
