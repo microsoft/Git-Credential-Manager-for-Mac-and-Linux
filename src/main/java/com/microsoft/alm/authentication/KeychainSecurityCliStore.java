@@ -406,7 +406,7 @@ public class KeychainSecurityCliStore implements ISecureStore
         final String stdOut, stdErr;
         try
         {
-            final TestableProcess process = processFactory.create(
+            final TestableProcess addProcess = processFactory.create(
                 SECURITY,
                 ADD_GENERIC_PASSWORD,
                 ACCOUNT_PARAMETER, accountName,
@@ -414,7 +414,7 @@ public class KeychainSecurityCliStore implements ISecureStore
                 PASSWORD_PARAMETER, password,
                 KIND_PARAMETER, secretKind.name()
             );
-            final ProcessCoordinator coordinator = new ProcessCoordinator(process);
+            final ProcessCoordinator coordinator = new ProcessCoordinator(addProcess);
             final int result = coordinator.waitFor();
             stdOut = coordinator.getStdOut();
             stdErr = coordinator.getStdErr();
