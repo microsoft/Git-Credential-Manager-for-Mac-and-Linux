@@ -20,7 +20,9 @@ class FifoProcessFactory implements TestableProcessFactory {
         def process = this.processes.remove(0)
 
         if (process.expectedCommand != null) {
-            assert process.expectedCommand.toList() == command.toList()
+            def expectedCommandList = process.expectedCommand.toList()
+            def actualCommandList = command.toList()
+            assert expectedCommandList == actualCommandList
         }
 
         return process
