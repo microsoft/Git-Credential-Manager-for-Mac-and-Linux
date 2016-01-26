@@ -6,7 +6,7 @@ This document explains how to obtain the Git Credential Manager for Mac and Linu
 
 Great care was taken to avoid using any features of Java that would impact compatibility with Java 6.  Unfortunately, at this time, only the JavaFX-based browser is available, which excludes Java 6.  If you find a compatibility issue, please report it and provide as many details about your platform as necessary to reproduce the problem.
 
-1. Mac OS X version 10.10.5 and up OR a GNU/Linux distribution with a desktop environment.
+1. Mac OS X version 10.9.5 and up OR a GNU/Linux distribution with a desktop environment.
 2. Oracle Java 7 Update 6 and up, Oracle Java 8, or OpenJDK with OpenJFX.
 3. Git version 1.9 and up.
 

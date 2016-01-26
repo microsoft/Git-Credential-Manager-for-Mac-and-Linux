@@ -99,6 +99,14 @@ public class ProgramTest
 
     @Test public void checkOsRequirements_macOsHappy()
     {
+        Assert.assertEquals(0, Program.checkOsRequirements("Mac OS X", "10.9.5").size());
+
+        Assert.assertEquals(0, Program.checkOsRequirements("Mac OS X", "10.9.6").size());
+
+        Assert.assertEquals(0, Program.checkOsRequirements("Mac OS X", "10.10.1").size());
+
+        Assert.assertEquals(0, Program.checkOsRequirements("Mac OS X", "10.10.4").size());
+
         Assert.assertEquals(0, Program.checkOsRequirements("Mac OS X", "10.10.5").size());
 
         Assert.assertEquals(0, Program.checkOsRequirements("Mac OS X", "10.10.6").size());
@@ -110,15 +118,13 @@ public class ProgramTest
 
     @Test public void checkOsRequirements_macOsBadVersion()
     {
-        Assert.assertEquals(1, Program.checkOsRequirements("Mac OS X", "10.10.1").size());
-
-        Assert.assertEquals(1, Program.checkOsRequirements("Mac OS X", "10.10.4").size());
-
-        Assert.assertEquals(1, Program.checkOsRequirements("Mac OS X", "10.9.10").size());
-
-        Assert.assertEquals(1, Program.checkOsRequirements("Mac OS X", "10.9.5").size());
-
         Assert.assertEquals(1, Program.checkOsRequirements("Mac OS X", "10.9.1").size());
+
+        Assert.assertEquals(1, Program.checkOsRequirements("Mac OS X", "10.9.4").size());
+
+        Assert.assertEquals(1, Program.checkOsRequirements("Mac OS X", "10.8.10").size());
+
+        Assert.assertEquals(1, Program.checkOsRequirements("Mac OS X", "10.8.5").size());
 
         Assert.assertEquals(1, Program.checkOsRequirements("Mac OS X", "9.10.5").size());
 
