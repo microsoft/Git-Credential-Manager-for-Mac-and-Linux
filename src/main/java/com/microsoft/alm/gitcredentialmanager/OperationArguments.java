@@ -99,6 +99,8 @@ final class OperationArguments
 
     public boolean EraseOsxKeyChain;
 
+    public boolean CanFallbackToInsecureStore;
+
     public void setCredentials(final Credential credentials)
     {
         this.userName = credentials.Username;
