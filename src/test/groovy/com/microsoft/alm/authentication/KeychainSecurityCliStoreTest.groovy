@@ -168,15 +168,9 @@ attributes:
             expectedExitCode = 44
         }
 
-        def deleteBeforeAddCredential = new FifoProcess(StringHelper.Empty, "security: SecKeychainSearchCopyNext: The specified item could not be found in the keychain.")
-        deleteBeforeAddCredential.with {
-            expectedCommand = ["/usr/bin/security", "delete-generic-password", "-s", SERVICE_NAME, "-D", "Credential"]
-            expectedExitCode = 44
-        }
-
         def addCredential = new FifoProcess(StringHelper.Empty)
         addCredential.with {
-            expectedCommand = ["/usr/bin/security", "add-generic-password", "-a", USER_NAME, "-s", SERVICE_NAME, "-w", PASSWORD, "-D", "Credential"]
+            expectedCommand = ["/usr/bin/security", "add-generic-password", "-U", "-a", USER_NAME, "-s", SERVICE_NAME, "-w", PASSWORD, "-D", "Credential"]
             expectedExitCode = 0
         }
 
@@ -187,15 +181,9 @@ attributes:
             expectedExitCode = 0
         }
 
-        def deleteBeforeUpdateCredential = new FifoProcess(StringHelper.Empty, "security: SecKeychainSearchCopyNext: The specified item could not be found in the keychain.")
-        deleteBeforeUpdateCredential.with {
-            expectedCommand = ["/usr/bin/security", "delete-generic-password", "-s", SERVICE_NAME, "-D", "Credential"]
-            expectedExitCode = 44
-        }
-
         def updateCredential = new FifoProcess(StringHelper.Empty)
         updateCredential.with {
-            expectedCommand = ["/usr/bin/security", "add-generic-password", "-a", USER_NAME, "-s", SERVICE_NAME, "-w", PASSWORD2, "-D", "Credential"]
+            expectedCommand = ["/usr/bin/security", "add-generic-password", "-U", "-a", USER_NAME, "-s", SERVICE_NAME, "-w", PASSWORD2, "-D", "Credential"]
             expectedExitCode = 0
         }
 
@@ -218,15 +206,9 @@ attributes:
             expectedExitCode = 44
         }
 
-        def deleteBeforeAddToken = new FifoProcess(StringHelper.Empty, "security: SecKeychainSearchCopyNext: The specified item could not be found in the keychain.")
-        deleteBeforeAddToken.with {
-            expectedCommand = ["/usr/bin/security", "delete-generic-password", "-s", SERVICE_NAME, "-D", "Token"]
-            expectedExitCode = 44
-        }
-
         def addToken = new FifoProcess(StringHelper.Empty)
         addToken.with {
-            expectedCommand = ["/usr/bin/security", "add-generic-password", "-a", "Personal Access Token", "-s", SERVICE_NAME, "-w", PASSWORD, "-D", "Token"]
+            expectedCommand = ["/usr/bin/security", "add-generic-password", "-U", "-a", "Personal Access Token", "-s", SERVICE_NAME, "-w", PASSWORD, "-D", "Token"]
             expectedExitCode = 0
         }
 
@@ -237,15 +219,9 @@ attributes:
             expectedExitCode = 0
         }
 
-        def deleteBeforeUpdateToken = new FifoProcess(StringHelper.Empty, "security: SecKeychainSearchCopyNext: The specified item could not be found in the keychain.")
-        deleteBeforeUpdateToken.with {
-            expectedCommand = ["/usr/bin/security", "delete-generic-password", "-s", SERVICE_NAME, "-D", "Token"]
-            expectedExitCode = 44
-        }
-
         def updateToken = new FifoProcess(StringHelper.Empty)
         updateToken.with {
-            expectedCommand = ["/usr/bin/security", "add-generic-password", "-a", "Personal Access Token", "-s", SERVICE_NAME, "-w", PASSWORD2, "-D", "Token"]
+            expectedCommand = ["/usr/bin/security", "add-generic-password", "-U", "-a", "Personal Access Token", "-s", SERVICE_NAME, "-w", PASSWORD2, "-D", "Token"]
             expectedExitCode = 0
         }
 
@@ -259,18 +235,14 @@ attributes:
         def processFactory = new FifoProcessFactory(
             deleteCredentialSuccess,
             deleteCredentialFailure,
-            deleteBeforeAddCredential,
             addCredential,
             findCredential,
-            deleteBeforeUpdateCredential,
             updateCredential,
             findUpdatedCredential,
             deleteTokenSuccess,
             deleteTokenFailure,
-            deleteBeforeAddToken,
             addToken,
             findToken,
-            deleteBeforeUpdateToken,
             updateToken,
             findUpdatedToken,
         )

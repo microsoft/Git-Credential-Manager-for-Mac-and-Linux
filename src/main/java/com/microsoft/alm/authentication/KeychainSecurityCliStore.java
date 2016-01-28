@@ -31,6 +31,7 @@ public class KeychainSecurityCliStore implements ISecureStore
     private static final String SERVICE_PARAMETER = "-s";
     private static final String KIND_PARAMETER = "-D";
     private static final String PASSWORD_PARAMETER = "-w";
+    private static final String UPDATE_IF_ALREADY_EXISTS = "-U";
 
     enum SecretKind
     {
@@ -406,18 +407,10 @@ public class KeychainSecurityCliStore implements ISecureStore
         final String stdOut, stdErr;
         try
         {
-            final TestableProcess deleteProcess = processFactory.create(
-                SECURITY,
-                DELETE_GENERIC_PASSWORD,
-                SERVICE_PARAMETER, serviceName,
-                KIND_PARAMETER, secretKind.name()
-            );
-            // we don't care about the exit code
-            deleteProcess.waitFor();
-
             final TestableProcess addProcess = processFactory.create(
                 SECURITY,
                 ADD_GENERIC_PASSWORD,
+                UPDATE_IF_ALREADY_EXISTS,
                 ACCOUNT_PARAMETER, accountName,
                 SERVICE_PARAMETER, serviceName,
                 PASSWORD_PARAMETER, password,
