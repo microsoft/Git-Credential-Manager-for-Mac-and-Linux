@@ -1174,13 +1174,20 @@ public class Program
 
         @Override public ISecureStore createSecureStore()
         {
-            // TODO: 449516: detect the operating system/capabilities and create the appropriate instance
+            ISecureStore secureStore = null;
             final File parentFolder = determineParentFolder();
             final File programFolder = new File(parentFolder, ProgramFolderName);
-            //noinspection ResultOfMethodCallIgnored
-            programFolder.mkdirs();
             final File insecureFile = new File(programFolder, "insecureStore.xml");
-            return new InsecureStore(insecureFile);
+
+            // TODO: 449516: detect the operating system/capabilities and create the appropriate instance
+
+            if (secureStore == null)
+            {
+                //noinspection ResultOfMethodCallIgnored
+                programFolder.mkdirs();
+                secureStore = new InsecureStore(insecureFile);
+            }
+            return secureStore;
         }
     }
 }
