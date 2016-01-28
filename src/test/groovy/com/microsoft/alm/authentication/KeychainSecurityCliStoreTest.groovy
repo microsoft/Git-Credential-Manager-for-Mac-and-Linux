@@ -168,6 +168,12 @@ attributes:
             expectedExitCode = 44
         }
 
+        def findNoCredential = new FifoProcess(StringHelper.Empty, "security: SecKeychainSearchCopyNext: The specified item could not be found in the keychain.")
+        findNoCredential.with {
+            expectedCommand = ["/usr/bin/security", "find-generic-password", "-s", SERVICE_NAME, "-D", "Credential", "-g"]
+            expectedExitCode = 44
+        }
+
         def addCredential = new FifoProcess(StringHelper.Empty)
         addCredential.with {
             expectedCommand = ["/usr/bin/security", "add-generic-password", "-U", "-a", USER_NAME, "-s", SERVICE_NAME, "-w", PASSWORD, "-D", "Credential"]
@@ -206,6 +212,12 @@ attributes:
             expectedExitCode = 44
         }
 
+        def findNoToken = new FifoProcess(StringHelper.Empty, "security: SecKeychainSearchCopyNext: The specified item could not be found in the keychain.")
+        findNoToken.with {
+            expectedCommand = ["/usr/bin/security", "find-generic-password", "-s", SERVICE_NAME, "-D", "Token", "-g"]
+            expectedExitCode = 44
+        }
+
         def addToken = new FifoProcess(StringHelper.Empty)
         addToken.with {
             expectedCommand = ["/usr/bin/security", "add-generic-password", "-U", "-a", "Personal Access Token", "-s", SERVICE_NAME, "-w", PASSWORD, "-D", "Token"]
@@ -235,12 +247,14 @@ attributes:
         def processFactory = new FifoProcessFactory(
             deleteCredentialSuccess,
             deleteCredentialFailure,
+            findNoCredential,
             addCredential,
             findCredential,
             updateCredential,
             findUpdatedCredential,
             deleteTokenSuccess,
             deleteTokenFailure,
+            findNoToken,
             addToken,
             findToken,
             updateToken,
@@ -264,6 +278,10 @@ attributes:
         // there should be nothing there, yet this call should not fail
         store.delete(TARGET_NAME)
 
+        final def nullCredential = store.readCredentials(TARGET_NAME)
+
+        assert nullCredential == null
+
         store.writeCredential(TARGET_NAME, credential)
 
         final def actualCredential = store.readCredentials(TARGET_NAME)
@@ -285,6 +303,10 @@ attributes:
         store.delete(TARGET_NAME)
         // there should be nothing there, yet this call should not fail
         store.delete(TARGET_NAME)
+
+        final def nullToken = store.readToken(TARGET_NAME)
+
+        assert nullToken == null
 
         store.writeToken(TARGET_NAME, token)
 

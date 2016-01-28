@@ -32,6 +32,7 @@ public class KeychainSecurityCliStore implements ISecureStore
     private static final String KIND_PARAMETER = "-D";
     private static final String PASSWORD_PARAMETER = "-w";
     private static final String UPDATE_IF_ALREADY_EXISTS = "-U";
+    private static final int ITEM_NOT_FOUND_EXIT_CODE = 44;
 
     enum SecretKind
     {
@@ -355,7 +356,10 @@ public class KeychainSecurityCliStore implements ISecureStore
             final int result = coordinator.waitFor();
             stdOut = coordinator.getStdOut();
             stdErr = coordinator.getStdErr();
-            checkResult(result, stdOut, stdErr);
+            if (result != 0 && result != ITEM_NOT_FOUND_EXIT_CODE)
+            {
+                checkResult(result, stdOut, stdErr);
+            }
         }
         catch (final IOException e)
         {
@@ -379,10 +383,18 @@ public class KeychainSecurityCliStore implements ISecureStore
 
         final Map<String, Object> metaData = read(SecretKind.Credential, processFactory, serviceName);
 
-        final String userName = (String) metaData.get(ACCOUNT_METADATA);
-        final String password = (String) metaData.get(PASSWORD);
+        final Credential result;
+        if (metaData.size() > 0)
+        {
+            final String userName = (String) metaData.get(ACCOUNT_METADATA);
+            final String password = (String) metaData.get(PASSWORD);
 
-        final Credential result = new Credential(userName, password);
+            result = new Credential(userName, password);
+        }
+        else
+        {
+            result = null;
+        }
 
         return result;
     }
@@ -394,10 +406,18 @@ public class KeychainSecurityCliStore implements ISecureStore
 
         final Map<String, Object> metaData = read(SecretKind.Token, processFactory, serviceName);
 
-        final String password = (String) metaData.get(PASSWORD);
-        final String typeName = (String) metaData.get(ACCOUNT_METADATA);
+        final Token result;
+        if (metaData.size() > 0)
+        {
+            final String typeName = (String) metaData.get(ACCOUNT_METADATA);
+            final String password = (String) metaData.get(PASSWORD);
 
-        final Token result = new Token(password, typeName);
+            result = new Token(password, typeName);
+        }
+        else
+        {
+            result = null;
+        }
 
         return result;
     }
