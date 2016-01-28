@@ -13,5 +13,5 @@ public interface IComponentFactory
 {
     IAuthentication createAuthentication(final OperationArguments operationArguments, final ISecureStore secureStore);
     Configuration createConfiguration() throws IOException;
-    ISecureStore createSecureStore();
+    ISecureStore createSecureStore(final OperationArguments operationArguments);
 }

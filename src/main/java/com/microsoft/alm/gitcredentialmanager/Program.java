@@ -897,7 +897,7 @@ public class Program
         Trace.writeLine("Program::" + methodName);
         Trace.writeLine("   targetUri = " + operationArguments.TargetUri);
 
-        final ISecureStore secureStore = componentFactory.createSecureStore();
+        final ISecureStore secureStore = componentFactory.createSecureStore(operationArguments);
         final IAuthentication authentication = componentFactory.createAuthentication(operationArguments, secureStore);
 
         operationArgumentsRef.set(operationArguments);
@@ -1172,7 +1172,7 @@ public class Program
             return new Configuration();
         }
 
-        @Override public ISecureStore createSecureStore()
+        @Override public ISecureStore createSecureStore(final OperationArguments operationArguments)
         {
             ISecureStore secureStore = null;
             final File parentFolder = determineParentFolder();
