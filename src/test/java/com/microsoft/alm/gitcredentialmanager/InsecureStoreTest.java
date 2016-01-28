@@ -67,15 +67,25 @@ public class InsecureStoreTest
     @Test public void serialization_instanceToXmlToInstance()
     {
         final InsecureStore input = new InsecureStore(null);
+        initializeTestData(input);
+
+        final InsecureStore actual = clone(input);
+
+        verifyTestData(actual);
+    }
+
+    private static void initializeTestData(final InsecureStore input)
+    {
         final Token inputBravo = new Token("42", TokenType.Test);
         input.Tokens.put("alpha", null);
         input.Tokens.put("bravo", inputBravo);
         input.Credentials.put("charlie", null);
         final Credential inputDelta = new Credential("douglas.adams", "42");
         input.Credentials.put("delta", inputDelta);
+    }
 
-        final InsecureStore actual = clone(input);
-
+    private void verifyTestData(final InsecureStore actual)
+    {
         Assert.assertEquals(2, actual.Tokens.size());
         Assert.assertTrue(actual.Tokens.containsKey("alpha"));
         final Token actualBravo = actual.Tokens.get("bravo");
