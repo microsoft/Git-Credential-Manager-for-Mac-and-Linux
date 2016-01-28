@@ -38,6 +38,8 @@ public class InsecureStore implements ISecureStore
     final Map<String, Token> Tokens = new HashMap<String, Token>();
     final Map<String, Credential> Credentials = new HashMap<String, Credential>();
 
+    private boolean isEnabled = true;
+
     /**
      * Creates an instance that only keeps the values in memory, never touching a file.
      *
@@ -293,9 +295,19 @@ public class InsecureStore implements ISecureStore
         return credentialsNode;
     }
 
+    private void ensureEnabled()
+    {
+        if (!isEnabled)
+        {
+            throw new IllegalStateException("This InsecureStore has been disabled.");
+        }
+    }
+
     @Override
     public synchronized void delete(final String targetName)
     {
+        ensureEnabled();
+
         if (Tokens.containsKey(targetName))
         {
             Tokens.remove(targetName);
@@ -311,18 +323,24 @@ public class InsecureStore implements ISecureStore
     @Override
     public synchronized Credential readCredentials(final String targetName)
     {
+        ensureEnabled();
+
         return Credentials.get(targetName);
     }
 
     @Override
     public synchronized Token readToken(final String targetName)
     {
+        ensureEnabled();
+
         return Tokens.get(targetName);
     }
 
     @Override
     public synchronized void writeCredential(final String targetName, final Credential credentials)
     {
+        ensureEnabled();
+
         Credentials.put(targetName, credentials);
         save();
     }
@@ -330,6 +348,8 @@ public class InsecureStore implements ISecureStore
     @Override
     public synchronized void writeToken(final String targetName, final Token token)
     {
+        ensureEnabled();
+
         Tokens.put(targetName, token);
         save();
     }
