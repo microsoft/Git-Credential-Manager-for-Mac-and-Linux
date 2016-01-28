@@ -75,6 +75,47 @@ public class InsecureStoreTest
         verifyTestData(actual);
     }
 
+    @Test public void migrateAndDisable_noBackingFile()
+    {
+        final InsecureStore input = new InsecureStore(null);
+        initializeTestData(input);
+        final InsecureStore actual = new InsecureStore(null);
+
+        input.migrateAndDisable(actual);
+
+        verifyTestData(actual);
+    }
+
+    @Test public void migrateAndDisable_withBackingFile() throws Exception
+    {
+        File tempFile = null;
+        try
+        {
+            tempFile = File.createTempFile(this.getClass().getSimpleName(), null);
+            Assert.assertEquals(0L, tempFile.length());
+
+            final InsecureStore input = new InsecureStore(tempFile);
+            initializeTestData(input);
+            Assert.assertNotEquals(0L, tempFile.length());
+            final InsecureStore actual = new InsecureStore(null);
+
+            input.migrateAndDisable(actual);
+
+            verifyTestData(actual);
+            Assert.assertFalse(tempFile.isFile());
+            final File migratedFile = new File(tempFile.getAbsolutePath() + InsecureStore.MIGRATION_SUFFIX);
+            Assert.assertTrue(migratedFile.isFile());
+            //noinspection ResultOfMethodCallIgnored
+            migratedFile.delete();
+        }
+        finally
+        {
+            if (tempFile != null)
+                //noinspection ResultOfMethodCallIgnored
+                tempFile.delete();
+        }
+    }
+
     private static void initializeTestData(final ISecureStore input)
     {
         final Token inputBravo = new Token("42", TokenType.Test);

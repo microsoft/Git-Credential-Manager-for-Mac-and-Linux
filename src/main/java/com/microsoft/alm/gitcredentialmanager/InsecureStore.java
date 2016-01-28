@@ -33,6 +33,7 @@ import java.util.Map;
 
 public class InsecureStore implements ISecureStore
 {
+    static final String MIGRATION_SUFFIX = ".old";
     private final File backingFile;
 
     final Map<String, Token> Tokens = new HashMap<String, Token>();
@@ -352,5 +353,47 @@ public class InsecureStore implements ISecureStore
 
         Tokens.put(targetName, token);
         save();
+    }
+
+    /**
+     * Exports all tokens and credentials to the specified {@link ISecureStore}
+     * and then the polite thing to do is to rename the backing file
+     * and prevent further use via this instance.
+     * This will still make a downgrade possible
+     * and the archival of the old file will be the user's responsibility.
+     *
+     * @param destination the {@link ISecureStore} that will replace this {@link InsecureStore}
+     */
+    public synchronized void migrateAndDisable(final ISecureStore destination)
+    {
+        ensureEnabled();
+
+        for (final Map.Entry<String, Token> pair : Tokens.entrySet())
+        {
+            final String targetName = pair.getKey();
+            final Token token = pair.getValue();
+            destination.writeToken(targetName, token);
+        }
+
+        for (final Map.Entry<String, Credential> pair : Credentials.entrySet())
+        {
+            final String targetName = pair.getKey();
+            final Credential credential = pair.getValue();
+            destination.writeCredential(targetName, credential);
+        }
+
+        if (backingFile != null)
+        {
+            final File disabledBackingFile = new File(backingFile.getAbsolutePath() + MIGRATION_SUFFIX);
+            final boolean wasRenamed = backingFile.renameTo(disabledBackingFile);
+            if (!wasRenamed)
+            {
+                final String renameFailureTemplate = "Unable to rename '%1$s' to '%2$s' after migrating its contents.";
+                final String renameFailureMessage = String.format(renameFailureTemplate, backingFile.getAbsolutePath(), disabledBackingFile.getAbsolutePath());
+                throw new Error(renameFailureMessage);
+            }
+        }
+
+        isEnabled = false;
     }
 }
