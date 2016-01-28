@@ -4,6 +4,7 @@
 package com.microsoft.alm.gitcredentialmanager;
 
 import com.microsoft.alm.authentication.Credential;
+import com.microsoft.alm.authentication.ISecureStore;
 import com.microsoft.alm.authentication.Token;
 import com.microsoft.alm.authentication.TokenType;
 import com.microsoft.alm.helpers.IOHelper;
@@ -74,14 +75,14 @@ public class InsecureStoreTest
         verifyTestData(actual);
     }
 
-    private static void initializeTestData(final InsecureStore input)
+    private static void initializeTestData(final ISecureStore input)
     {
         final Token inputBravo = new Token("42", TokenType.Test);
-        input.Tokens.put("alpha", null);
-        input.Tokens.put("bravo", inputBravo);
-        input.Credentials.put("charlie", null);
+        input.writeToken("alpha", null);
+        input.writeToken("bravo", inputBravo);
+        input.writeCredential("charlie", null);
         final Credential inputDelta = new Credential("douglas.adams", "42");
-        input.Credentials.put("delta", inputDelta);
+        input.writeCredential("delta", inputDelta);
     }
 
     private void verifyTestData(final InsecureStore actual)
