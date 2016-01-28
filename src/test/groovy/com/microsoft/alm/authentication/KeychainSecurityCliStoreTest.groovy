@@ -156,6 +156,53 @@ attributes:
         assert ["0x00000008" : null] == destination
     }
 
+    @Test public void simulatedProbing_keychainIsAvailable() {
+        def addToken = new FifoProcess(StringHelper.Empty)
+        addToken.with {
+            expectedCommand = ["/usr/bin/security", "add-generic-password", "-U", "-a", "Test-only Token", "-s", "gcm4ml:test:isKeychainAvailable", "-w", "this is a test token", "-D", "Token"]
+            expectedExitCode = 0
+        }
+
+        def deleteTokenSuccess = new FifoProcess(SAMPLE_TOKEN_METADATA, "password has been deleted.")
+        deleteTokenSuccess.with {
+            expectedCommand = ["/usr/bin/security", "delete-generic-password", "-s", "gcm4ml:test:isKeychainAvailable"]
+            expectedExitCode = 0
+        }
+
+        def processFactory = new FifoProcessFactory(
+            addToken,
+            deleteTokenSuccess,
+        )
+        probingTest(processFactory, true)
+    }
+
+    @Test public void simulatedProbing_keychainIsNotAvailable() {
+        def addToken = new FifoProcess(StringHelper.Empty)
+        addToken.with {
+            expectedCommand = ["/usr/bin/security", "add-generic-password", "-U", "-a", "Test-only Token", "-s", "gcm4ml:test:isKeychainAvailable", "-w", "this is a test token", "-D", "Token"]
+            expectedExitCode = 36
+        }
+
+        def processFactory = new FifoProcessFactory(
+                addToken,
+        )
+        probingTest(processFactory, false)
+    }
+
+    @Ignore("Needs to be run manually, in interactive mode, because the Keychain needs a desktop")
+    @Test public void interactiveProbing() {
+        def processFactory = new DefaultProcessFactory()
+        probingTest(processFactory, true)
+    }
+
+    static void probingTest(final TestableProcessFactory processFactory, final boolean expected) {
+        final def store = new KeychainSecurityCliStore(processFactory)
+
+        final def actual = store.isKeychainAvailable()
+
+        assert actual == expected
+    }
+
     @Test public void simulatedInteraction() {
         def deleteCredentialSuccess = new FifoProcess(SAMPLE_CREDENTIAL_METADATA, "password has been deleted.")
         deleteCredentialSuccess.with {

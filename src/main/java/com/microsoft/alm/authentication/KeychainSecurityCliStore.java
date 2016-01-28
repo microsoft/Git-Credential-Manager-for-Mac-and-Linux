@@ -33,6 +33,7 @@ public class KeychainSecurityCliStore implements ISecureStore
     private static final String PASSWORD_PARAMETER = "-w";
     private static final String UPDATE_IF_ALREADY_EXISTS = "-U";
     private static final int ITEM_NOT_FOUND_EXIT_CODE = 44;
+    private static final int USER_INTERACTION_NOT_ALLOWED_EXIT_CODE = 36;
 
     enum SecretKind
     {
@@ -306,6 +307,22 @@ public class KeychainSecurityCliStore implements ISecureStore
         // TODO: else if ("sint32".equals(type))
     }
 
+    public boolean isKeychainAvailable()
+    {
+        final String targetName = "test:isKeychainAvailable";
+        final Token token = new Token("this is a test token", TokenType.Test);
+        try
+        {
+            writeToken(targetName, token);
+        }
+        catch (final SecurityException e)
+        {
+            return false;
+        }
+        delete(targetName);
+        return true;
+    }
+
     @Override
     public void delete(final String targetName)
     {
@@ -334,9 +351,16 @@ public class KeychainSecurityCliStore implements ISecureStore
     {
         if (result != 0)
         {
-            final String template = "%1$s exited with result %2$d.\nstdOut: %3$s\nstdErr: %4$s\n";
-            final String message = String.format(template, SECURITY, result, stdOut, stdErr);
-            throw new Error(message);
+            if (result == USER_INTERACTION_NOT_ALLOWED_EXIT_CODE)
+            {
+                throw new SecurityException("User interaction is not allowed.");
+            }
+            else
+            {
+                final String template = "%1$s exited with result %2$d.\nstdOut: %3$s\nstdErr: %4$s\n";
+                final String message = String.format(template, SECURITY, result, stdOut, stdErr);
+                throw new Error(message);
+            }
         }
     }
 
