@@ -384,6 +384,7 @@ public class InsecureStore implements ISecureStore
 
         if (backingFile != null)
         {
+            // TODO: Add a parameter to control whether a rename or a delete should take place
             final File disabledBackingFile = new File(backingFile.getAbsolutePath() + MIGRATION_SUFFIX);
             final boolean wasRenamed = backingFile.renameTo(disabledBackingFile);
             if (!wasRenamed)
