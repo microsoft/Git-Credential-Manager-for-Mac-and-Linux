@@ -98,6 +98,26 @@ public class StringHelper
      */
     public static String join(final String separator, final String[] value, final int startIndex, final int count)
     {
+        return join(separator, value, startIndex, count, null);
+    }
+
+    /**
+     * Concatenates the specified elements of a string array,
+     * using the specified separator between each element.
+     *
+     * @param separator  The string to use as a separator.
+     *                   separator is included in the returned string only if value has more than one element.
+     * @param value      An array that contains the elements to concatenate.
+     * @param startIndex The first element in value to use.
+     * @param count      The number of elements of value to use.
+     * @param processor  A callback that gets to intercept and modify elements before they are inserted.
+     * @return           A string that consists of the strings in value delimited by the separator string.
+     *                   -or-
+     *                   {@link StringHelper#Empty} if count is zero, value has no elements,
+     *                   or separator and all the elements of value are {@link StringHelper#Empty}.
+     */
+    public static String join(final String separator, final String[] value, final int startIndex, final int count, final Func<String, String> processor)
+    {
         if (value == null)
             throw new IllegalArgumentException("value is null");
         if (startIndex < 0)
@@ -114,11 +134,21 @@ public class StringHelper
 
         if (value.length > 0 && count > 0)
         {
-            result.append(ObjectExtensions.coalesce(value[startIndex], StringHelper.Empty));
+            String element = ObjectExtensions.coalesce(value[startIndex], StringHelper.Empty);
+            if (processor != null)
+            {
+                element = processor.call(element);
+            }
+            result.append(element);
             for (int i = startIndex + 1; i < startIndex + count; i++)
             {
                 result.append(sep);
-                result.append(ObjectExtensions.coalesce(value[i], StringHelper.Empty));
+                element = ObjectExtensions.coalesce(value[i], StringHelper.Empty);
+                if (processor != null)
+                {
+                    element = processor.call(element);
+                }
+                result.append(element);
             }
         }
 

@@ -3,6 +3,7 @@
 
 package com.microsoft.alm.authentication
 
+import com.microsoft.alm.helpers.Environment
 import com.microsoft.alm.helpers.StringHelper
 import com.microsoft.alm.oauth2.useragent.subprocess.DefaultProcessFactory
 import com.microsoft.alm.oauth2.useragent.subprocess.TestableProcessFactory
@@ -216,7 +217,8 @@ attributes:
 
         def addCredential = new FifoProcess(StringHelper.Empty)
         addCredential.with {
-            expectedCommand = ["/usr/bin/security", "add-generic-password", "-U", "-a", USER_NAME, "-s", SERVICE_NAME, "-w", PASSWORD, "-D", "Credential"]
+            expectedCommand = ["/usr/bin/security", "-i"]
+            expectedStandardInput = """add-generic-password -U -a ${USER_NAME} -s ${SERVICE_NAME} -w ${PASSWORD} -D Credential""" + Environment.NewLine
             expectedExitCode = 0
         }
 
@@ -229,7 +231,8 @@ attributes:
 
         def updateCredential = new FifoProcess(StringHelper.Empty)
         updateCredential.with {
-            expectedCommand = ["/usr/bin/security", "add-generic-password", "-U", "-a", USER_NAME, "-s", SERVICE_NAME, "-w", PASSWORD2, "-D", "Credential"]
+            expectedCommand = ["/usr/bin/security", "-i"]
+            expectedStandardInput = """add-generic-password -U -a ${USER_NAME} -s ${SERVICE_NAME} -w "${PASSWORD2}" -D Credential""" + Environment.NewLine
             expectedExitCode = 0
         }
 
@@ -260,7 +263,8 @@ attributes:
 
         def addToken = new FifoProcess(StringHelper.Empty)
         addToken.with {
-            expectedCommand = ["/usr/bin/security", "add-generic-password", "-U", "-a", "Personal Access Token", "-s", SERVICE_NAME, "-w", PASSWORD, "-D", "Token"]
+            expectedCommand = ["/usr/bin/security", "-i"]
+            expectedStandardInput = """add-generic-password -U -a "Personal Access Token" -s ${SERVICE_NAME} -w ${PASSWORD} -D Token""" + Environment.NewLine
             expectedExitCode = 0
         }
 
@@ -273,7 +277,8 @@ attributes:
 
         def updateToken = new FifoProcess(StringHelper.Empty)
         updateToken.with {
-            expectedCommand = ["/usr/bin/security", "add-generic-password", "-U", "-a", "Personal Access Token", "-s", SERVICE_NAME, "-w", PASSWORD2, "-D", "Token"]
+            expectedCommand = ["/usr/bin/security", "-i"]
+            expectedStandardInput = """add-generic-password -U -a "Personal Access Token" -s ${SERVICE_NAME} -w "${PASSWORD2}" -D Token""" + Environment.NewLine
             expectedExitCode = 0
         }
 

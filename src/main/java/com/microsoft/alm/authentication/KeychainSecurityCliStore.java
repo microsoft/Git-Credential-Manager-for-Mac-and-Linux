@@ -3,7 +3,9 @@
 
 package com.microsoft.alm.authentication;
 
+import com.microsoft.alm.helpers.Func;
 import com.microsoft.alm.helpers.IOHelper;
+import com.microsoft.alm.helpers.StringHelper;
 import com.microsoft.alm.oauth2.useragent.subprocess.DefaultProcessFactory;
 import com.microsoft.alm.oauth2.useragent.subprocess.ProcessCoordinator;
 import com.microsoft.alm.oauth2.useragent.subprocess.TestableProcess;
@@ -35,6 +37,19 @@ public class KeychainSecurityCliStore implements ISecureStore
     private static final String UPDATE_IF_ALREADY_EXISTS = "-U";
     private static final int ITEM_NOT_FOUND_EXIT_CODE = 44;
     private static final int USER_INTERACTION_NOT_ALLOWED_EXIT_CODE = 36;
+    private static final String INTERACTIVE_MODE = "-i";
+
+    private static final Func<String, String> QUOTING_PROCESSOR = new Func<String, String>()
+    {
+        @Override public String call(final String s)
+        {
+            if (s.contains(" "))
+            {
+                return '"' + s + '"';
+            }
+            return s;
+        }
+    };
 
     enum SecretKind
     {
@@ -468,14 +483,19 @@ public class KeychainSecurityCliStore implements ISecureStore
         {
             final TestableProcess addProcess = processFactory.create(
                 SECURITY,
+                INTERACTIVE_MODE
+            );
+            final String[] commandParts = {
                 ADD_GENERIC_PASSWORD,
                 UPDATE_IF_ALREADY_EXISTS,
                 ACCOUNT_PARAMETER, accountName,
                 SERVICE_PARAMETER, serviceName,
                 PASSWORD_PARAMETER, password,
                 KIND_PARAMETER, secretKind.name()
-            );
+            };
             final ProcessCoordinator coordinator = new ProcessCoordinator(addProcess);
+            final String command = StringHelper.join(" ", commandParts, 0, commandParts.length, QUOTING_PROCESSOR);
+            coordinator.println(command);
             final int result = coordinator.waitFor();
             stdOut = coordinator.getStdOut();
             stdErr = coordinator.getStdErr();
