@@ -24,6 +24,7 @@ public class KeychainSecurityCliStore implements ISecureStore
     static final String DELETE_GENERIC_PASSWORD = "delete-generic-password";
     static final String FIND_GENERIC_PASSWORD = "find-generic-password";
     static final String ADD_GENERIC_PASSWORD = "add-generic-password";
+    static final String SHOW_KEYCHAIN_INFO = "show-keychain-info";
     static final String ACCOUNT_PARAMETER = "-a";
     static final String ACCOUNT_METADATA = "acct";
     static final String PASSWORD = "password";
@@ -309,17 +310,31 @@ public class KeychainSecurityCliStore implements ISecureStore
 
     public boolean isKeychainAvailable()
     {
-        final String targetName = "test:isKeychainAvailable";
-        final Token token = new Token("this is a test token", TokenType.Test);
+        final String stdOut, stdErr;
         try
         {
-            writeToken(targetName, token);
+            final TestableProcess process = processFactory.create(
+                SECURITY,
+                SHOW_KEYCHAIN_INFO
+            );
+            final ProcessCoordinator coordinator = new ProcessCoordinator(process);
+            final int result = coordinator.waitFor();
+            stdOut = coordinator.getStdOut();
+            stdErr = coordinator.getStdErr();
+            checkResult(result, stdOut, stdErr);
+        }
+        catch (final IOException e)
+        {
+            throw new Error(e);
+        }
+        catch (final InterruptedException e)
+        {
+            throw new Error(e);
         }
         catch (final SecurityException e)
         {
             return false;
         }
-        delete(targetName);
         return true;
     }
 

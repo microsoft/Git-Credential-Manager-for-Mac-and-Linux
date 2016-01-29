@@ -157,34 +157,27 @@ attributes:
     }
 
     @Test public void simulatedProbing_keychainIsAvailable() {
-        def addToken = new FifoProcess(StringHelper.Empty)
-        addToken.with {
-            expectedCommand = ["/usr/bin/security", "add-generic-password", "-U", "-a", "Test-only Token", "-s", "gcm4ml:test:isKeychainAvailable", "-w", "this is a test token", "-D", "Token"]
-            expectedExitCode = 0
-        }
-
-        def deleteTokenSuccess = new FifoProcess(SAMPLE_TOKEN_METADATA, "password has been deleted.")
-        deleteTokenSuccess.with {
-            expectedCommand = ["/usr/bin/security", "delete-generic-password", "-s", "gcm4ml:test:isKeychainAvailable"]
+        def showInfo = new FifoProcess(StringHelper.Empty)
+        showInfo.with {
+            expectedCommand = ["/usr/bin/security", "show-keychain-info"]
             expectedExitCode = 0
         }
 
         def processFactory = new FifoProcessFactory(
-            addToken,
-            deleteTokenSuccess,
+            showInfo,
         )
         probingTest(processFactory, true)
     }
 
     @Test public void simulatedProbing_keychainIsNotAvailable() {
-        def addToken = new FifoProcess(StringHelper.Empty)
-        addToken.with {
-            expectedCommand = ["/usr/bin/security", "add-generic-password", "-U", "-a", "Test-only Token", "-s", "gcm4ml:test:isKeychainAvailable", "-w", "this is a test token", "-D", "Token"]
+        def showInfo = new FifoProcess(StringHelper.Empty)
+        showInfo.with {
+            expectedCommand = ["/usr/bin/security", "show-keychain-info"]
             expectedExitCode = 36
         }
 
         def processFactory = new FifoProcessFactory(
-                addToken,
+                showInfo,
         )
         probingTest(processFactory, false)
     }
