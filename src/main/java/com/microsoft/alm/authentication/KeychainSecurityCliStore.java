@@ -24,6 +24,7 @@ public class KeychainSecurityCliStore implements ISecureStore
     static final String DELETE_GENERIC_PASSWORD = "delete-generic-password";
     static final String FIND_GENERIC_PASSWORD = "find-generic-password";
     static final String ADD_GENERIC_PASSWORD = "add-generic-password";
+    static final String SHOW_KEYCHAIN_INFO = "show-keychain-info";
     static final String ACCOUNT_PARAMETER = "-a";
     static final String ACCOUNT_METADATA = "acct";
     static final String PASSWORD = "password";
@@ -31,6 +32,9 @@ public class KeychainSecurityCliStore implements ISecureStore
     private static final String SERVICE_PARAMETER = "-s";
     private static final String KIND_PARAMETER = "-D";
     private static final String PASSWORD_PARAMETER = "-w";
+    private static final String UPDATE_IF_ALREADY_EXISTS = "-U";
+    private static final int ITEM_NOT_FOUND_EXIT_CODE = 44;
+    private static final int USER_INTERACTION_NOT_ALLOWED_EXIT_CODE = 36;
 
     enum SecretKind
     {
@@ -304,6 +308,36 @@ public class KeychainSecurityCliStore implements ISecureStore
         // TODO: else if ("sint32".equals(type))
     }
 
+    public boolean isKeychainAvailable()
+    {
+        final String stdOut, stdErr;
+        try
+        {
+            final TestableProcess process = processFactory.create(
+                SECURITY,
+                SHOW_KEYCHAIN_INFO
+            );
+            final ProcessCoordinator coordinator = new ProcessCoordinator(process);
+            final int result = coordinator.waitFor();
+            stdOut = coordinator.getStdOut();
+            stdErr = coordinator.getStdErr();
+            checkResult(result, stdOut, stdErr);
+        }
+        catch (final IOException e)
+        {
+            throw new Error(e);
+        }
+        catch (final InterruptedException e)
+        {
+            throw new Error(e);
+        }
+        catch (final SecurityException e)
+        {
+            return false;
+        }
+        return true;
+    }
+
     @Override
     public void delete(final String targetName)
     {
@@ -332,9 +366,16 @@ public class KeychainSecurityCliStore implements ISecureStore
     {
         if (result != 0)
         {
-            final String template = "%1$s exited with result %2$d.\nstdOut: %3$s\nstdErr: %4$s\n";
-            final String message = String.format(template, SECURITY, result, stdOut, stdErr);
-            throw new Error(message);
+            if (result == USER_INTERACTION_NOT_ALLOWED_EXIT_CODE)
+            {
+                throw new SecurityException("User interaction is not allowed.");
+            }
+            else
+            {
+                final String template = "%1$s exited with result %2$d.\nstdOut: %3$s\nstdErr: %4$s\n";
+                final String message = String.format(template, SECURITY, result, stdOut, stdErr);
+                throw new Error(message);
+            }
         }
     }
 
@@ -354,7 +395,10 @@ public class KeychainSecurityCliStore implements ISecureStore
             final int result = coordinator.waitFor();
             stdOut = coordinator.getStdOut();
             stdErr = coordinator.getStdErr();
-            checkResult(result, stdOut, stdErr);
+            if (result != 0 && result != ITEM_NOT_FOUND_EXIT_CODE)
+            {
+                checkResult(result, stdOut, stdErr);
+            }
         }
         catch (final IOException e)
         {
@@ -378,10 +422,18 @@ public class KeychainSecurityCliStore implements ISecureStore
 
         final Map<String, Object> metaData = read(SecretKind.Credential, processFactory, serviceName);
 
-        final String userName = (String) metaData.get(ACCOUNT_METADATA);
-        final String password = (String) metaData.get(PASSWORD);
+        final Credential result;
+        if (metaData.size() > 0)
+        {
+            final String userName = (String) metaData.get(ACCOUNT_METADATA);
+            final String password = (String) metaData.get(PASSWORD);
 
-        final Credential result = new Credential(userName, password);
+            result = new Credential(userName, password);
+        }
+        else
+        {
+            result = null;
+        }
 
         return result;
     }
@@ -393,10 +445,18 @@ public class KeychainSecurityCliStore implements ISecureStore
 
         final Map<String, Object> metaData = read(SecretKind.Token, processFactory, serviceName);
 
-        final String password = (String) metaData.get(PASSWORD);
-        final String typeName = (String) metaData.get(ACCOUNT_METADATA);
+        final Token result;
+        if (metaData.size() > 0)
+        {
+            final String typeName = (String) metaData.get(ACCOUNT_METADATA);
+            final String password = (String) metaData.get(PASSWORD);
 
-        final Token result = new Token(password, typeName);
+            result = new Token(password, typeName);
+        }
+        else
+        {
+            result = null;
+        }
 
         return result;
     }
@@ -406,18 +466,10 @@ public class KeychainSecurityCliStore implements ISecureStore
         final String stdOut, stdErr;
         try
         {
-            final TestableProcess deleteProcess = processFactory.create(
-                SECURITY,
-                DELETE_GENERIC_PASSWORD,
-                SERVICE_PARAMETER, serviceName,
-                KIND_PARAMETER, secretKind.name()
-            );
-            // we don't care about the exit code
-            deleteProcess.waitFor();
-
             final TestableProcess addProcess = processFactory.create(
                 SECURITY,
                 ADD_GENERIC_PASSWORD,
+                UPDATE_IF_ALREADY_EXISTS,
                 ACCOUNT_PARAMETER, accountName,
                 SERVICE_PARAMETER, serviceName,
                 PASSWORD_PARAMETER, password,

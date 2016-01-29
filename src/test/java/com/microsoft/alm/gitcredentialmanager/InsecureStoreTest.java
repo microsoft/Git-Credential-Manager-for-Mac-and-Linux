@@ -4,6 +4,7 @@
 package com.microsoft.alm.gitcredentialmanager;
 
 import com.microsoft.alm.authentication.Credential;
+import com.microsoft.alm.authentication.ISecureStore;
 import com.microsoft.alm.authentication.Token;
 import com.microsoft.alm.authentication.TokenType;
 import com.microsoft.alm.helpers.IOHelper;
@@ -67,15 +68,66 @@ public class InsecureStoreTest
     @Test public void serialization_instanceToXmlToInstance()
     {
         final InsecureStore input = new InsecureStore(null);
-        final Token inputBravo = new Token("42", TokenType.Test);
-        input.Tokens.put("alpha", null);
-        input.Tokens.put("bravo", inputBravo);
-        input.Credentials.put("charlie", null);
-        final Credential inputDelta = new Credential("douglas.adams", "42");
-        input.Credentials.put("delta", inputDelta);
+        initializeTestData(input);
 
         final InsecureStore actual = clone(input);
 
+        verifyTestData(actual);
+    }
+
+    @Test public void migrateAndDisable_noBackingFile()
+    {
+        final InsecureStore input = new InsecureStore(null);
+        initializeTestData(input);
+        final InsecureStore actual = new InsecureStore(null);
+
+        input.migrateAndDisable(actual);
+
+        verifyTestData(actual);
+    }
+
+    @Test public void migrateAndDisable_withBackingFile() throws Exception
+    {
+        File tempFile = null;
+        try
+        {
+            tempFile = File.createTempFile(this.getClass().getSimpleName(), null);
+            Assert.assertEquals(0L, tempFile.length());
+
+            final InsecureStore input = new InsecureStore(tempFile);
+            initializeTestData(input);
+            Assert.assertNotEquals(0L, tempFile.length());
+            final InsecureStore actual = new InsecureStore(null);
+
+            input.migrateAndDisable(actual);
+
+            verifyTestData(actual);
+            Assert.assertFalse(tempFile.isFile());
+            final File migratedFile = new File(tempFile.getAbsolutePath() + InsecureStore.MIGRATION_SUFFIX);
+            Assert.assertTrue(migratedFile.isFile());
+            //noinspection ResultOfMethodCallIgnored
+            migratedFile.delete();
+        }
+        finally
+        {
+            if (tempFile != null)
+                //noinspection ResultOfMethodCallIgnored
+                tempFile.delete();
+        }
+    }
+
+    private static void initializeTestData(final ISecureStore input)
+    {
+        final Token inputBravo = new Token("42", TokenType.Test);
+        input.writeToken("alpha", null);
+        input.writeToken("bravo", inputBravo);
+        input.writeCredential("charlie", null);
+        final Credential inputDelta = new Credential("douglas.adams", "42");
+        input.writeCredential("delta", inputDelta);
+    }
+
+    private void verifyTestData(final InsecureStore actual)
+    {
         Assert.assertEquals(2, actual.Tokens.size());
         Assert.assertTrue(actual.Tokens.containsKey("alpha"));
         final Token actualBravo = actual.Tokens.get("bravo");

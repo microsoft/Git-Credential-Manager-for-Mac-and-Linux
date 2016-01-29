@@ -12,6 +12,7 @@ import com.microsoft.alm.authentication.ISecureStore;
 import com.microsoft.alm.authentication.ITokenStore;
 import com.microsoft.alm.authentication.IVsoAadAuthentication;
 import com.microsoft.alm.authentication.IVsoMsaAuthentication;
+import com.microsoft.alm.authentication.KeychainSecurityCliStore;
 import com.microsoft.alm.authentication.SecretStore;
 import com.microsoft.alm.authentication.VsoAadAuthentication;
 import com.microsoft.alm.authentication.VsoMsaAuthentication;
@@ -63,6 +64,7 @@ public class Program
     private static final String AbortAuthenticationProcessResponse = "quit=true";
     private static final String CredentialHelperSection = "credential.helper";
     private static final String CredentialHelperValueRegex = "git-credential-manager-[0-9]+\\.[0-9]+\\.[0-9]+(-SNAPSHOT)?.jar";
+    private static final String CanFallbackToInsecureStore = "canFallBackToInsecureStore";
     private static final DefaultFileChecker DefaultFileCheckerSingleton = new DefaultFileChecker();
 
     private final InputStream standardIn;
@@ -897,7 +899,7 @@ public class Program
         Trace.writeLine("Program::" + methodName);
         Trace.writeLine("   targetUri = " + operationArguments.TargetUri);
 
-        final ISecureStore secureStore = componentFactory.createSecureStore();
+        final ISecureStore secureStore = componentFactory.createSecureStore(operationArguments);
         final IAuthentication authentication = componentFactory.createAuthentication(operationArguments, secureStore);
 
         operationArgumentsRef.set(operationArguments);
@@ -1081,6 +1083,20 @@ public class Program
                 operationArguments.EraseOsxKeyChain = false;
             }
         }
+
+        if (config.tryGetEntry(ConfigPrefix, operationArguments.TargetUri, CanFallbackToInsecureStore, entryRef))
+        {
+            Trace.writeLine("   " + CanFallbackToInsecureStore + " = " + entryRef.get().Value);
+
+            if ("true".equalsIgnoreCase(entryRef.get().Value))
+            {
+                operationArguments.CanFallbackToInsecureStore = true;
+            }
+            else if ("false".equalsIgnoreCase(entryRef.get().Value))
+            {
+                operationArguments.CanFallbackToInsecureStore = false;
+            }
+        }
     }
 
     private static void logEvent(final String message, final Object eventType)
@@ -1172,15 +1188,59 @@ public class Program
             return new Configuration();
         }
 
-        @Override public ISecureStore createSecureStore()
+        @Override public ISecureStore createSecureStore(final OperationArguments operationArguments)
         {
-            // TODO: 449516: detect the operating system/capabilities and create the appropriate instance
+            Trace.writeLine("Program::ComponentFactory::createSecureStore");
+            ISecureStore secureStore = null;
             final File parentFolder = determineParentFolder();
             final File programFolder = new File(parentFolder, ProgramFolderName);
-            //noinspection ResultOfMethodCallIgnored
-            programFolder.mkdirs();
             final File insecureFile = new File(programFolder, "insecureStore.xml");
-            return new InsecureStore(insecureFile);
+
+            final String osName = System.getProperty("os.name");
+            if (Provider.isMac(osName))
+            {
+                Trace.writeLine("   Mac OS X detected");
+                final KeychainSecurityCliStore keychainSecurityCliStore = new KeychainSecurityCliStore();
+                boolean ableToUseKeychain = keychainSecurityCliStore.isKeychainAvailable();
+                boolean canFallbackToInsecureStore = operationArguments.CanFallbackToInsecureStore;
+                if (ableToUseKeychain)
+                {
+                    Trace.writeLine("     Keychain is available");
+                    secureStore = keychainSecurityCliStore;
+                    if (insecureFile.isFile())
+                    {
+                        Trace.writeLine("       InsecureStore file found");
+                        if (!canFallbackToInsecureStore /* in other words, we won't use it again */)
+                        {
+                            Trace.writeLine("         No fallback requested, migrating...");
+                            final InsecureStore insecureStore = new InsecureStore(insecureFile);
+                            insecureStore.migrateAndDisable(secureStore);
+                            Trace.writeLine("         Migrated and disabled.");
+                        }
+                        else
+                        {
+                            Trace.writeLine("         Fallback requested, skipping migration.");
+                        }
+                    }
+                }
+                else
+                {
+                    Trace.writeLine("     Keychain is NOT available");
+                    if (!canFallbackToInsecureStore)
+                    {
+                        throw new SecurityException("The Keychain is not available. If you would like to use the InsecureStore instead, run `git config credential.canfallbacktoinsecurestore true`");
+                    }
+                }
+            }
+
+            if (secureStore == null)
+            {
+                Trace.writeLine("   Using the InsecureStore");
+                //noinspection ResultOfMethodCallIgnored
+                programFolder.mkdirs();
+                secureStore = new InsecureStore(insecureFile);
+            }
+            return secureStore;
         }
     }
 }
