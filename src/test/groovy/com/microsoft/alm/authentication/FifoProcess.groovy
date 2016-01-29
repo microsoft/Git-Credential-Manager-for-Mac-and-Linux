@@ -11,6 +11,7 @@ class FifoProcess extends TestProcess {
 
     String[] expectedCommand = null;
     int expectedExitCode = 0;
+    String expectedStandardInput = null;
 
     public FifoProcess(final String input) {
         super(input)
@@ -22,6 +23,10 @@ class FifoProcess extends TestProcess {
 
     @Override
     int waitFor() throws InterruptedException {
+        if (expectedStandardInput != null) {
+            final def actualStandardInput = getOutput()
+            assert actualStandardInput == expectedStandardInput
+        }
         return expectedExitCode
     }
 }
