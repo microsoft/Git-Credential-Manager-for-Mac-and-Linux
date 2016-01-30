@@ -2,6 +2,21 @@ Release Notes
 =============
 Every release is described here, from latest to earliest.
 
+Version 1.4.0
+-------------
+### Major changes
+- On Mac OS X, the default `ISecretStore` implementation now uses the Keychain.
+    - The first time, the secrets from `insecureStore.xml` will be imported into the Keychin and then the file will be renamed to `insecureStore.xml.old`.  The file isn't deleted (yet) after the import to facilitate downgrading without re-authenticating.  Once you are satified with the stability/usability of the new implementation, go ahead and deleted the `insecureStore.xml.old` file.
+
+### Minor changes
+- Improved the RPM-based installation for GNU/Linux.
+- Added preliminary .DEB (Debian packages) generation.
+- Updated minimum Mac OS X version to 10.9.5.  Thanks go out to Kern Handa who tested on his Mac and submitted pull request #24.
+
+### Known issues
+- Versions of Java before Oracle Java 7 Update 6 as well as default OpenJDK installations currently do not support OAuth 2.0 authentication & authorization with Visual Studio Team Services.
+    - **Workaround:** install Oracle Java 7 Update 6 (or later) or [build & install OpenJFX for OpenJDK 8](https://wiki.openjdk.java.net/display/OpenJFX/Building+OpenJFX).
+
 
 Version 1.3.0
 -------------
