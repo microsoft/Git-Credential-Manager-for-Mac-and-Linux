@@ -42,7 +42,7 @@ This will download the dependencies, compile the code, run unit tests, and packa
 
 How can I contribute?
 ---------------------
-Please refer to [Contributing.md](Contributing.md) or [Contributing.html](Contributing.html).
+Please refer to [Contributing.md](Contibuting.md) or [Contributing.html](Contributing.html).
 
 
 How can I find out more?
