@@ -286,7 +286,7 @@ Licensed under the MIT license. See License.txt in the project root. -->
             <configuration>
               <!-- http://stackoverflow.com/a/9339405 -->
               <properties>
-                <shaded_jar_checksum_file>${artifactId}-${version}.jar.sha256</shaded_jar_checksum_file>
+                <shaded_jar_checksum_file>${project.artifactId}-${project.version}.jar.sha256</shaded_jar_checksum_file>
               </properties>
               <scripts>
                 <script><![CDATA[
