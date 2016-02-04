@@ -303,6 +303,13 @@ Licensed under the MIT license. See License.txt in the project root. -->
             </configuration>
           </execution>
         </executions>
+        <dependencies>
+          <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-ant</artifactId>
+            <version>2.4.5</version>
+          </dependency>
+        </dependencies>
       </plugin>
       <plugin>
         <groupId>com.ruleoftech</groupId>
@@ -521,7 +528,7 @@ Licensed under the MIT license. See License.txt in the project root. -->
     </dependency>
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy-all</artifactId>
+      <artifactId>groovy</artifactId>
       <version>2.4.5</version>
       <scope>test</scope>
     </dependency>
