@@ -525,6 +525,7 @@ public class Program
         // i.e. !/usr/bin/jre\ 1.6/bin/java -Ddebug=false -jar /home/example/with\ spaces/gcm.jar
         sb.append("!").append(escapeSpaces(pathToJava));
         sb.append(" -Ddebug=").append(isDebug);
+        sb.append(" -Djava.net.useSystemProxies=true");
         sb.append(" -jar ").append(escapeSpaces(pathToJar));
         final String gcmCommandLine = sb.toString();
 

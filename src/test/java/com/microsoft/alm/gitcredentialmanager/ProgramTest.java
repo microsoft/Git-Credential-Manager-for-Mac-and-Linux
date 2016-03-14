@@ -240,7 +240,7 @@ public class ProgramTest
                 Assert.assertEquals("--global", strings[2]);
                 Assert.assertEquals("--add", strings[3]);
                 Assert.assertEquals("credential.helper", strings[4]);
-                Assert.assertEquals("!/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.65-3.b17.fc22.x86_64/bin/java -Ddebug=false -jar /usr/bin/git-credential-manager-1.1.0.jar", strings[5]);
+                Assert.assertEquals("!/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.65-3.b17.fc22.x86_64/bin/java -Ddebug=false -Djava.net.useSystemProxies=true -jar /usr/bin/git-credential-manager-1.1.0.jar", strings[5]);
                 return process;
             }
         };
@@ -260,7 +260,7 @@ public class ProgramTest
                 Assert.assertEquals("--system", strings[2]);
                 Assert.assertEquals("--add", strings[3]);
                 Assert.assertEquals("credential.helper", strings[4]);
-                Assert.assertEquals("!/System/Library/Frameworks/JavaVM.framework/Versions/Current/Commands/java -Ddebug=true -jar /usr/local/bin/git-credential-manager-1.1.0.jar", strings[5]);
+                Assert.assertEquals("!/System/Library/Frameworks/JavaVM.framework/Versions/Current/Commands/java -Ddebug=true -Djava.net.useSystemProxies=true -jar /usr/local/bin/git-credential-manager-1.1.0.jar", strings[5]);
                 return process;
             }
         };
