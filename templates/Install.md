@@ -6,9 +6,11 @@ This document explains how to obtain the Git Credential Manager for Mac and Linu
 
 Great care was taken to avoid using any features of Java that would impact compatibility with Java 6.  Unfortunately, at this time, only the JavaFX-based browser is available, which excludes Java 6.  If you find a compatibility issue, please report it and provide as many details about your platform as necessary to reproduce the problem.
 
-1. Mac OS X version 10.9.5 and up OR a GNU/Linux distribution with a desktop environment.
-2. Oracle Java 7 Update 6 and up, Oracle Java 8, or OpenJDK with OpenJFX.
-3. Git version 1.9 and up.
+| Operating System | Minimum Java version | Minimum Git version | Notes |
+|------------------|----------------------|---------------------|-------|
+| Mac OS X 10.9.5 - 10.10 | Oracle Java 7 Update 6 | 1.9 |  |
+| Mac OS X 10.11 and up | Oracle Java 8 | 1.9 | It looks like [Java FX from Oracle Java 7 is broken on Mac OS X 10.11](http://bugs.java.com/bugdatabase/view_bug.do?bug_id=8143907). |
+| GNU/Linux | Oracle Java 8 <br /> - or - <br /> OpenJDK 8 [with OpenJFX](https://wiki.openjdk.java.net/display/OpenJFX/Building+OpenJFX) | 1.9 | You need a desktop environment, such as Gnome or KDE. |
 
 
 ## How to install
