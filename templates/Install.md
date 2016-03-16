@@ -109,7 +109,7 @@ Debug mode will turn on tracing and assertions, producing a lot of output to `st
     ```
     !java -Ddebug=false -Djava.net.useSystemProxies=true -jar /home/example/${project.artifactId}/${project.artifactId}-${project.version}.jar
     ```
-2. Set a new value for the `credential.helper` configuration (essentially repeating the _manual configuration step_, being careful with quoting and spaces), changing the value of the `debug` property to `true` (or `false` to disable).
+2. Set a new value for the `credential.helper` configuration (essentially repeating the _manual configuration_ installation step, being careful with quoting and spaces), changing the value of the `debug` property to `true` (or `false` to disable).
 
 
 ## How to remove or uninstall
