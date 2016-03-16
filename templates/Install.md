@@ -82,7 +82,7 @@ Download [${project.artifactId}-${project.version}.jar](https://github.com/Micro
 1. Configure the `credential.helper` setting to launch Java with the absolute path to the JAR (make sure you surround the whole value with 'single quotes'):
 
     ```
-    git config --global credential.helper '!java -Ddebug=false -jar /home/example/${project.artifactId}/${project.artifactId}-${project.version}.jar'
+    git config --global credential.helper '!java -Ddebug=false -Djava.net.useSystemProxies=true -jar /home/example/${project.artifactId}/${project.artifactId}-${project.version}.jar'
     ```
 
 
@@ -107,7 +107,7 @@ Debug mode will turn on tracing and assertions, producing a lot of output to `st
     ...it should look like this:
 
     ```
-    !java -Ddebug=false -jar /home/example/${project.artifactId}/${project.artifactId}-${project.version}.jar
+    !java -Ddebug=false -Djava.net.useSystemProxies=true -jar /home/example/${project.artifactId}/${project.artifactId}-${project.version}.jar
     ```
 2. Set a new value for the `credential.helper` configuration (essentially repeating the _manual configuration step_, being careful with quoting and spaces), changing the value of the `debug` property to `true` (or `false` to disable).
 
