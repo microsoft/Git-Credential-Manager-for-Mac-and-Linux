@@ -82,7 +82,7 @@ Download [${project.artifactId}-${project.version}.jar](https://github.com/Micro
 1. Configure the `credential.helper` setting to launch Java with the absolute path to the JAR (make sure you surround the whole value with 'single quotes'):
 
     ```
-    git config --global credential.helper '!java -Ddebug=false -jar /home/example/${project.artifactId}/${project.artifactId}-${project.version}.jar'
+    git config --global credential.helper '!java -Ddebug=false -Djava.net.useSystemProxies=true -jar /home/example/${project.artifactId}/${project.artifactId}-${project.version}.jar'
     ```
 
 
@@ -107,9 +107,37 @@ Debug mode will turn on tracing and assertions, producing a lot of output to `st
     ...it should look like this:
 
     ```
-    !java -Ddebug=false -jar /home/example/${project.artifactId}/${project.artifactId}-${project.version}.jar
+    !java -Ddebug=false -Djava.net.useSystemProxies=true -jar /home/example/${project.artifactId}/${project.artifactId}-${project.version}.jar
     ```
-2. Set a new value for the `credential.helper` configuration (essentially repeating the _manual configuration step_, being careful with quoting and spaces), changing the value of the `debug` property to `true` (or `false` to disable).
+2. Set a new value for the `credential.helper` configuration (essentially repeating the _manual configuration_ installation step, being careful with quoting and spaces), changing the value of the `debug` property to `true` (or `false` to disable).
+
+
+## How to configure the proxy server
+If your network does not allow a direct connection to remote hosts, you can configure the GCM to perform requests through a web proxy.
+
+### Automatic configuration (recommended)
+If you are running Gnome 2.x or greater, you can configure the proxy settings using the GUI and the GCM will use those settings thanks to a JVM feature that's activated by setting the `java.net.useSystemProxies` system property to `true` (this is now done automatically when running the GCM in `install` mode).
+
+### Manual configuration
+
+If it's not possible to use the automatic proxy server configuration, you must set the appropriate [networking properties](http://docs.oracle.com/javase/7/docs/api/java/net/doc-files/net-properties.html). Aside from SOCKS proxy servers, which can have their credentials specified through specific properties, authenticated proxy servers are currently not supported.
+
+1. Retrieve the value of the `credential.helper` configuration:
+
+    ```
+    git config --global --get credential.helper ${project.artifactId}
+    ```
+    ...it should look like this:
+
+    ```
+    !java -Ddebug=false -Djava.net.useSystemProxies=true -jar /home/example/${project.artifactId}/${project.artifactId}-${project.version}.jar
+    ```
+2. Set a new value for the `credential.helper` configuration (essentially repeating the _manual configuration_ installation step, being careful with quoting and spaces), adding the appropriate properties.  For example, if you have a proxy server that can do HTTP and HTTPS, running on the host `192.168.0.117`, listening on port `8123`, then you would run the following (notice there's a pair of properties for http and one for https).
+
+
+    ```
+    git config --global credential.helper '!java -Ddebug=false -Dhttp.proxyHost=192.168.0.117 -Dhttp.proxyPort=8123 -Dhttps.proxyHost=192.168.0.117 -Dhttps.proxyPort=8123 -jar /home/example/${project.artifactId}/${project.artifactId}-${project.version}.jar'
+    ```
 
 
 ## How to remove or uninstall
