@@ -85,7 +85,7 @@ class VsoAzureAuthority extends AzureAuthority implements IVsoAuthority
                 }
             }
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             throw new Error(e);
         }
@@ -112,7 +112,7 @@ class VsoAzureAuthority extends AzureAuthority implements IVsoAuthority
         }
         catch (final IOException e)
         {
-            Trace.writeLine("   server returned " + e.getMessage());
+            throw new Error(e);
         }
 
         final AtomicReference<UUID> instanceId = new AtomicReference<UUID>();
@@ -156,16 +156,12 @@ class VsoAzureAuthority extends AzureAuthority implements IVsoAuthority
         }
         catch (final IOException e)
         {
-            Trace.writeLine("   server returned: " + e.getMessage());
+            throw new Error(e);
         }
-        catch(final Throwable ignored)
+        catch (final Throwable ignored)
         {
-            Trace.writeLine("   unexpected error");
+            throw new Error("   unexpected error", ignored);
         }
-
-        Trace.writeLine("   credential validation failed");
-        return false;
-
     }
 
     /**

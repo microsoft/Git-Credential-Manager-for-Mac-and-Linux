@@ -272,7 +272,7 @@ public class Token extends Secret
         }
         catch (final Throwable throwable)
         {
-            Trace.writeLine("   token deserialization error");
+            throw new Error("   token deserialization error", throwable);
         }
 
         return tokenReference.get() != null;
@@ -299,9 +299,9 @@ public class Token extends Secret
             bytes.put(utf8bytes);
             byteReference.set(bytes.array());
         }
-        catch(final Throwable t)
+        catch (final Throwable t)
         {
-            Trace.writeLine("   token serialization error");
+            throw new Error("   token serialization error", t);
         }
 
         return byteReference.get() != null;
