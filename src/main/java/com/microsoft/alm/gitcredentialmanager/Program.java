@@ -103,19 +103,19 @@ public class Program
 
             program.innerMain(args);
         }
-        catch (final Exception exception)
+        catch (final Throwable throwable)
         {
             if (Debug.IsDebug)
             {
                 System.err.println("Fatal error encountered.  Details:");
-                exception.printStackTrace(System.err);
+                throwable.printStackTrace(System.err);
             }
             else
             {
-                System.err.println("Fatal: " + exception.getClass().getName() + " encountered.  Details:");
-                System.err.println(exception.getMessage());
+                System.err.println("Fatal: " + throwable.getClass().getName() + " encountered.  Details:");
+                System.err.println(throwable.getMessage());
             }
-            logEvent(exception.getMessage(), "EventLogEntryType.Error");
+            logEvent(throwable.getMessage(), "EventLogEntryType.Error");
             // notice the lack of a new line; Git needs it that way
             System.out.print(AbortAuthenticationProcessResponse);
         }
