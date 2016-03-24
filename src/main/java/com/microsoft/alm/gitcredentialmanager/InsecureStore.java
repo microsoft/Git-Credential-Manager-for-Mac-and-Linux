@@ -81,7 +81,7 @@ public class InsecureStore implements ISecureStore
                     this.Credentials.putAll(clone.Credentials);
                 }
             }
-            catch (FileNotFoundException e)
+            catch (final FileNotFoundException e)
             {
                 Trace.writeLine("backingFile '" + backingFile.getAbsolutePath() + "' did not exist.");
             }

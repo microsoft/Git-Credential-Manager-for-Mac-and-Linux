@@ -285,8 +285,9 @@ public abstract class BaseVsoAuthentication extends BaseAuthentication
                 return !StringHelper.isNullOrWhiteSpace(tenant)
                         && Guid.tryParse(tenant, tenantId);
             }
-            catch (final IOException ignored)
+            catch (final IOException e)
             {
+                throw new Error(e);
             }
         }
 

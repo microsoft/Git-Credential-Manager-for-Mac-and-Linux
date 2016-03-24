@@ -485,11 +485,11 @@ public class Program
                 uninstall(processFactory);
                 configureGit(processFactory, configLocation);
             }
-            catch (IOException e)
+            catch (final IOException e)
             {
                 throw new Error(e);
             }
-            catch (InterruptedException e)
+            catch (final InterruptedException e)
             {
                 throw new Error(e);
             }
@@ -574,11 +574,11 @@ public class Program
                 unconfigureGit(processFactory, configLocation);
             }
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
             throw new Error(e);
         }
-        catch (InterruptedException e)
+        catch (final InterruptedException e)
         {
             throw new Error(e);
         }

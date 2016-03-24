@@ -130,8 +130,7 @@ class AzureAuthority implements IAzureAuthority
         }
         catch (final IOException e)
         {
-            // TODO: 449248: silently catching the exception here seems horribly wrong
-            Trace.writeLine("   token acquisition failed.");
+            throw new Error("   token acquisition failed.", e);
         }
         return tokens;
     }
@@ -182,8 +181,9 @@ class AzureAuthority implements IAzureAuthority
                 authorizationCode = null;
             }
         }
-        catch (final AuthorizationException ignored)
+        catch (final AuthorizationException e)
         {
+            throw new Error(e);
         }
         return authorizationCode;
     }
