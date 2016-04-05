@@ -22,4 +22,8 @@ public class SimpleJsonTest {
         assertParse([:], "")
     }
 
+    @Test public void parse_emptyMap() {
+        assertParse([:], "{}")
+    }
+
 }
