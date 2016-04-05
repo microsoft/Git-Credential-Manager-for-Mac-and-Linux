@@ -3,6 +3,7 @@
 
 package com.microsoft.alm.helpers;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -11,7 +12,9 @@ import java.util.Map;
 public class SimpleJson {
 
     public static Map<String, Object> parse(final String input) {
-        return null;
+        final Map<String, Object> result = new LinkedHashMap<String, Object>();
+
+        return result;
     }
 
     public static String format(final Map<String, Object> input) {

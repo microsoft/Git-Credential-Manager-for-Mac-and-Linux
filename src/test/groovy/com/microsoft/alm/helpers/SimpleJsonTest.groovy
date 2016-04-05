@@ -12,4 +12,14 @@ import org.junit.Test
 @CompileStatic
 public class SimpleJsonTest {
 
+    private static void assertParse(final Map<String, ? extends Object> expected, final String input) {
+        final actual = SimpleJson.parse(input)
+
+        assert expected == actual
+    }
+
+    @Test public void parse_emptyString() {
+        assertParse([:], "")
+    }
+
 }
