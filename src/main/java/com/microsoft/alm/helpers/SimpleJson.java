@@ -178,26 +178,20 @@ public class SimpleJson {
                     }
                     break;
                 case NUMBER_VALUE:
-                    if (isComma(c)) {
+                    if (isComma(c) || isInsignificantWhitespace(c) || isRightCurlyBracket(c)) {
                         final String candidateDouble = token.toString();
                         token.setLength(0);
                         value = Double.parseDouble(candidateDouble);
                         result.put(key, value);
-                        state = State.PRE_KEY;
-                    }
-                    else if (isInsignificantWhitespace(c)) {
-                        final String candidateDouble = token.toString();
-                        token.setLength(0);
-                        value = Double.parseDouble(candidateDouble);
-                        result.put(key, value);
-                        state = State.POST_VALUE;
-                    }
-                    else if (isRightCurlyBracket(c)) {
-                        final String candidateDouble = token.toString();
-                        token.setLength(0);
-                        value = Double.parseDouble(candidateDouble);
-                        result.put(key, value);
-                        state = State.END;
+                        if (isComma(c)) {
+                            state = State.PRE_KEY;
+                        }
+                        else if (isRightCurlyBracket(c)) {
+                            state = State.END;
+                        }
+                        else {
+                            state = State.POST_VALUE;
+                        }
                     }
                     else if (isDigit(c) || isExp(c) || isPeriod(c)) {
                         token.append(c);
@@ -281,19 +275,16 @@ public class SimpleJson {
                         case 'u':
                             token.append(c);
                             break;
-                        case ',': {
-                                final String candidateLiteral = token.toString();
-                                token.setLength(0);
-                                final Object literal = decodeLiteral(candidateLiteral);
-                                result.put(key, literal);
+                        case ',':
+                        case '}':
+                            final String candidateLiteral = token.toString();
+                            token.setLength(0);
+                            final Object literal = decodeLiteral(candidateLiteral);
+                            result.put(key, literal);
+                            if (isComma(c)) {
                                 state = State.POST_VALUE;
                             }
-                            break;
-                        case '}': {
-                                final String candidateLiteral = token.toString();
-                                token.setLength(0);
-                                final Object literal = decodeLiteral(candidateLiteral);
-                                result.put(key, literal);
+                            else {
                                 state = State.END;
                             }
                             break;
