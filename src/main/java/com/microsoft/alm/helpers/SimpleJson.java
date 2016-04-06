@@ -178,7 +178,14 @@ public class SimpleJson {
                     }
                     break;
                 case NUMBER_VALUE:
-                    if (isComma(c) || isInsignificantWhitespace(c)) {
+                    if (isComma(c)) {
+                        final String candidateDouble = token.toString();
+                        token.setLength(0);
+                        value = Double.parseDouble(candidateDouble);
+                        result.put(key, value);
+                        state = State.PRE_KEY;
+                    }
+                    else if (isInsignificantWhitespace(c)) {
                         final String candidateDouble = token.toString();
                         token.setLength(0);
                         value = Double.parseDouble(candidateDouble);

@@ -104,6 +104,27 @@ public class SimpleJsonTest {
         assertParse(expected, input)
     }
 
+    @Test public void parse_commaAfterNumberIsPreKey() {
+        final input = """
+    {
+        "access_token":"2YotnFZFEjr1zCsicMWpAA",
+        "token_type":"example",
+        "expires_in":3600,
+        "refresh_token":"tGzv3JOkF0XG5Qx2TlKWIA",
+        "example_parameter":"example_value"
+    }
+"""
+        final def expected = [
+            "access_token":"2YotnFZFEjr1zCsicMWpAA",
+            "token_type":"example",
+            "expires_in":3600,
+            "refresh_token":"tGzv3JOkF0XG5Qx2TlKWIA",
+            "example_parameter":"example_value"
+        ]
+
+        assertParse(expected, input)
+    }
+
     @Test public void parse_error_START() {
         assertParseError("Unexpected character '[' at state START.", /[/)
     }
