@@ -5,6 +5,8 @@ package com.microsoft.alm.authentication
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule
 import groovy.transform.CompileStatic
+import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
@@ -29,8 +31,22 @@ public class DeviceFlowImplTest {
     private static final DeviceFlowResponse DEFAULT_DEVICE_FLOW_RESPONSE = new DeviceFlowResponse(DEVICE_CODE, USER_CODE, VERIFICATION_URI, EXPIRY_SECONDS, ATTEMPT_INTERVAL);
 
     private final String host;
+    private int deviceEndpointExpectedHits;
+    private int tokenEndpointExpectedErrorHits;
+    private int tokenEndpointExpectedSuccessHits;
 
     @Rule public WireMockRule wireMockRule = new WireMockRule(0);
+
+    @Before public void initializeExpectedHits() {
+        deviceEndpointExpectedHits = 0;
+        tokenEndpointExpectedErrorHits = 0;
+        tokenEndpointExpectedSuccessHits = 0;
+    }
+
+    @After public void verifyExpectedHits() {
+        verify(deviceEndpointExpectedHits, postRequestedFor(urlEqualTo(DEVICE_ENDPOINT_PATH)));
+        verify(tokenEndpointExpectedErrorHits + tokenEndpointExpectedSuccessHits, postRequestedFor(urlEqualTo(TOKEN_ENDPOINT_PATH)));
+    }
 
     public DeviceFlowImplTest() {
         final def localHostAddress = InetAddress.localHost;
@@ -71,6 +87,7 @@ public class DeviceFlowImplTest {
                 .withBody(deviceResponseBody)
             )
         );
+        deviceEndpointExpectedHits++;
     }
 
     private void stubTokenEndpointSuccess(final String requestBodySuffix = "", String responseBodyPrefix = "") {
@@ -99,6 +116,7 @@ public class DeviceFlowImplTest {
                 .withBody(tokenResponseBody)
             )
         );
+        tokenEndpointExpectedSuccessHits++;
     }
 
     private void stubTokenEndpointError(final String requestBody, final String errorCode, final String errorDescription = null, final URI errorUri = null) {
@@ -138,6 +156,7 @@ public class DeviceFlowImplTest {
                 .withBody(tokenResponseBody)
             )
         );
+        tokenEndpointExpectedErrorHits++;
     }
 
     @Test public void endToEnd_authorizedRightAway() {
