@@ -104,6 +104,12 @@ public class SimpleJson {
 
     public static Map<String, Object> parse(final String input) {
         final Map<String, Object> result = new LinkedHashMap<String, Object>();
+        parse(input, result);
+
+        return result;
+    }
+
+    static void parse(final String input, final Map<String, Object> destination) {
         final StringBuilder token = new StringBuilder();
         final StringBuilder unicodeHex = new StringBuilder();
 
@@ -182,7 +188,7 @@ public class SimpleJson {
                         final String candidateDouble = token.toString();
                         token.setLength(0);
                         value = Double.parseDouble(candidateDouble);
-                        result.put(key, value);
+                        destination.put(key, value);
                         if (isComma(c)) {
                             state = State.PRE_KEY;
                         }
@@ -207,7 +213,7 @@ public class SimpleJson {
                     else if (isDoubleQuote(c)) {
                         value = token.toString();
                         token.setLength(0);
-                        result.put(key, value);
+                        destination.put(key, value);
                         state = State.POST_VALUE;
                     }
                     else {
@@ -280,7 +286,7 @@ public class SimpleJson {
                             final String candidateLiteral = token.toString();
                             token.setLength(0);
                             final Object literal = decodeLiteral(candidateLiteral);
-                            result.put(key, literal);
+                            destination.put(key, literal);
                             if (isComma(c)) {
                                 state = State.POST_VALUE;
                             }
@@ -316,8 +322,6 @@ public class SimpleJson {
                     break;
             }
         }
-
-        return result;
     }
 
     public static int readOptionalInteger(final Map<String, Object> pairs, final String key, final int defaultValue) {

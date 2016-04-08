@@ -5,6 +5,7 @@ package com.microsoft.alm.authentication;
 
 import com.microsoft.alm.helpers.Debug;
 import com.microsoft.alm.helpers.NotImplementedException;
+import com.microsoft.alm.helpers.PropertyBag;
 import com.microsoft.alm.helpers.SimpleJson;
 import com.microsoft.alm.helpers.StringHelper;
 
@@ -50,10 +51,10 @@ class TokenPair
     public TokenPair(final String accessTokenResponse)
     {
         final LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
-        final Map<String, Object> pairs = SimpleJson.parse(accessTokenResponse);
+        final PropertyBag bag = PropertyBag.fromJson(accessTokenResponse);
         String accessToken = null;
         String refreshToken = null;
-        for (final Map.Entry<String, Object> pair : pairs.entrySet()) {
+        for (final Map.Entry<String, Object> pair : bag.entrySet()) {
             final String name = pair.getKey();
             final Object value = pair.getValue();
             if (ACCESS_TOKEN.equals(name))
