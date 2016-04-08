@@ -6,12 +6,17 @@ package com.microsoft.alm.helpers;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class UriHelper
 {
+    private static final Pattern PAIR_SEPARATOR = Pattern.compile("&");
+    private static final Pattern NAME_VALUE_SEPARATOR = Pattern.compile("=");
+
     public static final String UTF_8 = "UTF-8";
 
     public static boolean isWellFormedUriString(final String uriString)
@@ -30,7 +35,33 @@ public class UriHelper
     public static QueryString deserializeParameters(final String s)
     {
         final QueryString result = new QueryString();
-        // TODO: implement
+
+        if (StringHelper.isNullOrWhiteSpace(s))
+        {
+            return result;
+        }
+
+        final String trimmed = s.trim();
+        final String[] pairs = PAIR_SEPARATOR.split(trimmed);
+
+        for (final String pair : pairs)
+        {
+            final String trimmedPair = pair.trim();
+            if (trimmedPair.length() == 0) {
+                continue;
+            }
+            final String[] nameAndValue = NAME_VALUE_SEPARATOR.split(pair, 2);
+            try {
+                final String name = URLDecoder.decode(nameAndValue[0], UTF_8);
+                final String value;
+                value = nameAndValue.length == 2 ? URLDecoder.decode(nameAndValue[1], UTF_8) : null;
+                result.put(name, value);
+            }
+            catch (final UnsupportedEncodingException e) {
+                throw new Error(e);
+            }
+
+        }
         return result;
     }
 

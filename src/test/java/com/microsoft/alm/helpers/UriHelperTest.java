@@ -6,8 +6,10 @@ package com.microsoft.alm.helpers;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class UriHelperTest
 {
@@ -30,6 +32,33 @@ public class UriHelperTest
         final QueryString actual = UriHelper.deserializeParameters(input);
 
         Assert.assertEquals(0, actual.size());
+    }
+
+    @Test
+    public void deserializeParameters_firstHasNameOnly() throws Exception
+    {
+        final String input = "nameOnly";
+
+        final QueryString actual = UriHelper.deserializeParameters(input);
+
+        Assert.assertEquals(1, actual.size());
+        Assert.assertEquals("nameOnly", actual.keySet().toArray()[0]);
+    }
+
+    @Test
+    public void deserializeParameters_firstHasNameValue() throws Exception
+    {
+        final String input = "name=value";
+
+        final QueryString actual = UriHelper.deserializeParameters(input);
+
+        Assert.assertEquals(1, actual.size());
+        final Set<Map.Entry<String, String>> entries = actual.entrySet();
+        final Iterator<Map.Entry<String, String>> it = entries.iterator();
+        Assert.assertEquals(true, it.hasNext());
+        Map.Entry<String, String> entry = it.next();
+        Assert.assertEquals("name", entry.getKey());
+        Assert.assertEquals("value", entry.getValue());
     }
 
     @Test
