@@ -3,6 +3,8 @@
 
 package com.microsoft.alm.authentication;
 
+import com.microsoft.alm.helpers.PropertyBag;
+
 import java.net.URI;
 import java.util.Calendar;
 
@@ -29,6 +31,19 @@ public class DeviceFlowResponse
         this.expiresAt = Calendar.getInstance();
         expiresAt.add(Calendar.SECOND, expiresIn);
         this.interval = interval;
+    }
+
+    public static DeviceFlowResponse fromJson(final String jsonText) {
+        final PropertyBag bag = PropertyBag.fromJson(jsonText);
+        final String deviceCode = (String) bag.get(OAuthParameter.DEVICE_CODE);
+        final String userCode = (String) bag.get(OAuthParameter.USER_CODE);
+        final String verificationUriString = (String) bag.get(OAuthParameter.VERIFICATION_URI);
+        final URI verificationUri = URI.create(verificationUriString);
+        final int expiresInSeconds = bag.readOptionalInteger(OAuthParameter.EXPIRES_IN, 600);
+        final int intervalInSeconds = bag.readOptionalInteger(OAuthParameter.INTERVAL, 5);
+
+        final DeviceFlowResponse result = new DeviceFlowResponse(deviceCode, userCode, verificationUri, expiresInSeconds, intervalInSeconds);
+        return result;
     }
 
     /**
