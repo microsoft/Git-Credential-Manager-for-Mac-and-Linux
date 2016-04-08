@@ -50,8 +50,11 @@ class TokenPair
 
     public TokenPair(final String accessTokenResponse)
     {
+        this(PropertyBag.fromJson(accessTokenResponse));
+    }
+
+    public TokenPair(final PropertyBag bag) {
         final LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
-        final PropertyBag bag = PropertyBag.fromJson(accessTokenResponse);
         String accessToken = null;
         String refreshToken = null;
         for (final Map.Entry<String, Object> pair : bag.entrySet()) {
