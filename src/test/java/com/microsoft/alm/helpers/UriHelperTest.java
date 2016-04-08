@@ -21,7 +21,7 @@ public class UriHelperTest
 
         final QueryString actual = UriHelper.deserializeParameters(input);
 
-        Assert.assertEquals(0, actual.size());
+        assertMapEntries(actual);
     }
 
     @Test
@@ -31,7 +31,7 @@ public class UriHelperTest
 
         final QueryString actual = UriHelper.deserializeParameters(input);
 
-        Assert.assertEquals(0, actual.size());
+        assertMapEntries(actual);
     }
 
     @Test
@@ -41,8 +41,9 @@ public class UriHelperTest
 
         final QueryString actual = UriHelper.deserializeParameters(input);
 
-        Assert.assertEquals(1, actual.size());
-        Assert.assertEquals("nameOnly", actual.keySet().toArray()[0]);
+        assertMapEntries(actual,
+            "nameOnly", null
+        );
     }
 
     @Test
@@ -52,13 +53,26 @@ public class UriHelperTest
 
         final QueryString actual = UriHelper.deserializeParameters(input);
 
-        Assert.assertEquals(1, actual.size());
-        final Set<Map.Entry<String, String>> entries = actual.entrySet();
-        final Iterator<Map.Entry<String, String>> it = entries.iterator();
-        Assert.assertEquals(true, it.hasNext());
-        Map.Entry<String, String> entry = it.next();
-        Assert.assertEquals("name", entry.getKey());
-        Assert.assertEquals("value", entry.getValue());
+        assertMapEntries(actual,
+            "name", "value"
+        );
+    }
+
+    private static void assertMapEntries(final Map<String, String> actualMap, final String... namesAndValues)
+    {
+        Assert.assertEquals("I need an even number of names and values", 0, namesAndValues.length % 2);
+
+        final Set<Map.Entry<String, String>> actualEntries = actualMap.entrySet();
+        final Iterator<Map.Entry<String, String>> aIt = actualEntries.iterator();
+        for (int e = 0; e < namesAndValues.length; e+=2) {
+            Assert.assertTrue(aIt.hasNext());
+            final Map.Entry<String, String> actualPair = aIt.next();
+
+            final String index = "At index " + (e / 2);
+            Assert.assertEquals(index, namesAndValues[e], actualPair.getKey());
+            Assert.assertEquals(index, namesAndValues[e + 1], actualPair.getValue());
+        }
+        Assert.assertFalse(aIt.hasNext());
     }
 
     @Test
