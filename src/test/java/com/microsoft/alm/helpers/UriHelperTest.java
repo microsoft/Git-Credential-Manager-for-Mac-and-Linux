@@ -58,6 +58,36 @@ public class UriHelperTest
         );
     }
 
+    @Test
+    public void deserializeParameters_secondHasNameOnly() throws Exception
+    {
+        final String input = "name=value&nameOnly";
+
+        final QueryString actual = UriHelper.deserializeParameters(input);
+
+        assertMapEntries(actual,
+            "name", "value",
+            "nameOnly", null
+        );
+    }
+
+    @Test
+    public void deserializeParameters_typical() throws Exception
+    {
+        final String input = "resource=a8860e8f-ca7d-4efe-b80d-4affab13d4ba&client_id=f7e11bcd-b50b-4869-ad88-8bdd6cbc8473&response_type=code&redirect_uri=https%3A%2F%2Fexample.com&client-request-id=06ac412b-8cc0-4ca5-b943-d9dc218abee6&prompt=login";
+
+        final QueryString actual = UriHelper.deserializeParameters(input);
+
+        assertMapEntries(actual,
+            "resource", "a8860e8f-ca7d-4efe-b80d-4affab13d4ba",
+            "client_id", "f7e11bcd-b50b-4869-ad88-8bdd6cbc8473",
+            "response_type", "code",
+            "redirect_uri", "https://example.com",
+            "client-request-id", "06ac412b-8cc0-4ca5-b943-d9dc218abee6",
+            "prompt", "login"
+        );
+    }
+
     private static void assertMapEntries(final Map<String, String> actualMap, final String... namesAndValues)
     {
         Assert.assertEquals("I need an even number of names and values", 0, namesAndValues.length % 2);
