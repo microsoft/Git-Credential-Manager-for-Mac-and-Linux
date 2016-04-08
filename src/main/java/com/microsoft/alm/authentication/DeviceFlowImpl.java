@@ -47,6 +47,27 @@ public class DeviceFlowImpl implements DeviceFlow
     @Override
     public TokenPair requestToken(final URI tokenEndpoint, final String clientId, final DeviceFlowResponse deviceFlowResponse) throws AuthorizationException
     {
-        return new TokenPair("d15281b1-03f1-4581-90d3-4527d9cf4147", "fake-refresh-token");
+        final QueryString bodyParameters = new QueryString();
+        bodyParameters.put(OAuthParameter.GRANT_TYPE, OAuthParameter.DEVICE_CODE);
+        bodyParameters.put(OAuthParameter.CODE, deviceFlowResponse.getDeviceCode());
+        bodyParameters.put(OAuthParameter.CLIENT_ID, clientId);
+        final StringContent requestBody = StringContent.createUrlEncoded(bodyParameters);
+
+        final HttpClient client = new HttpClient(Global.getUserAgent());
+        final String responseText;
+        try {
+            final HttpURLConnection response = client.post(tokenEndpoint, requestBody);
+            final int httpStatus = response.getResponseCode();
+            responseText = HttpClient.readToString(response);
+            if (httpStatus != HttpURLConnection.HTTP_OK) {
+                throw new Error("Token endpoint returned HTTP " + httpStatus + ":\n" + responseText);
+            }
+        }
+        catch (final IOException e) {
+            throw new Error(e);
+        }
+
+        final TokenPair tokenPair = new TokenPair(responseText);
+        return tokenPair;
     }
 }
