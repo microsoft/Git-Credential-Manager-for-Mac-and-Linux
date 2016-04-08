@@ -192,6 +192,7 @@ public class DeviceFlowImplTest {
         final def port = wireMockRule.port();
         final def deviceEndpoint = new URI(PROTOCOL, null, host, port, DEVICE_ENDPOINT_PATH, null, null);
         final def tokenEndpoint = new URI(PROTOCOL, null, host, port, TOKEN_ENDPOINT_PATH, null, null);
+        stubDeviceEndpoint();
         final def cut = new DeviceFlowImpl();
 
         final def actualResponse = cut.requestAuthorization(deviceEndpoint, CLIENT_ID, null);

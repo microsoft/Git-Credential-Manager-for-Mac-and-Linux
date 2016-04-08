@@ -3,8 +3,14 @@
 
 package com.microsoft.alm.authentication;
 
+import com.microsoft.alm.helpers.HttpClient;
+import com.microsoft.alm.helpers.QueryString;
+import com.microsoft.alm.helpers.StringContent;
+import com.microsoft.alm.helpers.StringHelper;
 import com.microsoft.alm.oauth2.useragent.AuthorizationException;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URI;
 
 public class DeviceFlowImpl implements DeviceFlow
@@ -12,7 +18,30 @@ public class DeviceFlowImpl implements DeviceFlow
     @Override
     public DeviceFlowResponse requestAuthorization(final URI deviceEndpoint, final String clientId, final String scope)
     {
-        return new DeviceFlowResponse("9297fb18-46d0-4846-97ca-ab8dd3b55729", "A1B2B4C1C5D1D3E3E5", URI.create("http://verification.example.com"), 600, 1);
+        final QueryString bodyParameters = new QueryString();
+        bodyParameters.put(OAuthParameter.RESPONSE_TYPE, OAuthParameter.DEVICE_CODE);
+        bodyParameters.put(OAuthParameter.CLIENT_ID, clientId);
+        if (!StringHelper.isNullOrEmpty(scope)) {
+            bodyParameters.put(OAuthParameter.SCOPE, scope);
+        }
+        final StringContent requestBody = StringContent.createUrlEncoded(bodyParameters);
+
+        final HttpClient client = new HttpClient(Global.getUserAgent());
+        final String responseText;
+        try {
+            final HttpURLConnection response = client.post(deviceEndpoint, requestBody);
+            final int httpStatus = response.getResponseCode();
+            responseText = HttpClient.readToString(response);
+            if (httpStatus != HttpURLConnection.HTTP_OK) {
+                throw new Error("Device endpoint returned HTTP " + httpStatus + ":\n" + responseText);
+            }
+        }
+        catch (final IOException e) {
+            throw new Error(e);
+        }
+
+        final DeviceFlowResponse result = DeviceFlowResponse.fromJson(responseText);
+        return result;
     }
 
     @Override
