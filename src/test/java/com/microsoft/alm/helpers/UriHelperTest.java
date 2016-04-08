@@ -13,6 +13,26 @@ public class UriHelperTest
 {
 
     @Test
+    public void deserializeParameters_null() throws Exception
+    {
+        final String input = null;
+
+        final QueryString actual = UriHelper.deserializeParameters(input);
+
+        Assert.assertEquals(0, actual.size());
+    }
+
+    @Test
+    public void deserializeParameters_empty() throws Exception
+    {
+        final String input = "";
+
+        final QueryString actual = UriHelper.deserializeParameters(input);
+
+        Assert.assertEquals(0, actual.size());
+    }
+
+    @Test
     public void serializeParameters_firstHasNameOnly() throws Exception
     {
         final Map<String, String> input = new LinkedHashMap<String, String>();

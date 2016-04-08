@@ -27,6 +27,13 @@ public class UriHelper
         }
     }
 
+    public static QueryString deserializeParameters(final String s)
+    {
+        final QueryString result = new QueryString();
+        // TODO: implement
+        return result;
+    }
+
     public static String serializeParameters(final Map<String, String> parameters)
     {
         try {
