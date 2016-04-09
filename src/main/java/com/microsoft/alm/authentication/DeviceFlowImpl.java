@@ -57,6 +57,8 @@ public class DeviceFlowImpl implements DeviceFlow
         bodyParameters.put(OAuthParameter.CLIENT_ID, clientId);
         final StringContent requestBody = StringContent.createUrlEncoded(bodyParameters);
 
+        final int intervalSeconds = deviceFlowResponse.getInterval();
+        final int intervalMilliseconds = intervalSeconds * 1000;
         final HttpClient client = new HttpClient(Global.getUserAgent());
         String responseText;
         while (true) {
@@ -73,6 +75,11 @@ public class DeviceFlowImpl implements DeviceFlow
                         final PropertyBag bag = PropertyBag.fromJson(errorResponseText);
                         final String errorCode = bag.readOptionalString(OAuthParameter.ERROR_CODE, "unknown_error");
                         if (OAuthParameter.ERROR_AUTHORIZATION_PENDING.equals(errorCode)) {
+                            try {
+                                Thread.sleep(intervalMilliseconds);
+                            } catch (final InterruptedException e) {
+                                throw new Error(e);
+                            }
                             continue;
                         }
                         final String errorDescription = bag.readOptionalString(OAuthParameter.ERROR_DESCRIPTION, null);

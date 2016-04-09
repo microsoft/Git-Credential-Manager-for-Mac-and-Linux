@@ -3,6 +3,9 @@
 
 package com.microsoft.alm.authentication
 
+import com.github.tomakehurst.wiremock.http.Request
+import com.github.tomakehurst.wiremock.http.RequestListener
+import com.github.tomakehurst.wiremock.http.Response
 import com.github.tomakehurst.wiremock.junit.WireMockRule
 import com.github.tomakehurst.wiremock.stubbing.Scenario
 import com.microsoft.alm.oauth2.useragent.AuthorizationException
@@ -228,6 +231,34 @@ public class DeviceFlowImplTest {
             return;
         }
         Assert.fail("An Error should have been thrown");
+    }
+
+    @Test public void requestToken_waitsBetweenRequests() {
+        final def port = wireMockRule.port();
+        final def tokenEndpoint = new URI(PROTOCOL, null, host, port, TOKEN_ENDPOINT_PATH, null, null);
+        final intervalMilliseconds = ATTEMPT_INTERVAL * 1000;
+        final listener = new RequestListener() {
+            private Calendar lastRequestTime = null;
+            @Override void requestReceived(final Request request, final Response response) {
+                final currentRequestTime = Calendar.instance;
+                if (lastRequestTime != null) {
+                    final currentRequestMilliseconds = currentRequestTime.timeInMillis;
+                    final lastRequestMilliseconds = lastRequestTime.timeInMillis;
+                    assert currentRequestMilliseconds - lastRequestMilliseconds >= intervalMilliseconds;
+                }
+                lastRequestTime = currentRequestTime;
+            }
+        };
+        wireMockRule.addMockServiceRequestListener(listener);
+        stubTokenEndpointError("grant_type=device_code&code=${DEVICE_CODE}&client_id=${CLIENT_ID}", "authorization_pending");
+        stubTokenEndpointSuccess();
+        final def cut = new DeviceFlowImpl();
+
+        final def actualTokenPair = cut.requestToken(tokenEndpoint, CLIENT_ID, DEFAULT_DEVICE_FLOW_RESPONSE);
+
+        final def actualAccessToken = actualTokenPair.AccessToken;
+        assert TokenType.Access == actualAccessToken.Type;
+        assert ACCESS_TOKEN == actualAccessToken.Value;
     }
 
     @Test public void endToEnd_authorizedRightAway() {
