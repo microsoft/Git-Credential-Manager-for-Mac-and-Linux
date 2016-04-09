@@ -21,6 +21,13 @@ class OAuthParameter
     static final String STATE = "state";
     static final String INTERVAL = "interval";
 
+    static final String ERROR_CODE = "error";
+    static final String ERROR_DESCRIPTION = "error_description";
+    static final String ERROR_URI = "error_uri";
+
+    static final String ERROR_AUTHORIZATION_PENDING = "authorization_pending";
+    static final String ERROR_SLOW_DOWN = "slow_down";
+
     static final String CORRELATION_ID = "client-request-id"; // correlation id is not standard oauth2 parameter
     static final String REQUEST_CORRELATION_ID_IN_RESPONSE = "return-client-request-id"; // not standard oauth2 parameter
     static final String PROMPT = "prompt"; // prompt is not standard oauth2 parameter
