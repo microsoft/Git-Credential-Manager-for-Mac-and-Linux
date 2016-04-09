@@ -44,8 +44,12 @@ public class DeviceFlowImplTest {
     }
 
     @After public void verifyExpectedHits() {
-        verify(deviceEndpointExpectedHits, postRequestedFor(urlEqualTo(DEVICE_ENDPOINT_PATH)));
-        verify(tokenEndpointExpectedErrorHits + tokenEndpointExpectedSuccessHits, postRequestedFor(urlEqualTo(TOKEN_ENDPOINT_PATH)));
+        if (deviceEndpointExpectedHits > 0) {
+            verify(deviceEndpointExpectedHits, postRequestedFor(urlEqualTo(DEVICE_ENDPOINT_PATH)));
+        }
+        if (tokenEndpointExpectedErrorHits + tokenEndpointExpectedSuccessHits > 0) {
+            verify(tokenEndpointExpectedErrorHits + tokenEndpointExpectedSuccessHits, postRequestedFor(urlEqualTo(TOKEN_ENDPOINT_PATH)));
+        }
     }
 
     public DeviceFlowImplTest() {
