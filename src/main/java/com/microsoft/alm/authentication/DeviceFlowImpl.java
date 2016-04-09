@@ -13,6 +13,7 @@ import com.microsoft.alm.oauth2.useragent.AuthorizationException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.util.Calendar;
 
 public class DeviceFlowImpl implements DeviceFlow
 {
@@ -60,8 +61,9 @@ public class DeviceFlowImpl implements DeviceFlow
         final int intervalSeconds = deviceFlowResponse.getInterval();
         final int intervalMilliseconds = intervalSeconds * 1000;
         final HttpClient client = new HttpClient(Global.getUserAgent());
-        String responseText;
-        while (true) {
+        String responseText = null;
+        final Calendar expiresAt = deviceFlowResponse.getExpiresAt();
+        while (Calendar.getInstance().compareTo(expiresAt) <= 0) {
             try {
                 final HttpURLConnection response = client.post(tokenEndpoint, requestBody);
                 final int httpStatus = response.getResponseCode();
@@ -97,6 +99,9 @@ public class DeviceFlowImpl implements DeviceFlow
             }
         }
 
+        if (responseText == null) {
+            throw new AuthorizationException("code_expired", "The verification code expired.", null, null);
+        }
         final TokenPair tokenPair = new TokenPair(responseText);
         return tokenPair;
     }
