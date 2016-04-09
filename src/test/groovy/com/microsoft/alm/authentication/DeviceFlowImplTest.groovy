@@ -4,6 +4,7 @@
 package com.microsoft.alm.authentication
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule
+import com.github.tomakehurst.wiremock.stubbing.Scenario
 import groovy.transform.CompileStatic
 import org.junit.After
 import org.junit.Before
@@ -29,8 +30,11 @@ public class DeviceFlowImplTest {
     private static final String DEVICE_ENDPOINT_PATH = "/device";
     private static final String TOKEN_ENDPOINT_PATH = "/token";
     private static final DeviceFlowResponse DEFAULT_DEVICE_FLOW_RESPONSE = new DeviceFlowResponse(DEVICE_CODE, USER_CODE, VERIFICATION_URI, EXPIRY_SECONDS, ATTEMPT_INTERVAL);
+    private static final String SCENARIO = "Default stateful scenario";
 
     private final String host;
+    private String scenarioStateName;
+    private int scenarioNextStateNumber;
     private int deviceEndpointExpectedHits;
     private int tokenEndpointExpectedErrorHits;
     private int tokenEndpointExpectedSuccessHits;
@@ -38,6 +42,8 @@ public class DeviceFlowImplTest {
     @Rule public WireMockRule wireMockRule = new WireMockRule(0);
 
     @Before public void initializeExpectedHits() {
+        scenarioStateName = Scenario.STARTED;
+        scenarioNextStateNumber = 0;
         deviceEndpointExpectedHits = 0;
         tokenEndpointExpectedErrorHits = 0;
         tokenEndpointExpectedSuccessHits = 0;
@@ -76,10 +82,13 @@ public class DeviceFlowImplTest {
 }
 """;
 
+        final def nextStateName = Integer.toString(scenarioNextStateNumber, 10);
         stubFor(
             post(
                 urlEqualTo(DEVICE_ENDPOINT_PATH)
             )
+            .inScenario(SCENARIO)
+            .whenScenarioStateIs(scenarioStateName)
             .withRequestBody(
                 equalTo(deviceRequestBody)
             )
@@ -90,8 +99,11 @@ public class DeviceFlowImplTest {
                 .withHeader("Cache-Control", "no-store")
                 .withBody(deviceResponseBody)
             )
+            .willSetStateTo(nextStateName)
         );
         deviceEndpointExpectedHits++;
+        scenarioStateName = nextStateName;
+        scenarioNextStateNumber++;
     }
 
     private void stubTokenEndpointSuccess(final String requestBodySuffix = "", String responseBodyPrefix = "") {
@@ -104,10 +116,14 @@ public class DeviceFlowImplTest {
     "expires_in":3600
 }
 """;
+
+        final def nextStateName = Integer.toString(scenarioNextStateNumber, 10);
         stubFor(
             post(
                 urlEqualTo(TOKEN_ENDPOINT_PATH)
             )
+            .inScenario(SCENARIO)
+            .whenScenarioStateIs(scenarioStateName)
             .withRequestBody(
                 equalTo(tokenRequestBody)
             )
@@ -119,8 +135,11 @@ public class DeviceFlowImplTest {
                 .withHeader("Pragma", "no-cache")
                 .withBody(tokenResponseBody)
             )
+            .willSetStateTo(nextStateName)
         );
         tokenEndpointExpectedSuccessHits++;
+        scenarioStateName = nextStateName;
+        scenarioNextStateNumber++;
     }
 
     private void stubTokenEndpointError(final String requestBody, final String errorCode, final String errorDescription = null, final URI errorUri = null) {
@@ -144,10 +163,13 @@ public class DeviceFlowImplTest {
 }
 """;
 
+        final def nextStateName = Integer.toString(scenarioNextStateNumber, 10);
         stubFor(
             post(
                 urlEqualTo(TOKEN_ENDPOINT_PATH)
             )
+            .inScenario(SCENARIO)
+            .whenScenarioStateIs(scenarioStateName)
             .withRequestBody(
                 equalTo(tokenRequestBody)
             )
@@ -159,8 +181,11 @@ public class DeviceFlowImplTest {
                 .withHeader("Pragma", "no-cache")
                 .withBody(tokenResponseBody)
             )
+            .willSetStateTo(nextStateName)
         );
         tokenEndpointExpectedErrorHits++;
+        scenarioStateName = nextStateName;
+        scenarioNextStateNumber++;
     }
 
     @Test public void endToEnd_authorizedRightAway() {
