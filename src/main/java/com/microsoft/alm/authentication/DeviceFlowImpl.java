@@ -4,6 +4,7 @@
 package com.microsoft.alm.authentication;
 
 import com.microsoft.alm.helpers.HttpClient;
+import com.microsoft.alm.helpers.PropertyBag;
 import com.microsoft.alm.helpers.QueryString;
 import com.microsoft.alm.helpers.StringContent;
 import com.microsoft.alm.helpers.StringHelper;
@@ -65,8 +66,18 @@ public class DeviceFlowImpl implements DeviceFlow
                 responseText = HttpClient.readToString(response);
             }
             else {
-                responseText = HttpClient.readErrorToString(response);
-                throw new Error("Token endpoint returned HTTP " + httpStatus + ":\n" + responseText);
+                final String errorResponseText = HttpClient.readErrorToString(response);
+                if (httpStatus == HttpURLConnection.HTTP_BAD_REQUEST) {
+                    final PropertyBag bag = PropertyBag.fromJson(errorResponseText);
+                    final String errorCode = bag.readOptionalString(OAuthParameter.ERROR_CODE, "unknown_error");
+                    final String errorDescription = bag.readOptionalString(OAuthParameter.ERROR_DESCRIPTION, null);
+                    final String errorUriString = bag.readOptionalString(OAuthParameter.ERROR_URI, null);
+                    final URI errorUri = errorUriString == null ? null : URI.create(errorUriString);
+                    throw new AuthorizationException(errorCode, errorDescription, errorUri, null);
+                }
+                else {
+                    throw new Error("Token endpoint returned HTTP " + httpStatus + ":\n" + errorResponseText);
+                }
             }
         }
         catch (final IOException e) {
