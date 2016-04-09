@@ -59,7 +59,7 @@ public class DeviceFlowImpl implements DeviceFlow
         final StringContent requestBody = StringContent.createUrlEncoded(bodyParameters);
 
         final int intervalSeconds = deviceFlowResponse.getInterval();
-        final int intervalMilliseconds = intervalSeconds * 1000;
+        int intervalMilliseconds = intervalSeconds * 1000;
         final HttpClient client = new HttpClient(Global.getUserAgent());
         String responseText = null;
         final Calendar expiresAt = deviceFlowResponse.getExpiresAt();
@@ -77,6 +77,15 @@ public class DeviceFlowImpl implements DeviceFlow
                         final PropertyBag bag = PropertyBag.fromJson(errorResponseText);
                         final String errorCode = bag.readOptionalString(OAuthParameter.ERROR_CODE, "unknown_error");
                         if (OAuthParameter.ERROR_AUTHORIZATION_PENDING.equals(errorCode)) {
+                            try {
+                                Thread.sleep(intervalMilliseconds);
+                            } catch (final InterruptedException e) {
+                                throw new Error(e);
+                            }
+                            continue;
+                        }
+                        else if (OAuthParameter.ERROR_SLOW_DOWN.equals(errorCode)) {
+                            intervalMilliseconds *= 2;
                             try {
                                 Thread.sleep(intervalMilliseconds);
                             } catch (final InterruptedException e) {

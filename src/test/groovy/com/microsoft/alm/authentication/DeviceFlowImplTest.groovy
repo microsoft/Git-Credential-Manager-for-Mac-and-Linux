@@ -280,6 +280,25 @@ public class DeviceFlowImplTest {
         Assert.fail("An AuthorizationException should have been thrown");
     }
 
+    @Test public void requestToken_backsOff() {
+        final testStartTime = Calendar.instance;
+        final def port = wireMockRule.port();
+        final def tokenEndpoint = new URI(PROTOCOL, null, host, port, TOKEN_ENDPOINT_PATH, null, null);
+        stubTokenEndpointError("grant_type=device_code&code=${DEVICE_CODE}&client_id=${CLIENT_ID}", "authorization_pending");
+        stubTokenEndpointError("grant_type=device_code&code=${DEVICE_CODE}&client_id=${CLIENT_ID}", "slow_down");
+        stubTokenEndpointError("grant_type=device_code&code=${DEVICE_CODE}&client_id=${CLIENT_ID}", "slow_down");
+        stubTokenEndpointSuccess();
+        final def cut = new DeviceFlowImpl();
+
+        final def actualTokenPair = cut.requestToken(tokenEndpoint, CLIENT_ID, DEFAULT_DEVICE_FLOW_RESPONSE);
+
+        final def actualAccessToken = actualTokenPair.AccessToken;
+        assert TokenType.Access == actualAccessToken.Type;
+        assert ACCESS_TOKEN == actualAccessToken.Value;
+        final testEndTime = Calendar.instance;
+        assert testEndTime.timeInMillis - testStartTime.timeInMillis >= (1 + 2 + 4) * 1000
+    }
+
     @Test public void endToEnd_authorizedRightAway() {
         final def port = wireMockRule.port();
         final def deviceEndpoint = new URI(PROTOCOL, null, host, port, DEVICE_ENDPOINT_PATH, null, null);
