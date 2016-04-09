@@ -16,4 +16,15 @@ public class PropertyBag extends LinkedHashMap<String, Object> {
     public int readOptionalInteger(final String key, final int defaultValue) {
         return SimpleJson.readOptionalInteger(this, key, defaultValue);
     }
+
+    public String readOptionalString(final String key, final String defaultValue) {
+        final String result;
+        if (containsKey(key)) {
+            result = (String) get(key);
+        }
+        else {
+            result = defaultValue;
+        }
+        return result;
+    }
 }
