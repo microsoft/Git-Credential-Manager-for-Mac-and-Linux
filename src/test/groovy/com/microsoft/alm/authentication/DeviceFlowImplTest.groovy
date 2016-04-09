@@ -279,4 +279,27 @@ public class DeviceFlowImplTest {
         Assert.fail("An AuthorizationException should have been thrown");
     }
 
+    @Test public void endToEnd_authorizedAfterOnePending() {
+        final def port = wireMockRule.port();
+        final def deviceEndpoint = new URI(PROTOCOL, null, host, port, DEVICE_ENDPOINT_PATH, null, null);
+        final def tokenEndpoint = new URI(PROTOCOL, null, host, port, TOKEN_ENDPOINT_PATH, null, null);
+        stubDeviceEndpoint();
+        stubTokenEndpointError("grant_type=device_code&code=${DEVICE_CODE}&client_id=${CLIENT_ID}", "authorization_pending");
+        stubTokenEndpointSuccess();
+        final def cut = new DeviceFlowImpl();
+
+        final def actualResponse = cut.requestAuthorization(deviceEndpoint, CLIENT_ID, null);
+
+        assert DEVICE_CODE == actualResponse.deviceCode;
+        assert USER_CODE == actualResponse.userCode;
+        assert VERIFICATION_URI == actualResponse.verificationUri;
+        assert EXPIRY_SECONDS == actualResponse.expiresIn;
+        assert ATTEMPT_INTERVAL == actualResponse.interval;
+
+        final def actualTokenPair = cut.requestToken(tokenEndpoint, CLIENT_ID, actualResponse);
+
+        final def actualAccessToken = actualTokenPair.AccessToken;
+        assert TokenType.Access == actualAccessToken.Type;
+        assert ACCESS_TOKEN == actualAccessToken.Value;
+    }
 }

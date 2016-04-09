@@ -58,30 +58,36 @@ public class DeviceFlowImpl implements DeviceFlow
         final StringContent requestBody = StringContent.createUrlEncoded(bodyParameters);
 
         final HttpClient client = new HttpClient(Global.getUserAgent());
-        final String responseText;
-        try {
-            final HttpURLConnection response = client.post(tokenEndpoint, requestBody);
-            final int httpStatus = response.getResponseCode();
-            if (httpStatus == HttpURLConnection.HTTP_OK) {
-                responseText = HttpClient.readToString(response);
-            }
-            else {
-                final String errorResponseText = HttpClient.readErrorToString(response);
-                if (httpStatus == HttpURLConnection.HTTP_BAD_REQUEST) {
-                    final PropertyBag bag = PropertyBag.fromJson(errorResponseText);
-                    final String errorCode = bag.readOptionalString(OAuthParameter.ERROR_CODE, "unknown_error");
-                    final String errorDescription = bag.readOptionalString(OAuthParameter.ERROR_DESCRIPTION, null);
-                    final String errorUriString = bag.readOptionalString(OAuthParameter.ERROR_URI, null);
-                    final URI errorUri = errorUriString == null ? null : URI.create(errorUriString);
-                    throw new AuthorizationException(errorCode, errorDescription, errorUri, null);
+        String responseText;
+        while (true) {
+            try {
+                final HttpURLConnection response = client.post(tokenEndpoint, requestBody);
+                final int httpStatus = response.getResponseCode();
+                if (httpStatus == HttpURLConnection.HTTP_OK) {
+                    responseText = HttpClient.readToString(response);
+                    break;
                 }
                 else {
-                    throw new Error("Token endpoint returned HTTP " + httpStatus + ":\n" + errorResponseText);
+                    final String errorResponseText = HttpClient.readErrorToString(response);
+                    if (httpStatus == HttpURLConnection.HTTP_BAD_REQUEST) {
+                        final PropertyBag bag = PropertyBag.fromJson(errorResponseText);
+                        final String errorCode = bag.readOptionalString(OAuthParameter.ERROR_CODE, "unknown_error");
+                        if (OAuthParameter.ERROR_AUTHORIZATION_PENDING.equals(errorCode)) {
+                            continue;
+                        }
+                        final String errorDescription = bag.readOptionalString(OAuthParameter.ERROR_DESCRIPTION, null);
+                        final String errorUriString = bag.readOptionalString(OAuthParameter.ERROR_URI, null);
+                        final URI errorUri = errorUriString == null ? null : URI.create(errorUriString);
+                        throw new AuthorizationException(errorCode, errorDescription, errorUri, null);
+                    }
+                    else {
+                        throw new Error("Token endpoint returned HTTP " + httpStatus + ":\n" + errorResponseText);
+                    }
                 }
             }
-        }
-        catch (final IOException e) {
-            throw new Error(e);
+            catch (final IOException e) {
+                throw new Error(e);
+            }
         }
 
         final TokenPair tokenPair = new TokenPair(responseText);
