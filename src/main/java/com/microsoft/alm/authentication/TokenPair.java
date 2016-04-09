@@ -5,6 +5,8 @@ package com.microsoft.alm.authentication;
 
 import com.microsoft.alm.helpers.Debug;
 import com.microsoft.alm.helpers.NotImplementedException;
+import com.microsoft.alm.helpers.PropertyBag;
+import com.microsoft.alm.helpers.SimpleJson;
 import com.microsoft.alm.helpers.StringHelper;
 
 import java.util.Collections;
@@ -18,8 +20,6 @@ class TokenPair
     private static final Map<String, String> EMPTY_MAP = Collections.unmodifiableMap(new LinkedHashMap<String, String>(0));
     private static final String ACCESS_TOKEN = "access_token";
     private static final String REFRESH_TOKEN = "refresh_token";
-    // TODO: 449517: this won't match numerical values, such as '"expires_in":3600'
-    private static final Pattern JSON_NAME_VALUE_PAIR = Pattern.compile("\\s*\"([^\"]+)\"\\s*:\\s*\"([^\"]+)\"");
 
     /**
      * Creates a new {@link TokenPair} from raw access and refresh token data.
@@ -51,25 +51,25 @@ class TokenPair
     public TokenPair(final String accessTokenResponse)
     {
         final LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
-        final Matcher matcher = JSON_NAME_VALUE_PAIR.matcher(accessTokenResponse);
+        final PropertyBag bag = PropertyBag.fromJson(accessTokenResponse);
         String accessToken = null;
         String refreshToken = null;
-        while (matcher.find())
-        {
-            final String name = matcher.group(1);
-            final String value = matcher.group(2);
+        for (final Map.Entry<String, Object> pair : bag.entrySet()) {
+            final String name = pair.getKey();
+            final Object value = pair.getValue();
             if (ACCESS_TOKEN.equals(name))
             {
-                accessToken = value;
+                accessToken = (String) value;
             }
             else if (REFRESH_TOKEN.equals(name))
             {
-                refreshToken = value;
+                refreshToken = (String) value;
             }
             else
             {
-                parameters.put(name, value);
+                parameters.put(name, value.toString());
             }
+
         }
         this.AccessToken = new Token(accessToken, TokenType.Access);
         this.RefreshToken = new Token(refreshToken, TokenType.Refresh);

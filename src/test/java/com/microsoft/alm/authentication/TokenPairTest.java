@@ -24,6 +24,7 @@ public class TokenPairTest
 
         Assert.assertEquals("2YotnFZFEjr1zCsicMWpAA", actual.AccessToken.Value);
         Assert.assertEquals("tGzv3JOkF0XG5Qx2TlKWIA", actual.RefreshToken.Value);
+        Assert.assertEquals("3600.0", actual.Parameters.get("expires_in"));
         Assert.assertEquals("example_value", actual.Parameters.get("example_parameter"));
         Assert.assertEquals("example", actual.Parameters.get("token_type"));
     }
