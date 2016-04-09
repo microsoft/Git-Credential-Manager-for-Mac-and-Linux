@@ -7,6 +7,7 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule
 import com.github.tomakehurst.wiremock.stubbing.Scenario
 import groovy.transform.CompileStatic
 import org.junit.After
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -186,6 +187,26 @@ public class DeviceFlowImplTest {
         tokenEndpointExpectedErrorHits++;
         scenarioStateName = nextStateName;
         scenarioNextStateNumber++;
+    }
+
+    @Test public void requestToken_serverError() {
+        final def port = wireMockRule.port();
+        final def tokenEndpoint = new URI(PROTOCOL, null, host, port, TOKEN_ENDPOINT_PATH, null, null);
+        stubFor(post(urlEqualTo(TOKEN_ENDPOINT_PATH))
+                .willReturn(aResponse()
+                .withStatus(500)
+                .withBody("Internal server error!")));
+        final def cut = new DeviceFlowImpl();
+
+        try {
+            cut.requestToken(tokenEndpoint, CLIENT_ID, DEFAULT_DEVICE_FLOW_RESPONSE)
+        }
+        catch (final Error e) {
+            final def actual = e.message.trim()
+            assert "Token endpoint returned HTTP 500:\nInternal server error!" == actual;
+            return;
+        }
+        Assert.fail("An Error should have been thrown");
     }
 
     @Test public void endToEnd_authorizedRightAway() {

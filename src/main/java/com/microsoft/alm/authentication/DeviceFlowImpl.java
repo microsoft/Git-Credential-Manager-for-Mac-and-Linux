@@ -58,8 +58,11 @@ public class DeviceFlowImpl implements DeviceFlow
         try {
             final HttpURLConnection response = client.post(tokenEndpoint, requestBody);
             final int httpStatus = response.getResponseCode();
-            responseText = HttpClient.readToString(response);
-            if (httpStatus != HttpURLConnection.HTTP_OK) {
+            if (httpStatus == HttpURLConnection.HTTP_OK) {
+                responseText = HttpClient.readToString(response);
+            }
+            else {
+                responseText = HttpClient.readErrorToString(response);
                 throw new Error("Token endpoint returned HTTP " + httpStatus + ":\n" + responseText);
             }
         }
