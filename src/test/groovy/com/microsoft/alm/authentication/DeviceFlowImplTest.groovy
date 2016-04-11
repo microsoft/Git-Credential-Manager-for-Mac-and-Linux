@@ -15,6 +15,8 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.littleshoot.proxy.HttpProxyServer
+import org.littleshoot.proxy.impl.DefaultHttpProxyServer
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
@@ -36,6 +38,9 @@ public class DeviceFlowImplTest {
     private static final String TOKEN_ENDPOINT_PATH = "/token";
     private static final DeviceFlowResponse DEFAULT_DEVICE_FLOW_RESPONSE = new DeviceFlowResponse(DEVICE_CODE, USER_CODE, VERIFICATION_URI, EXPIRY_SECONDS, ATTEMPT_INTERVAL);
     private static final String SCENARIO = "Default stateful scenario";
+    private static final String ALL_INTERFACES_ADDRESS = "0.0.0.0";
+    private static final InetSocketAddress PROXY_LISTEN_ADDRESS = new InetSocketAddress(ALL_INTERFACES_ADDRESS, 0);
+
 
     private final String host;
     private String scenarioStateName;
@@ -320,6 +325,53 @@ public class DeviceFlowImplTest {
         final def actualAccessToken = actualTokenPair.AccessToken;
         assert TokenType.Access == actualAccessToken.Type;
         assert ACCESS_TOKEN == actualAccessToken.Value;
+    }
+
+    @Test public void endToEnd_throughProxyServer() {
+        final def port = wireMockRule.port();
+        final def oldProperties = System.properties;
+        final def adapter = new LoggingFiltersSourceAdapter();
+        final def deviceEndpoint = new URI(PROTOCOL, null, host, port, DEVICE_ENDPOINT_PATH, null, null);
+        final def tokenEndpoint = new URI(PROTOCOL, null, host, port, TOKEN_ENDPOINT_PATH, null, null);
+        stubDeviceEndpoint();
+        stubTokenEndpointSuccess();
+        final HttpProxyServer proxyServer =
+                DefaultHttpProxyServer
+                        .bootstrap()
+                        .withAddress(PROXY_LISTEN_ADDRESS)
+                        .withFiltersSource(adapter)
+                        .start();
+        final def cut = new DeviceFlowImpl();
+
+        try {
+            final def tempProperties = new Properties(oldProperties);
+            tempProperties.setProperty("http.proxyHost", host);
+            final InetSocketAddress proxyAddress = proxyServer.getListenAddress();
+            tempProperties.setProperty("http.proxyPort", Integer.toString(proxyAddress.getPort(), 10));
+            System.properties = tempProperties;
+
+            final def actualResponse = cut.requestAuthorization(deviceEndpoint, CLIENT_ID, null);
+
+            assert DEVICE_CODE == actualResponse.deviceCode;
+            assert USER_CODE == actualResponse.userCode;
+            assert VERIFICATION_URI == actualResponse.verificationUri;
+            assert EXPIRY_SECONDS == actualResponse.expiresIn;
+            assert ATTEMPT_INTERVAL == actualResponse.interval;
+            Assert.assertTrue(adapter.proxyWasUsed());
+
+            adapter.reset();
+
+            final def actualTokenPair = cut.requestToken(tokenEndpoint, CLIENT_ID, actualResponse);
+
+            final def actualAccessToken = actualTokenPair.AccessToken;
+            assert TokenType.Access == actualAccessToken.Type;
+            assert ACCESS_TOKEN == actualAccessToken.Value;
+            Assert.assertTrue(adapter.proxyWasUsed());
+        }
+        finally {
+            System.properties = oldProperties;
+            proxyServer.stop();
+        }
     }
 
     @Test public void endToEnd_deniedRightAway() {
