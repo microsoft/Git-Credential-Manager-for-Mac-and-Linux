@@ -189,6 +189,26 @@ public class DeviceFlowImplTest {
         scenarioNextStateNumber++;
     }
 
+    @Test public void requestAuthorization_serverError() {
+        final def port = wireMockRule.port();
+        final def deviceEndpoint = new URI(PROTOCOL, null, host, port, DEVICE_ENDPOINT_PATH, null, null);
+        stubFor(post(urlEqualTo(DEVICE_ENDPOINT_PATH))
+                .willReturn(aResponse()
+                .withStatus(500)
+                .withBody("Internal server error!")));
+        final def cut = new DeviceFlowImpl();
+
+        try {
+            cut.requestAuthorization(deviceEndpoint, CLIENT_ID, null)
+        }
+        catch (final Error e) {
+            final def actual = e.message.trim()
+            assert "Device endpoint returned HTTP 500:\nInternal server error!" == actual;
+            return;
+        }
+        Assert.fail("An Error should have been thrown");
+    }
+
     @Test public void requestToken_serverError() {
         final def port = wireMockRule.port();
         final def tokenEndpoint = new URI(PROTOCOL, null, host, port, TOKEN_ENDPOINT_PATH, null, null);

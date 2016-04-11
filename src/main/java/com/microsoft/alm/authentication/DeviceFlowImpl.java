@@ -31,9 +31,12 @@ public class DeviceFlowImpl implements DeviceFlow
         try {
             final HttpURLConnection response = client.post(deviceEndpoint, requestBody);
             final int httpStatus = response.getResponseCode();
-            responseText = HttpClient.readToString(response);
-            if (httpStatus != HttpURLConnection.HTTP_OK) {
-                throw new Error("Device endpoint returned HTTP " + httpStatus + ":\n" + responseText);
+            if (httpStatus == HttpURLConnection.HTTP_OK) {
+                responseText = HttpClient.readToString(response);
+            }
+            else {
+                final String errorResponseText = HttpClient.readErrorToString(response);
+                throw new Error("Device endpoint returned HTTP " + httpStatus + ":\n" + errorResponseText);
             }
         }
         catch (final IOException e) {
