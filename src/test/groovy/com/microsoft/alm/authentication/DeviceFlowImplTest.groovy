@@ -346,6 +346,7 @@ public class DeviceFlowImplTest {
         try {
             final def tempProperties = new Properties(oldProperties);
             tempProperties.setProperty("http.proxyHost", host);
+            tempProperties.setProperty("http.nonProxyHosts", "");
             final InetSocketAddress proxyAddress = proxyServer.getListenAddress();
             tempProperties.setProperty("http.proxyPort", Integer.toString(proxyAddress.getPort(), 10));
             System.properties = tempProperties;
