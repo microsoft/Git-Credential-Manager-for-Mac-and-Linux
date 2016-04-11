@@ -198,6 +198,21 @@ public class DeviceFlowImplTest {
         scenarioNextStateNumber++;
     }
 
+    @Test public void requestAuthorization_withScope() {
+        final def port = wireMockRule.port();
+        final def deviceEndpoint = new URI(PROTOCOL, null, host, port, DEVICE_ENDPOINT_PATH, null, null);
+        stubDeviceEndpoint(ATTEMPT_INTERVAL, -1, "&scope=access_all_the_things")
+        final def cut = new DeviceFlowImpl();
+
+        final actualResponse = cut.requestAuthorization(deviceEndpoint, CLIENT_ID, "access_all_the_things")
+
+        assert DEVICE_CODE == actualResponse.deviceCode;
+        assert USER_CODE == actualResponse.userCode;
+        assert VERIFICATION_URI == actualResponse.verificationUri;
+        assert EXPIRY_SECONDS == actualResponse.expiresIn;
+        assert ATTEMPT_INTERVAL == actualResponse.interval;
+    }
+
     @Test public void requestAuthorization_serverError() {
         final def port = wireMockRule.port();
         final def deviceEndpoint = new URI(PROTOCOL, null, host, port, DEVICE_ENDPOINT_PATH, null, null);
