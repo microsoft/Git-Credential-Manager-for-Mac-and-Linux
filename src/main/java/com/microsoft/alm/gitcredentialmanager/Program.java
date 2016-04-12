@@ -296,25 +296,27 @@ public class Program
 
                 // attempt to get cached creds -> refresh creds -> non-interactive logon -> interactive logon
                 // note that AAD "credentials" are always scoped access tokens
-                if (((operationArguments.Interactivity != Interactivity.Always
+                if (
+                    (operationArguments.Interactivity != Interactivity.Always
                         && aadAuth.getCredentials(operationArguments.TargetUri, credentials)
                         && (!operationArguments.ValidateCredentials
                             || aadAuth.validateCredentials(operationArguments.TargetUri, credentials.get())))
-                        || (operationArguments.Interactivity != Interactivity.Always
-                            && aadAuth.refreshCredentials(operationArguments.TargetUri, true)
-                            && aadAuth.getCredentials(operationArguments.TargetUri, credentials)
-                            && (!operationArguments.ValidateCredentials
-                                || aadAuth.validateCredentials(operationArguments.TargetUri, credentials.get())))
+                    || (operationArguments.Interactivity != Interactivity.Always
+                        && aadAuth.refreshCredentials(operationArguments.TargetUri, true)
+                        && aadAuth.getCredentials(operationArguments.TargetUri, credentials)
+                        && (!operationArguments.ValidateCredentials
+                            || aadAuth.validateCredentials(operationArguments.TargetUri, credentials.get())))
 //                        || (operationArguments.Interactivity != Interactivity.Always
 //                            && aadAuth.noninteractiveLogon(operationArguments.TargetUri, true)
 //                            && aadAuth.getCredentials(operationArguments.TargetUri, credentials)
 //                            && (!operationArguments.ValidateCredentials
 //                                || aadAuth.validateCredentials(operationArguments.TargetUri, credentials.get())))
-                        || (operationArguments.Interactivity != Interactivity.Never
-                            && aadAuth.interactiveLogon(operationArguments.TargetUri, true))
-                            && aadAuth.getCredentials(operationArguments.TargetUri, credentials)
-                            && (!operationArguments.ValidateCredentials
-                                || aadAuth.validateCredentials(operationArguments.TargetUri, credentials.get()))))
+                    || (operationArguments.Interactivity != Interactivity.Never
+                        && aadAuth.interactiveLogon(operationArguments.TargetUri, true)
+                        && aadAuth.getCredentials(operationArguments.TargetUri, credentials)
+                        && (!operationArguments.ValidateCredentials
+                            || aadAuth.validateCredentials(operationArguments.TargetUri, credentials.get())))
+                )
                 {
                     Trace.writeLine("   credentials found");
                     operationArguments.setCredentials(credentials.get());
@@ -334,20 +336,22 @@ public class Program
 
                 // attempt to get cached creds -> refresh creds -> interactive logon
                 // note that MSA "credentials" are always scoped access tokens
-                if (((operationArguments.Interactivity != Interactivity.Always
+                if (
+                    (operationArguments.Interactivity != Interactivity.Always
                         && msaAuth.getCredentials(operationArguments.TargetUri, credentials)
                         && (!operationArguments.ValidateCredentials
                             || msaAuth.validateCredentials(operationArguments.TargetUri, credentials.get())))
-                        || (operationArguments.Interactivity != Interactivity.Always
-                            && msaAuth.refreshCredentials(operationArguments.TargetUri, true)
-                            && msaAuth.getCredentials(operationArguments.TargetUri, credentials)
-                            && (!operationArguments.ValidateCredentials
-                                || msaAuth.validateCredentials(operationArguments.TargetUri, credentials.get())))
-                        || (operationArguments.Interactivity != Interactivity.Never
-                            && msaAuth.interactiveLogon(operationArguments.TargetUri, true))
-                            && msaAuth.getCredentials(operationArguments.TargetUri, credentials)
-                            && (!operationArguments.ValidateCredentials
-                                || msaAuth.validateCredentials(operationArguments.TargetUri, credentials.get()))))
+                    || (operationArguments.Interactivity != Interactivity.Always
+                        && msaAuth.refreshCredentials(operationArguments.TargetUri, true)
+                        && msaAuth.getCredentials(operationArguments.TargetUri, credentials)
+                        && (!operationArguments.ValidateCredentials
+                            || msaAuth.validateCredentials(operationArguments.TargetUri, credentials.get())))
+                    || (operationArguments.Interactivity != Interactivity.Never
+                        && msaAuth.interactiveLogon(operationArguments.TargetUri, true)
+                        && msaAuth.getCredentials(operationArguments.TargetUri, credentials)
+                        && (!operationArguments.ValidateCredentials
+                            || msaAuth.validateCredentials(operationArguments.TargetUri, credentials.get())))
+                )
                 {
                     Trace.writeLine("   credentials found");
                     operationArguments.setCredentials(credentials.get());
