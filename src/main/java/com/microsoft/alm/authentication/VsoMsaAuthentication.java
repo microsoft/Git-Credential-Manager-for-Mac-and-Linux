@@ -3,6 +3,8 @@
 
 package com.microsoft.alm.authentication;
 
+import com.microsoft.alm.helpers.Action;
+import com.microsoft.alm.helpers.NotImplementedException;
 import com.microsoft.alm.helpers.Trace;
 
 import java.net.URI;
@@ -69,6 +71,12 @@ public final class VsoMsaAuthentication extends BaseVsoAuthentication implements
         Trace.writeLine("   failed to acquire token.");
         return false;
     }
+
+    public boolean deviceLogon(final URI targetUri, final boolean requestCompactToken, final Action<DeviceFlowResponse> callback)
+    {
+        throw new NotImplementedException(560199);
+    }
+
     /**
      * Sets credentials for future use with this authentication object.
      * Not supported.

@@ -150,6 +150,11 @@ class AzureAuthority implements IAzureAuthority
         throw new NotImplementedException(449285);
     }
 
+    public TokenPair acquireToken(final URI targetUri, final String clientId, final String resource, final Action<DeviceFlowResponse> callback)
+    {
+        throw new NotImplementedException(560199);
+    }
+
     /**
      * Acquires an access token from the authority using a previously acquired refresh token.
      *
