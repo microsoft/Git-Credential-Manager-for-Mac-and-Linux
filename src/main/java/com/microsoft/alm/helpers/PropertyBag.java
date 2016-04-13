@@ -14,7 +14,26 @@ public class PropertyBag extends LinkedHashMap<String, Object> {
     }
 
     public int readOptionalInteger(final String key, final int defaultValue) {
-        return SimpleJson.readOptionalInteger(this, key, defaultValue);
+        final int result;
+        if (containsKey(key)) {
+            final Object candidateResult = get(key);
+            if (candidateResult instanceof Double) {
+                final Double resultAsDouble = (Double) candidateResult;
+                result = (int) Math.round(resultAsDouble);
+            }
+            else if (candidateResult instanceof String) {
+                final String resultAsString = (String) candidateResult;
+                result = Integer.parseInt(resultAsString, 10);
+            }
+            else {
+                result = defaultValue;
+            }
+        }
+        else {
+            result = defaultValue;
+        }
+
+        return result;
     }
 
     public String readOptionalString(final String key, final String defaultValue) {
