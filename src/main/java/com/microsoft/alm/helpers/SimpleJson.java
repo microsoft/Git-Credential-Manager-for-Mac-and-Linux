@@ -324,18 +324,6 @@ public class SimpleJson {
         }
     }
 
-    public static int readOptionalInteger(final Map<String, Object> pairs, final String key, final int defaultValue) {
-        final int result;
-        if (pairs.containsKey(key)) {
-            final Double resultAsDouble = (Double) pairs.get(key);
-            result = (int) Math.round(resultAsDouble);
-        }
-        else {
-            result = defaultValue;
-        }
-        return result;
-    }
-
     public static String format(final Map<String, Object> input) {
         return null;
     }
