@@ -26,6 +26,7 @@ public class DeviceFlowImpl implements DeviceFlow
         if (!StringHelper.isNullOrEmpty(scope)) {
             bodyParameters.put(OAuthParameter.SCOPE, scope);
         }
+        contributeAuthorizationRequestParameters(bodyParameters);
         final StringContent requestBody = StringContent.createUrlEncoded(bodyParameters);
 
         final HttpClient client = new HttpClient(Global.getUserAgent());
@@ -45,8 +46,28 @@ public class DeviceFlowImpl implements DeviceFlow
             throw new Error(e);
         }
 
-        final DeviceFlowResponse result = DeviceFlowResponse.fromJson(responseText);
+        final DeviceFlowResponse result = buildDeviceFlowResponse(responseText);
         return result;
+    }
+
+    /**
+     * Allows subclasses to augment the request to the device endpoint with additional parameters.
+     *
+     * @param bodyParameters the {@link QueryString} to which additional parameters should be added.
+     */
+    protected void contributeAuthorizationRequestParameters(final QueryString bodyParameters) {
+        // do nothing by default
+    }
+
+    /**
+     * Allows subclasses to construct a subclass of {@link DeviceFlowResponse} with extra metadata, etc.
+     *
+     * @param responseText the JSON response received from the device endpoint.
+     *
+     * @return             a {@link DeviceFlowResponse} (or subclass thereof).
+     */
+    protected DeviceFlowResponse buildDeviceFlowResponse(final String responseText) {
+        return DeviceFlowResponse.fromJson(responseText);
     }
 
     @Override
@@ -56,6 +77,7 @@ public class DeviceFlowImpl implements DeviceFlow
         bodyParameters.put(OAuthParameter.GRANT_TYPE, OAuthParameter.DEVICE_CODE);
         bodyParameters.put(OAuthParameter.CODE, deviceFlowResponse.getDeviceCode());
         bodyParameters.put(OAuthParameter.CLIENT_ID, clientId);
+        contributeTokenRequestParameters(bodyParameters);
         final StringContent requestBody = StringContent.createUrlEncoded(bodyParameters);
 
         final int intervalSeconds = deviceFlowResponse.getInterval();
@@ -111,6 +133,27 @@ public class DeviceFlowImpl implements DeviceFlow
         if (responseText == null) {
             throw new AuthorizationException("code_expired", "The verification code expired.", null, null);
         }
+        final TokenPair tokenPair = buildTokenPair(responseText);
+        return tokenPair;
+    }
+
+    /**
+     * Allows subclasses to augment the request to the token endpoint with additional parameters.
+     *
+     * @param bodyParameters the {@link QueryString} to which additional parameters should be added.
+     */
+    protected void contributeTokenRequestParameters(final QueryString bodyParameters) {
+        // do nothing by default
+    }
+
+    /**
+     * Allows subclasses to construct a subclass of {@link TokenPair} with extra metadata, etc.
+     *
+     * @param responseText the JSON response received from the token endpoint.
+     *
+     * @return             a {@link TokenPair} (or subclass thereof).
+     */
+    protected TokenPair buildTokenPair(final String responseText) {
         final TokenPair tokenPair = new TokenPair(responseText);
         return tokenPair;
     }
