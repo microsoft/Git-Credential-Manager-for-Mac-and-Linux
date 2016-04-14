@@ -45,11 +45,19 @@ public class HttpClient
 
     public static String readToString(final HttpURLConnection connection) throws IOException
     {
-        String responseContent;
-        InputStream responseStream = null;
+        return readToString(connection.getInputStream());
+    }
+
+    public static String readErrorToString(final HttpURLConnection connection) throws IOException
+    {
+        return readToString(connection.getErrorStream());
+    }
+
+    public static String readToString(final InputStream responseStream) throws IOException
+    {
+        final String responseContent;
         try
         {
-            responseStream = connection.getInputStream();
             responseContent = IOHelper.readToString(responseStream);
         }
         finally

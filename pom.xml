@@ -527,6 +527,18 @@ Licensed under the MIT license. See License.txt in the project root. -->
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>com.github.tomakehurst</groupId>
+      <artifactId>wiremock</artifactId>
+      <version>1.57</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.littleshoot</groupId>
+      <artifactId>littleproxy</artifactId>
+      <version>1.1.0-beta1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy</artifactId>
       <version>2.4.5</version>
