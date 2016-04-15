@@ -44,6 +44,12 @@ public class SimpleJsonTest {
         assertParse(["name":"value"], /{"name":"value",}/)
     }
 
+    @Test public void parse_singleSquareBracketString() {
+        assertParse(["name":'"value"'], /{"name":["value"]}/)
+        assertParse(["name":'"value"'], /{"name":["value"],}/)
+        assertParse(["error_codes":'50001'], /{"error_codes":[50001]}/)
+    }
+
     @Test public void parse_insignificantWhitespace() {
         assertParse(["name":"value"], /{"name":"value" ,}/)
         assertParse(["name":"value"], /{"name":"value", }/)
