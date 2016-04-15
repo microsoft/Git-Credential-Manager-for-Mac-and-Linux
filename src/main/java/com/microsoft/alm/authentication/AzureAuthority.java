@@ -51,10 +51,10 @@ class AzureAuthority implements IAzureAuthority
      */
     public AzureAuthority(final String authorityHostUrl)
     {
-        this(authorityHostUrl, new UserAgentImpl());
+        this(authorityHostUrl, new UserAgentImpl(), new AzureDeviceFlow());
     }
 
-    AzureAuthority(final String authorityHostUrl, final UserAgent userAgent)
+    AzureAuthority(final String authorityHostUrl, final UserAgent userAgent, final AzureDeviceFlow azureDeviceFlow)
     {
         Debug.Assert(UriHelper.isWellFormedUriString(authorityHostUrl), "The authorityHostUrl parameter is invalid.");
         Debug.Assert(userAgent != null, "The userAgent parameter is null.");
@@ -62,10 +62,12 @@ class AzureAuthority implements IAzureAuthority
         this.authorityHostUrl = authorityHostUrl;
         _adalTokenCache = /* TODO: 449201: consider new InsecureStore("adalTokenCache.xml");*/null;
         _userAgent = userAgent;
+        _azureDeviceFlow = azureDeviceFlow;
     }
 
     private final VsoAdalTokenCache _adalTokenCache;
     private final UserAgent _userAgent;
+    private final AzureDeviceFlow _azureDeviceFlow;
 
     protected String authorityHostUrl;
     /**
