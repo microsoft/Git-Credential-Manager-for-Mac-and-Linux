@@ -7,6 +7,7 @@ import com.microsoft.alm.authentication.BaseVsoAuthentication;
 import com.microsoft.alm.authentication.BasicAuthentication;
 import com.microsoft.alm.authentication.Configuration;
 import com.microsoft.alm.authentication.Credential;
+import com.microsoft.alm.authentication.DeviceFlowResponse;
 import com.microsoft.alm.authentication.IAuthentication;
 import com.microsoft.alm.authentication.ISecureStore;
 import com.microsoft.alm.authentication.ITokenStore;
@@ -18,6 +19,7 @@ import com.microsoft.alm.authentication.VsoAadAuthentication;
 import com.microsoft.alm.authentication.VsoMsaAuthentication;
 import com.microsoft.alm.authentication.VsoTokenScope;
 import com.microsoft.alm.authentication.Where;
+import com.microsoft.alm.helpers.Action;
 import com.microsoft.alm.helpers.Debug;
 import com.microsoft.alm.helpers.Environment;
 import com.microsoft.alm.helpers.Func;
@@ -70,6 +72,20 @@ public class Program
     private final InputStream standardIn;
     private final PrintStream standardOut;
     private final IComponentFactory componentFactory;
+    private static final Action<DeviceFlowResponse> DEVICE_FLOW_CALLBACK = new Action<DeviceFlowResponse>()
+    {
+        @Override public void call(final DeviceFlowResponse deviceFlowResponse)
+        {
+            System.err.println("------------------------------------");
+            System.err.println("OAuth 2.0 Device Flow authentication");
+            System.err.println("------------------------------------");
+            System.err.println("To complete the authentication process, please open a web browser and visit the following URI:");
+            System.err.println(deviceFlowResponse.getVerificationUri());
+            System.err.println("When prompted, enter the following code:");
+            System.err.println(deviceFlowResponse.getUserCode());
+            System.err.println("Once authenticated and authorized, execution will continue.");
+        }
+    };
 
     // http://stackoverflow.com/a/6773868/
     static String getVersion()
