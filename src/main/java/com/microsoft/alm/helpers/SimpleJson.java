@@ -22,6 +22,7 @@ public class SimpleJson {
         STRING_VALUE,
         STRING_VALUE_ESCAPE,
         STRING_VALUE_UNICODE,
+        SQUARE_BRACKET_STRING,
         LITERAL_VALUE,
         POST_VALUE,
         END,
@@ -55,6 +56,14 @@ public class SimpleJson {
 
     static boolean isRightCurlyBracket(final char c) {
         return c == '}';
+    }
+
+    static boolean isLeftSquareBracket(final char c) {
+        return c == '[';
+    }
+
+    static boolean isRightSquareBracket(final char c) {
+        return c == ']';
     }
 
     static boolean isColon(final char c) {
@@ -176,6 +185,9 @@ public class SimpleJson {
                         token.append(c);
                         state = State.LITERAL_VALUE;
                     }
+                    else if (isLeftSquareBracket(c)) {
+                        state = State.SQUARE_BRACKET_STRING;
+                    }
                     else if (isInsignificantWhitespace(c)) {
                         continue;
                     }
@@ -269,6 +281,17 @@ public class SimpleJson {
                     }
                     else {
                         error(c, state);
+                    }
+                    break;
+                case SQUARE_BRACKET_STRING:
+                    if (isRightSquareBracket(c)) {
+                        value = token.toString();
+                        token.setLength(0);
+                        destination.put(key, value);
+                        state = State.POST_VALUE;
+                    }
+                    else {
+                        token.append(c);
                     }
                     break;
                 case LITERAL_VALUE:
