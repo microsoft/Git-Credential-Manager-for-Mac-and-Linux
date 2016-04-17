@@ -367,6 +367,11 @@ public class Program
                         && msaAuth.getCredentials(operationArguments.TargetUri, credentials)
                         && (!operationArguments.ValidateCredentials
                             || msaAuth.validateCredentials(operationArguments.TargetUri, credentials.get())))
+                    || (operationArguments.Interactivity != Interactivity.Never
+                        && msaAuth.deviceLogon(operationArguments.TargetUri, true, deviceFlowCallback)
+                        && msaAuth.getCredentials(operationArguments.TargetUri, credentials)
+                        && (!operationArguments.ValidateCredentials
+                            || msaAuth.validateCredentials(operationArguments.TargetUri, credentials.get())))
                 )
                 {
                     Trace.writeLine("   credentials found");

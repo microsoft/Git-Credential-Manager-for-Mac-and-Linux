@@ -4,7 +4,6 @@
 package com.microsoft.alm.authentication;
 
 import com.microsoft.alm.helpers.Action;
-import com.microsoft.alm.helpers.NotImplementedException;
 import com.microsoft.alm.helpers.Trace;
 
 import java.net.URI;
@@ -74,7 +73,22 @@ public final class VsoMsaAuthentication extends BaseVsoAuthentication implements
 
     public boolean deviceLogon(final URI targetUri, final boolean requestCompactToken, final Action<DeviceFlowResponse> callback)
     {
-        throw new NotImplementedException(560199);
+        BaseSecureStore.validateTargetUri(targetUri);
+
+        Trace.writeLine("VsoMsaAuthentication::deviceLogon");
+
+        TokenPair tokens;
+        if ((tokens = this.VsoAuthority.acquireToken(targetUri, this.ClientId, this.Resource, callback)) != null)
+        {
+            Trace.writeLine("   token successfully acquired.");
+
+            this.storeRefreshToken(targetUri, tokens.RefreshToken);
+
+            return this.generatePersonalAccessToken(targetUri, tokens.AccessToken, requestCompactToken);
+        }
+
+        Trace.writeLine("   failed to acquire token.");
+        return false;
     }
 
     /**
