@@ -35,4 +35,9 @@ public class Trace
             listener.println(message);
         }
     }
+
+    public static void writeLine(final String message, final Throwable throwable)
+    {
+        writeLine(message + throwable.toString());
+    }
 }

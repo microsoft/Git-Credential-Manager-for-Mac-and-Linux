@@ -7,6 +7,7 @@ import com.microsoft.alm.authentication.BaseVsoAuthentication;
 import com.microsoft.alm.authentication.BasicAuthentication;
 import com.microsoft.alm.authentication.Configuration;
 import com.microsoft.alm.authentication.Credential;
+import com.microsoft.alm.authentication.DeviceFlowResponse;
 import com.microsoft.alm.authentication.IAuthentication;
 import com.microsoft.alm.authentication.ISecureStore;
 import com.microsoft.alm.authentication.ITokenStore;
@@ -18,6 +19,7 @@ import com.microsoft.alm.authentication.VsoAadAuthentication;
 import com.microsoft.alm.authentication.VsoMsaAuthentication;
 import com.microsoft.alm.authentication.VsoTokenScope;
 import com.microsoft.alm.authentication.Where;
+import com.microsoft.alm.helpers.Action;
 import com.microsoft.alm.helpers.Debug;
 import com.microsoft.alm.helpers.Environment;
 import com.microsoft.alm.helpers.Func;
@@ -70,6 +72,20 @@ public class Program
     private final InputStream standardIn;
     private final PrintStream standardOut;
     private final IComponentFactory componentFactory;
+    private static final Action<DeviceFlowResponse> DEVICE_FLOW_CALLBACK = new Action<DeviceFlowResponse>()
+    {
+        @Override public void call(final DeviceFlowResponse deviceFlowResponse)
+        {
+            System.err.println("------------------------------------");
+            System.err.println("OAuth 2.0 Device Flow authentication");
+            System.err.println("------------------------------------");
+            System.err.println("To complete the authentication process, please open a web browser and visit the following URI:");
+            System.err.println(deviceFlowResponse.getVerificationUri());
+            System.err.println("When prompted, enter the following code:");
+            System.err.println(deviceFlowResponse.getUserCode());
+            System.err.println("Once authenticated and authorized, execution will continue.");
+        }
+    };
 
     // http://stackoverflow.com/a/6773868/
     static String getVersion()
@@ -271,10 +287,10 @@ public class Program
         final AtomicReference<OperationArguments> operationArgumentsRef = new AtomicReference<OperationArguments>();
         final AtomicReference<IAuthentication> authenticationRef = new AtomicReference<IAuthentication>();
         initialize("get", operationArgumentsRef, authenticationRef);
-        final String result = get(operationArgumentsRef.get(), authenticationRef.get());
+        final String result = get(operationArgumentsRef.get(), authenticationRef.get(), DEVICE_FLOW_CALLBACK);
         standardOut.print(result);
     }
-    public static String get(final OperationArguments operationArguments, final IAuthentication authentication)
+    public static String get(final OperationArguments operationArguments, final IAuthentication authentication, final Action<DeviceFlowResponse> deviceFlowCallback)
     {
         final String AuthFailureMessage = "Logon failed, aborting authentication process.";
 
@@ -296,25 +312,32 @@ public class Program
 
                 // attempt to get cached creds -> refresh creds -> non-interactive logon -> interactive logon
                 // note that AAD "credentials" are always scoped access tokens
-                if (((operationArguments.Interactivity != Interactivity.Always
+                if (
+                    (operationArguments.Interactivity != Interactivity.Always
                         && aadAuth.getCredentials(operationArguments.TargetUri, credentials)
                         && (!operationArguments.ValidateCredentials
                             || aadAuth.validateCredentials(operationArguments.TargetUri, credentials.get())))
-                        || (operationArguments.Interactivity != Interactivity.Always
-                            && aadAuth.refreshCredentials(operationArguments.TargetUri, true)
-                            && aadAuth.getCredentials(operationArguments.TargetUri, credentials)
-                            && (!operationArguments.ValidateCredentials
-                                || aadAuth.validateCredentials(operationArguments.TargetUri, credentials.get())))
+                    || (operationArguments.Interactivity != Interactivity.Always
+                        && aadAuth.refreshCredentials(operationArguments.TargetUri, true)
+                        && aadAuth.getCredentials(operationArguments.TargetUri, credentials)
+                        && (!operationArguments.ValidateCredentials
+                            || aadAuth.validateCredentials(operationArguments.TargetUri, credentials.get())))
 //                        || (operationArguments.Interactivity != Interactivity.Always
 //                            && aadAuth.noninteractiveLogon(operationArguments.TargetUri, true)
 //                            && aadAuth.getCredentials(operationArguments.TargetUri, credentials)
 //                            && (!operationArguments.ValidateCredentials
 //                                || aadAuth.validateCredentials(operationArguments.TargetUri, credentials.get())))
-                        || (operationArguments.Interactivity != Interactivity.Never
-                            && aadAuth.interactiveLogon(operationArguments.TargetUri, true))
-                            && aadAuth.getCredentials(operationArguments.TargetUri, credentials)
-                            && (!operationArguments.ValidateCredentials
-                                || aadAuth.validateCredentials(operationArguments.TargetUri, credentials.get()))))
+                    || (operationArguments.Interactivity != Interactivity.Never
+                        && aadAuth.interactiveLogon(operationArguments.TargetUri, true)
+                        && aadAuth.getCredentials(operationArguments.TargetUri, credentials)
+                        && (!operationArguments.ValidateCredentials
+                            || aadAuth.validateCredentials(operationArguments.TargetUri, credentials.get())))
+                    || (operationArguments.Interactivity != Interactivity.Never
+                        && aadAuth.deviceLogon(operationArguments.TargetUri, true, deviceFlowCallback)
+                        && aadAuth.getCredentials(operationArguments.TargetUri, credentials)
+                        && (!operationArguments.ValidateCredentials
+                            || aadAuth.validateCredentials(operationArguments.TargetUri, credentials.get())))
+                )
                 {
                     Trace.writeLine("   credentials found");
                     operationArguments.setCredentials(credentials.get());
@@ -334,20 +357,27 @@ public class Program
 
                 // attempt to get cached creds -> refresh creds -> interactive logon
                 // note that MSA "credentials" are always scoped access tokens
-                if (((operationArguments.Interactivity != Interactivity.Always
+                if (
+                    (operationArguments.Interactivity != Interactivity.Always
                         && msaAuth.getCredentials(operationArguments.TargetUri, credentials)
                         && (!operationArguments.ValidateCredentials
                             || msaAuth.validateCredentials(operationArguments.TargetUri, credentials.get())))
-                        || (operationArguments.Interactivity != Interactivity.Always
-                            && msaAuth.refreshCredentials(operationArguments.TargetUri, true)
-                            && msaAuth.getCredentials(operationArguments.TargetUri, credentials)
-                            && (!operationArguments.ValidateCredentials
-                                || msaAuth.validateCredentials(operationArguments.TargetUri, credentials.get())))
-                        || (operationArguments.Interactivity != Interactivity.Never
-                            && msaAuth.interactiveLogon(operationArguments.TargetUri, true))
-                            && msaAuth.getCredentials(operationArguments.TargetUri, credentials)
-                            && (!operationArguments.ValidateCredentials
-                                || msaAuth.validateCredentials(operationArguments.TargetUri, credentials.get()))))
+                    || (operationArguments.Interactivity != Interactivity.Always
+                        && msaAuth.refreshCredentials(operationArguments.TargetUri, true)
+                        && msaAuth.getCredentials(operationArguments.TargetUri, credentials)
+                        && (!operationArguments.ValidateCredentials
+                            || msaAuth.validateCredentials(operationArguments.TargetUri, credentials.get())))
+                    || (operationArguments.Interactivity != Interactivity.Never
+                        && msaAuth.interactiveLogon(operationArguments.TargetUri, true)
+                        && msaAuth.getCredentials(operationArguments.TargetUri, credentials)
+                        && (!operationArguments.ValidateCredentials
+                            || msaAuth.validateCredentials(operationArguments.TargetUri, credentials.get())))
+                    || (operationArguments.Interactivity != Interactivity.Never
+                        && msaAuth.deviceLogon(operationArguments.TargetUri, true, deviceFlowCallback)
+                        && msaAuth.getCredentials(operationArguments.TargetUri, credentials)
+                        && (!operationArguments.ValidateCredentials
+                            || msaAuth.validateCredentials(operationArguments.TargetUri, credentials.get())))
+                )
                 {
                     Trace.writeLine("   credentials found");
                     operationArguments.setCredentials(credentials.get());

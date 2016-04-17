@@ -51,10 +51,10 @@ class AzureAuthority implements IAzureAuthority
      */
     public AzureAuthority(final String authorityHostUrl)
     {
-        this(authorityHostUrl, new UserAgentImpl());
+        this(authorityHostUrl, new UserAgentImpl(), new AzureDeviceFlow());
     }
 
-    AzureAuthority(final String authorityHostUrl, final UserAgent userAgent)
+    AzureAuthority(final String authorityHostUrl, final UserAgent userAgent, final AzureDeviceFlow azureDeviceFlow)
     {
         Debug.Assert(UriHelper.isWellFormedUriString(authorityHostUrl), "The authorityHostUrl parameter is invalid.");
         Debug.Assert(userAgent != null, "The userAgent parameter is null.");
@@ -62,10 +62,12 @@ class AzureAuthority implements IAzureAuthority
         this.authorityHostUrl = authorityHostUrl;
         _adalTokenCache = /* TODO: 449201: consider new InsecureStore("adalTokenCache.xml");*/null;
         _userAgent = userAgent;
+        _azureDeviceFlow = azureDeviceFlow;
     }
 
     private final VsoAdalTokenCache _adalTokenCache;
     private final UserAgent _userAgent;
+    private final AzureDeviceFlow _azureDeviceFlow;
 
     protected String authorityHostUrl;
     /**
@@ -150,6 +152,38 @@ class AzureAuthority implements IAzureAuthority
         throw new NotImplementedException(449285);
     }
 
+    public TokenPair acquireToken(final URI targetUri, final String clientId, final String resource, final Action<DeviceFlowResponse> callback)
+    {
+        Debug.Assert(targetUri != null && targetUri.isAbsolute(), "The targetUri parameter is null or invalid");
+        Debug.Assert(!StringHelper.isNullOrWhiteSpace(clientId), "The clientId parameter is null or empty");
+        Debug.Assert(!StringHelper.isNullOrWhiteSpace(resource), "The resource parameter is null or empty");
+        Debug.Assert(callback != null, "The callback parameter is null");
+
+        Trace.writeLine("AzureAuthority::acquireToken");
+
+        _azureDeviceFlow.setResource(resource);
+        final StringBuilder sb = new StringBuilder(authorityHostUrl);
+        sb.append("/oauth2/devicecode");
+        final URI deviceEndpoint = URI.create(sb.toString());
+        final DeviceFlowResponse response = _azureDeviceFlow.requestAuthorization(deviceEndpoint, clientId, null);
+
+        callback.call(response);
+
+        TokenPair tokens = null;
+        final URI tokenEndpoint = createTokenEndpointUri(authorityHostUrl);
+        try
+        {
+            tokens = _azureDeviceFlow.requestToken(tokenEndpoint, clientId, response);
+
+            Trace.writeLine("   token acquisition succeeded.");
+        }
+        catch (final AuthorizationException e)
+        {
+            Trace.writeLine("   token acquisition failed: ", e);
+        }
+        return tokens;
+    }
+
     /**
      * Acquires an access token from the authority using a previously acquired refresh token.
      *
@@ -183,7 +217,7 @@ class AzureAuthority implements IAzureAuthority
         }
         catch (final AuthorizationException e)
         {
-            throw new Error(e);
+            Trace.writeLine("Authorization code could not be obtained: ", e);
         }
         return authorizationCode;
     }

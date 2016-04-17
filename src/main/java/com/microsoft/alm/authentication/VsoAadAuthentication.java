@@ -3,6 +3,7 @@
 
 package com.microsoft.alm.authentication;
 
+import com.microsoft.alm.helpers.Action;
 import com.microsoft.alm.helpers.Guid;
 import com.microsoft.alm.helpers.NotImplementedException;
 import com.microsoft.alm.helpers.Trace;
@@ -140,6 +141,26 @@ public final class VsoAadAuthentication extends BaseVsoAuthentication implements
     public boolean noninteractiveLogon(final URI targetUri, final boolean requestCompactToken)
     {
         throw new NotImplementedException(449285);
+    }
+
+    public boolean deviceLogon(final URI targetUri, final boolean requestCompactToken, final Action<DeviceFlowResponse> callback)
+    {
+        BaseSecureStore.validateTargetUri(targetUri);
+
+        Trace.writeLine("VsoAadAuthentication::deviceLogon");
+
+        TokenPair tokens;
+        if ((tokens = this.VsoAuthority.acquireToken(targetUri, this.ClientId, this.Resource, callback)) != null)
+        {
+            Trace.writeLine("   token successfully acquired.");
+
+            this.storeRefreshToken(targetUri, tokens.RefreshToken);
+
+            return this.generatePersonalAccessToken(targetUri, tokens.AccessToken, requestCompactToken);
+        }
+
+        Trace.writeLine("   failed to acquire token.");
+        return false;
     }
 
     /**
