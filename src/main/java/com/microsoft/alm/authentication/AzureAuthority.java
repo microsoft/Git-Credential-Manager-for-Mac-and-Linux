@@ -154,7 +154,34 @@ class AzureAuthority implements IAzureAuthority
 
     public TokenPair acquireToken(final URI targetUri, final String clientId, final String resource, final Action<DeviceFlowResponse> callback)
     {
-        throw new NotImplementedException(560199);
+        Debug.Assert(targetUri != null && targetUri.isAbsolute(), "The targetUri parameter is null or invalid");
+        Debug.Assert(!StringHelper.isNullOrWhiteSpace(clientId), "The clientId parameter is null or empty");
+        Debug.Assert(!StringHelper.isNullOrWhiteSpace(resource), "The resource parameter is null or empty");
+        Debug.Assert(callback != null, "The callback parameter is null");
+
+        Trace.writeLine("AzureAuthority::acquireToken");
+
+        _azureDeviceFlow.setResource(resource);
+        final StringBuilder sb = new StringBuilder(authorityHostUrl);
+        sb.append("/oauth2/devicecode");
+        final URI deviceEndpoint = URI.create(sb.toString());
+        final DeviceFlowResponse response = _azureDeviceFlow.requestAuthorization(deviceEndpoint, clientId, null);
+
+        callback.call(response);
+
+        TokenPair tokens = null;
+        final URI tokenEndpoint = createTokenEndpointUri(authorityHostUrl);
+        try
+        {
+            tokens = _azureDeviceFlow.requestToken(tokenEndpoint, clientId, response);
+
+            Trace.writeLine("   token acquisition succeeded.");
+        }
+        catch (final AuthorizationException e)
+        {
+            Trace.writeLine("   token acquisition failed: ", e);
+        }
+        return tokens;
     }
 
     /**

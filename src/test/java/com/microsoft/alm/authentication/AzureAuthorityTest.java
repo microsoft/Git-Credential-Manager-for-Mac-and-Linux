@@ -3,15 +3,117 @@
 
 package com.microsoft.alm.authentication;
 
+import com.microsoft.alm.helpers.Action;
 import com.microsoft.alm.helpers.StringContent;
+import com.microsoft.alm.oauth2.useragent.AuthorizationException;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.net.URI;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class AzureAuthorityTest
 {
+    static final String TEST_RESOURCE = "TEST_RESOURCE";
+    static final String TEST_CLIENT_ID = "d30feefe-9ee4-4b00-ac77-08dbd1199811";
+    static final String TEST_DEVICE_CODE = "03d5f4b1-c8ab-4ce2-85c0-158d2075ff5f";
+    static final String TEST_USER_CODE = "DEADBEEF";
+    static final int TEST_EXPIRATION = 600;
+    static final int TEST_INTERVAL = 5;
+    static final String TEST_ACCESS_TOKEN = "bacf8b5f-63f2-4998-9170-d32cf7db4a78";
+    static final String TEST_REFRESH_TOKEN = "c2be2d76-1e9e-487c-9684-78823747391c";
+
+    @Test
+    public void deviceFlow_success() throws Exception
+    {
+        final String authorityHostUrl = "https://authorization.example.com/common/";
+        final URI targetUri = URI.create("https://resource.example.com/");
+        final URI verificationUri = URI.create("https://authorization.example.com/oauth/device");
+        final AtomicInteger requestAuthorizationCalls = new AtomicInteger(0);
+        final AtomicInteger requestTokenCalls = new AtomicInteger(0);
+        final AtomicInteger callbackCalls = new AtomicInteger(0);
+        final AzureDeviceFlowResponse azureDeviceFlowResponse = new AzureDeviceFlowResponse(TEST_DEVICE_CODE, TEST_USER_CODE, verificationUri, TEST_EXPIRATION, TEST_INTERVAL, "message");
+        final AzureDeviceFlow testDeviceFlow = new AzureDeviceFlow()
+        {
+            @Override public DeviceFlowResponse requestAuthorization(final URI deviceEndpoint, final String clientId, final String scope)
+            {
+                requestAuthorizationCalls.addAndGet(1);
+                Assert.assertEquals(TEST_CLIENT_ID, clientId);
+                return azureDeviceFlowResponse;
+            }
+
+            @Override public TokenPair requestToken(final URI tokenEndpoint, final String clientId, final DeviceFlowResponse deviceFlowResponse) throws AuthorizationException
+            {
+                requestTokenCalls.addAndGet(1);
+                Assert.assertEquals(TEST_CLIENT_ID, clientId);
+                Assert.assertEquals(azureDeviceFlowResponse, deviceFlowResponse);
+                return new TokenPair(TEST_ACCESS_TOKEN, TEST_REFRESH_TOKEN);
+            }
+        };
+        final Action<DeviceFlowResponse> callback = new Action<DeviceFlowResponse>()
+        {
+            @Override public void call(final DeviceFlowResponse deviceFlowResponse)
+            {
+                callbackCalls.addAndGet(1);
+                Assert.assertEquals(azureDeviceFlowResponse, deviceFlowResponse);
+            }
+        };
+        final AzureAuthority cut = new AzureAuthority(authorityHostUrl, null, testDeviceFlow);
+
+        final TokenPair actualTokenPair = cut.acquireToken(targetUri, TEST_CLIENT_ID, TEST_RESOURCE, callback);
+
+        Assert.assertEquals(TEST_ACCESS_TOKEN, actualTokenPair.AccessToken.Value);
+        Assert.assertEquals(TEST_REFRESH_TOKEN, actualTokenPair.RefreshToken.Value);
+        Assert.assertEquals(TEST_RESOURCE, testDeviceFlow.getResource());
+        Assert.assertEquals(1, requestAuthorizationCalls.get());
+        Assert.assertEquals(1, requestTokenCalls.get());
+        Assert.assertEquals(1, callbackCalls.get());
+    }
+
+    @Test
+    public void deviceFlow_failure() throws Exception
+    {
+        final String authorityHostUrl = "https://authorization.example.com/common/";
+        final URI targetUri = URI.create("https://resource.example.com/");
+        final URI verificationUri = URI.create("https://authorization.example.com/oauth/device");
+        final AtomicInteger requestAuthorizationCalls = new AtomicInteger(0);
+        final AtomicInteger requestTokenCalls = new AtomicInteger(0);
+        final AtomicInteger callbackCalls = new AtomicInteger(0);
+        final AzureDeviceFlowResponse azureDeviceFlowResponse = new AzureDeviceFlowResponse(TEST_DEVICE_CODE, TEST_USER_CODE, verificationUri, TEST_EXPIRATION, TEST_INTERVAL, "message");
+        final AzureDeviceFlow testDeviceFlow = new AzureDeviceFlow()
+        {
+            @Override public DeviceFlowResponse requestAuthorization(final URI deviceEndpoint, final String clientId, final String scope)
+            {
+                requestAuthorizationCalls.addAndGet(1);
+                Assert.assertEquals(TEST_CLIENT_ID, clientId);
+                return azureDeviceFlowResponse;
+            }
+
+            @Override public TokenPair requestToken(final URI tokenEndpoint, final String clientId, final DeviceFlowResponse deviceFlowResponse) throws AuthorizationException
+            {
+                requestTokenCalls.addAndGet(1);
+                throw new AuthorizationException("access_denied");
+            }
+        };
+        final Action<DeviceFlowResponse> callback = new Action<DeviceFlowResponse>()
+        {
+            @Override public void call(final DeviceFlowResponse deviceFlowResponse)
+            {
+                callbackCalls.addAndGet(1);
+                Assert.assertEquals(azureDeviceFlowResponse, deviceFlowResponse);
+            }
+        };
+        final AzureAuthority cut = new AzureAuthority(authorityHostUrl, null, testDeviceFlow);
+
+        final TokenPair actualTokenPair = cut.acquireToken(targetUri, TEST_CLIENT_ID, TEST_RESOURCE, callback);
+
+        Assert.assertEquals(null, actualTokenPair);
+        Assert.assertEquals(TEST_RESOURCE, testDeviceFlow.getResource());
+        Assert.assertEquals(1, requestAuthorizationCalls.get());
+        Assert.assertEquals(1, requestTokenCalls.get());
+        Assert.assertEquals(1, callbackCalls.get());
+    }
 
     @Test
     public void createAuthorizationEndpointUri_minimal() throws Exception
