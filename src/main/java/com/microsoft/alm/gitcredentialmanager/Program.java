@@ -287,10 +287,10 @@ public class Program
         final AtomicReference<OperationArguments> operationArgumentsRef = new AtomicReference<OperationArguments>();
         final AtomicReference<IAuthentication> authenticationRef = new AtomicReference<IAuthentication>();
         initialize("get", operationArgumentsRef, authenticationRef);
-        final String result = get(operationArgumentsRef.get(), authenticationRef.get());
+        final String result = get(operationArgumentsRef.get(), authenticationRef.get(), DEVICE_FLOW_CALLBACK);
         standardOut.print(result);
     }
-    public static String get(final OperationArguments operationArguments, final IAuthentication authentication)
+    public static String get(final OperationArguments operationArguments, final IAuthentication authentication, final Action<DeviceFlowResponse> deviceFlowCallback)
     {
         final String AuthFailureMessage = "Logon failed, aborting authentication process.";
 
