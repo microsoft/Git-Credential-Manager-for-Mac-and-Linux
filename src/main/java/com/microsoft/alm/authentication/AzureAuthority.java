@@ -217,7 +217,7 @@ class AzureAuthority implements IAzureAuthority
         }
         catch (final AuthorizationException e)
         {
-            throw new Error(e);
+            Trace.writeLine("Authorization code could not be obtained: ", e);
         }
         return authorizationCode;
     }
