@@ -145,7 +145,22 @@ public final class VsoAadAuthentication extends BaseVsoAuthentication implements
 
     public boolean deviceLogon(final URI targetUri, final boolean requestCompactToken, final Action<DeviceFlowResponse> callback)
     {
-        throw new NotImplementedException(560199);
+        BaseSecureStore.validateTargetUri(targetUri);
+
+        Trace.writeLine("VsoAadAuthentication::deviceLogon");
+
+        TokenPair tokens;
+        if ((tokens = this.VsoAuthority.acquireToken(targetUri, this.ClientId, this.Resource, callback)) != null)
+        {
+            Trace.writeLine("   token successfully acquired.");
+
+            this.storeRefreshToken(targetUri, tokens.RefreshToken);
+
+            return this.generatePersonalAccessToken(targetUri, tokens.AccessToken, requestCompactToken);
+        }
+
+        Trace.writeLine("   failed to acquire token.");
+        return false;
     }
 
     /**

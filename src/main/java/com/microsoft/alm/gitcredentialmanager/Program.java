@@ -332,6 +332,11 @@ public class Program
                         && aadAuth.getCredentials(operationArguments.TargetUri, credentials)
                         && (!operationArguments.ValidateCredentials
                             || aadAuth.validateCredentials(operationArguments.TargetUri, credentials.get())))
+                    || (operationArguments.Interactivity != Interactivity.Never
+                        && aadAuth.deviceLogon(operationArguments.TargetUri, true, deviceFlowCallback)
+                        && aadAuth.getCredentials(operationArguments.TargetUri, credentials)
+                        && (!operationArguments.ValidateCredentials
+                            || aadAuth.validateCredentials(operationArguments.TargetUri, credentials.get())))
                 )
                 {
                     Trace.writeLine("   credentials found");
