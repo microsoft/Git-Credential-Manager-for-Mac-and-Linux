@@ -5,7 +5,7 @@ Licensed under the MIT license. See License.txt in the project root. -->
 
   <groupId>com.microsoft.alm</groupId>
   <artifactId>git-credential-manager</artifactId>
-  <version>1.6.1-SNAPSHOT</version>
+  <version>1.7.0</version>
   <packaging>jar</packaging>
 
   <name>Git Credential Manager for Mac and Linux</name>
@@ -39,7 +39,7 @@ Licensed under the MIT license. See License.txt in the project root. -->
     <connection>scm:git:https://github.com/Microsoft/Git-Credential-Manager-for-Mac-and-Linux.git</connection>
     <developerConnection>scm:git:https://github.com/Microsoft/Git-Credential-Manager-for-Mac-and-Linux.git</developerConnection>
     <url>https://github.com/Microsoft/Git-Credential-Manager-for-Mac-and-Linux</url>
-    <tag>HEAD</tag>
+    <tag>git-credential-manager-1.7.0</tag>
   </scm>
 
   <repositories>
