@@ -6,11 +6,7 @@ class GitCredentialManager < Formula
 
   bottle :unneeded
 
-  if MacOS.version >= :el_capitan
-    depends_on :java => "1.8+"
-  else
-    depends_on :java => "1.7+"
-  end
+  depends_on :java => "1.6+"
 
   def install
     libexec.install "git-credential-manager-#{version}.jar"
