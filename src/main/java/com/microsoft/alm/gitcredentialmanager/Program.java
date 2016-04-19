@@ -502,7 +502,6 @@ public class Program
     static void install(final String osName, final String osVersion, final PrintStream standardOut, final List<Provider> providers, final TestableProcessFactory processFactory)
     {
         List<String> missedRequirements = new ArrayList<String>();
-        missedRequirements.addAll(checkUserAgentProviderRequirements(providers));
         missedRequirements.addAll(checkGitRequirements(processFactory));
         missedRequirements.addAll(checkOsRequirements(osName, osVersion));
 
@@ -699,54 +698,6 @@ public class Program
     }
 
     /**
-     * Asks all the supplied {@link Provider} implementations to check their requirements and
-     * report only if all of them are missing something.
-     *
-     *
-     * For example, suppose we have support for both JavaFX- and SWT-based browsers:
-     * we just need to have one of those working on the user's computer.
-     *
-     * So, if they are running on Java 6, they can't use JavaFX, but that's fine,
-     * because they installed xulrunner and the SWT-based browser should work.
-     *
-     * @param providers a list of {@link Provider} implementations to interrogate
-     * @return a list of requirements, per provider,
-     *          if no single user agent provider had all its requirements satisfied
-     */
-    static List<String> checkUserAgentProviderRequirements(final List<Provider> providers)
-    {
-        final List<String> results = new ArrayList<String>();
-        final LinkedHashMap<Provider, List<String>> requirementsByProvider = new LinkedHashMap<Provider, List<String>>();
-        int numberOfProvidersWithSatisfiedRequirements = 0;
-        for (final Provider provider : providers)
-        {
-            final List<String> requirements = provider.checkRequirements();
-            if (requirements == null || requirements.isEmpty())
-            {
-                numberOfProvidersWithSatisfiedRequirements++;
-            }
-            else
-            {
-                requirementsByProvider.put(provider, requirements);
-            }
-        }
-        if (numberOfProvidersWithSatisfiedRequirements == 0)
-        {
-            for (final Map.Entry<Provider, List<String>> entry : requirementsByProvider.entrySet())
-            {
-                final Provider provider = entry.getKey();
-                final List<String> requirements = entry.getValue();
-                results.add("The " + provider.getClassName() + " user agent provider has the following unmet requirements:");
-                for (final String requirement : requirements)
-                {
-                    results.add(" - " + requirement);
-                }
-            }
-        }
-        return results;
-    }
-
-    /**
      * Checks if git version can be found and if it is the correct version
      *
      * @return if git requirements are met
@@ -887,7 +838,6 @@ public class Program
         }
         else if (Provider.isLinux(osName))
         {
-            // only needs a desktop env; already checked by checkUserAgentProviderRequirements()
             // TODO: check for supported major distributions and versions (Ubuntu 14+, Fedora 22+, etc.)
         }
         else if (Provider.isWindows(osName))

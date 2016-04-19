@@ -202,6 +202,7 @@ class AzureAuthority implements IAzureAuthority
     {
         final String expectedState = UUID.randomUUID().toString();
         String authorizationCode = null;
+        final String errorMessage = "Authorization code could not be obtained: ";
         try
         {
             final URI authorizationEndpoint = createAuthorizationEndpointUri(authorityHostUrl, resource, clientId, redirectUri, UserIdentifier.ANY_USER, expectedState, PromptBehavior.ALWAYS, queryParameters);
@@ -217,7 +218,11 @@ class AzureAuthority implements IAzureAuthority
         }
         catch (final AuthorizationException e)
         {
-            Trace.writeLine("Authorization code could not be obtained: ", e);
+            Trace.writeLine(errorMessage, e);
+        }
+        catch (final IllegalStateException e)
+        {
+            Trace.writeLine(errorMessage, e);
         }
         return authorizationCode;
     }

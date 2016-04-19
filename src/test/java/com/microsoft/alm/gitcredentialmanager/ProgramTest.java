@@ -192,41 +192,6 @@ public class ProgramTest
         }
     };
 
-    @Test public void checkUserAgentProviderRequirements_allFine() throws Exception
-    {
-        final List<Provider> input = Arrays.asList(TestProviderFoo, TestProviderBar);
-
-        final List<String> actual = Program.checkUserAgentProviderRequirements(input);
-
-        Assert.assertEquals(0, actual.size());
-    }
-
-    @Test public void checkUserAgentProviderRequirements_allWrong() throws Exception
-    {
-        final List<Provider> input = Arrays.asList(TestProviderPateChinois, TestProviderBananaNutChocolateCake);
-
-        final List<String> actual = Program.checkUserAgentProviderRequirements(input);
-
-        Assert.assertEquals("The Pâté Chinois user agent provider has the following unmet requirements:", actual.get(0));
-        Assert.assertEquals(" - steak", actual.get(1));
-        Assert.assertEquals(" - blé d'inde", actual.get(2));
-        Assert.assertEquals(" - patates", actual.get(3));
-        Assert.assertEquals("The Banana Nut Chocolate Cake user agent provider has the following unmet requirements:", actual.get(4));
-        Assert.assertEquals(" - bananas", actual.get(5));
-        Assert.assertEquals(" - nuts", actual.get(6));
-        Assert.assertEquals(" - chocolate", actual.get(7));
-        Assert.assertEquals(8, actual.size());
-    }
-
-    @Test public void checkUserAgentProviderRequirements_oneFineOneWrong() throws Exception
-    {
-        final List<Provider> input = Arrays.asList(TestProviderFoo, TestProviderPateChinois);
-
-        final List<String> actual = Program.checkUserAgentProviderRequirements(input);
-
-        Assert.assertEquals(0, actual.size());
-    }
-
     @Test public void configureGit_perUserWithOpenJdkOnFedoraLinux() throws Exception
     {
         final TestableProcess process = new TestProcess("");
