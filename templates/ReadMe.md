@@ -27,7 +27,7 @@ If you are connecting to Git repositories hosted elsewhere, the GCM works a lot 
 
 How do I install it?
 --------------------
-Follow the instructions in [Install.md](Install.md) or [Install.html](Install.html).
+Follow the instructions in [Install.md](Install.md).
 
 
 How do I build it?
@@ -41,7 +41,7 @@ This will download the dependencies, compile the code, run unit tests, and packa
 
 How can I contribute?
 ---------------------
-Please refer to [Contributing.md](Contributing.md) or [Contributing.html](Contributing.html).
+Please refer to [Contributing.md](Contributing.md).
 
 
 How can I find out more?
