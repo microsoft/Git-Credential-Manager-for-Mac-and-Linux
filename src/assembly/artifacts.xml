@@ -25,6 +25,14 @@
       </includes>
     </fileSet>
     <fileSet>
+      <directory>${project.basedir}/src/main/resources</directory>
+      <outputDirectory>.</outputDirectory>
+      <includes>
+        <include>EULA.txt</include>
+        <include>ThirdPartyNotices.txt</include>
+      </includes>
+    </fileSet>
+    <fileSet>
       <directory>${project.build.directory}/rpm/${project.artifactId}/RPMS/noarch</directory>
       <outputDirectory>.</outputDirectory>
       <includes>

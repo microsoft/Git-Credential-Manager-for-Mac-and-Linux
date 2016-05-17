@@ -6,6 +6,7 @@ ${project.description}
 License
 -------
 This source code and artifacts are released under the terms of the [${project.license.name}](${project.license.url}). 
+The binary distribution (`${project.artifactId}-${project.version}.jar`) is released under the terms of the ${project.name} software license.
 
 
 Build status
@@ -24,6 +25,21 @@ If you are connecting to a Git repository hosted in a Visual Studio Team Service
 
 If you are connecting to Git repositories hosted elsewhere, the ${project.shortname} works a lot like [git-credential-store](https://git-scm.com/docs/git-credential-store) and will store & retrieve your username & password.
 
+### Data collection
+There are no telemetry nor crash-reporting features in the ${project.shortname}.  Aside from the interactions with Visual Studio Team Services (VSTS) from your device and under your account, the only data collected are the following pieces of non-personally-identifiable information in the [user-agent string](https://github.com/Microsoft/Git-Credential-Manager-for-Mac-and-Linux/blob/master/src/main/java/com/microsoft/alm/authentication/Global.java):
+
+1. Operating System name
+2. Operating System version
+3. Operating System architecture
+4. Java Virtual Machine name
+5. Java Virtual Machine version
+6. GCM version
+
+For example:
+
+`git-credential-manager (Mac OS X; 10.10.5; x86_64) Java HotSpot(TM) 64-Bit Server VM/1.8.0_92-b14 git-tools/${project.version}`
+
+The collection of this data is strictly for statistical purposes and is governed by the [Microsoft Visual Studio Product Family Privacy Statement](https://go.microsoft.com/fwlink/?LinkId=528096&clcid=0x409).
 
 How do I install it?
 --------------------
