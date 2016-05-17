@@ -6,6 +6,7 @@ package com.microsoft.alm.authentication;
 import com.microsoft.alm.helpers.ObjectExtensions;
 import com.microsoft.alm.helpers.StringHelper;
 import com.microsoft.alm.helpers.XmlHelper;
+import com.microsoft.alm.secret.Secret;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;

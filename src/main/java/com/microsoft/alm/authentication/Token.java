@@ -9,6 +9,7 @@ import com.microsoft.alm.helpers.NotImplementedException;
 import com.microsoft.alm.helpers.StringHelper;
 import com.microsoft.alm.helpers.Trace;
 import com.microsoft.alm.helpers.XmlHelper;
+import com.microsoft.alm.secret.Secret;
 import com.microsoft.alm.secret.TokenType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
