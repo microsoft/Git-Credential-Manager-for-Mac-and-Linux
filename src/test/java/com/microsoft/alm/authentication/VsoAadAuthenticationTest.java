@@ -4,6 +4,7 @@
 package com.microsoft.alm.authentication;
 
 import com.microsoft.alm.helpers.Guid;
+import com.microsoft.alm.secret.VsoTokenScope;
 import org.junit.Assert;
 import org.junit.Test;
 

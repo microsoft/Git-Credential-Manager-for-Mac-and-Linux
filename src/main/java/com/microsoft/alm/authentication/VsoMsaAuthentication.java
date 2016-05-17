@@ -5,6 +5,7 @@ package com.microsoft.alm.authentication;
 
 import com.microsoft.alm.helpers.Action;
 import com.microsoft.alm.helpers.Trace;
+import com.microsoft.alm.secret.VsoTokenScope;
 
 import java.net.URI;
 

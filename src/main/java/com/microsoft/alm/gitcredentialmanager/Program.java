@@ -17,7 +17,6 @@ import com.microsoft.alm.authentication.KeychainSecurityCliStore;
 import com.microsoft.alm.authentication.SecretStore;
 import com.microsoft.alm.authentication.VsoAadAuthentication;
 import com.microsoft.alm.authentication.VsoMsaAuthentication;
-import com.microsoft.alm.authentication.VsoTokenScope;
 import com.microsoft.alm.authentication.Where;
 import com.microsoft.alm.helpers.Action;
 import com.microsoft.alm.helpers.Debug;
@@ -36,6 +35,7 @@ import com.microsoft.alm.oauth2.useragent.subprocess.DefaultProcessFactory;
 import com.microsoft.alm.oauth2.useragent.subprocess.ProcessCoordinator;
 import com.microsoft.alm.oauth2.useragent.subprocess.TestableProcess;
 import com.microsoft.alm.oauth2.useragent.subprocess.TestableProcessFactory;
+import com.microsoft.alm.secret.VsoTokenScope;
 
 import java.io.BufferedReader;
 import java.io.File;
