@@ -4,9 +4,9 @@
 package com.microsoft.alm.gitcredentialmanager;
 
 import com.microsoft.alm.authentication.ISecureStore;
-import com.microsoft.alm.authentication.Token;
 import com.microsoft.alm.helpers.IOHelper;
 import com.microsoft.alm.secret.Credential;
+import com.microsoft.alm.secret.Token;
 import com.microsoft.alm.secret.TokenType;
 import org.junit.Assert;
 import org.junit.Test;

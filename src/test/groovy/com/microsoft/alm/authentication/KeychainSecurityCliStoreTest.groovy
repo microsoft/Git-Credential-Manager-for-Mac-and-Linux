@@ -8,6 +8,7 @@ import com.microsoft.alm.helpers.StringHelper
 import com.microsoft.alm.oauth2.useragent.subprocess.DefaultProcessFactory
 import com.microsoft.alm.oauth2.useragent.subprocess.TestableProcessFactory
 import com.microsoft.alm.secret.Credential
+import com.microsoft.alm.secret.Token
 import com.microsoft.alm.secret.TokenType
 import groovy.transform.CompileStatic
 import org.junit.Ignore

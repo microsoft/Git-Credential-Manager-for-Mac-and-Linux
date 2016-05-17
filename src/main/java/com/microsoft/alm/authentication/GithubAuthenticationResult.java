@@ -3,6 +3,8 @@
 
 package com.microsoft.alm.authentication;
 
+import com.microsoft.alm.secret.Token;
+
 public class GithubAuthenticationResult
 {
     public GithubAuthenticationResult(final GithubAuthenticationResultType type)

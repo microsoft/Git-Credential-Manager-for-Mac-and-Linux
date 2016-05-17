@@ -11,6 +11,7 @@ import com.microsoft.alm.oauth2.useragent.subprocess.ProcessCoordinator;
 import com.microsoft.alm.oauth2.useragent.subprocess.TestableProcess;
 import com.microsoft.alm.oauth2.useragent.subprocess.TestableProcessFactory;
 import com.microsoft.alm.secret.Credential;
+import com.microsoft.alm.secret.Token;
 
 import java.io.BufferedReader;
 import java.io.IOException;

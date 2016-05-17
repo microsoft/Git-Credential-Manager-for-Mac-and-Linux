@@ -4,6 +4,7 @@
 package com.microsoft.alm.authentication;
 
 import com.microsoft.alm.secret.Credential;
+import com.microsoft.alm.secret.Token;
 import com.microsoft.alm.secret.VsoTokenScope;
 
 import java.net.URI;
