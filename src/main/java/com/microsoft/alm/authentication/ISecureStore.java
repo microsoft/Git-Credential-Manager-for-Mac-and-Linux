@@ -3,6 +3,8 @@
 
 package com.microsoft.alm.authentication;
 
+import com.microsoft.alm.secret.Credential;
+
 public interface ISecureStore
 {
     void delete(final String targetName);

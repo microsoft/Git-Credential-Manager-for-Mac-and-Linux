@@ -6,7 +6,6 @@ package com.microsoft.alm.gitcredentialmanager;
 import com.microsoft.alm.authentication.BaseVsoAuthentication;
 import com.microsoft.alm.authentication.BasicAuthentication;
 import com.microsoft.alm.authentication.Configuration;
-import com.microsoft.alm.authentication.Credential;
 import com.microsoft.alm.authentication.DeviceFlowResponse;
 import com.microsoft.alm.authentication.IAuthentication;
 import com.microsoft.alm.authentication.ISecureStore;
@@ -35,6 +34,7 @@ import com.microsoft.alm.oauth2.useragent.subprocess.DefaultProcessFactory;
 import com.microsoft.alm.oauth2.useragent.subprocess.ProcessCoordinator;
 import com.microsoft.alm.oauth2.useragent.subprocess.TestableProcess;
 import com.microsoft.alm.oauth2.useragent.subprocess.TestableProcessFactory;
+import com.microsoft.alm.secret.Credential;
 import com.microsoft.alm.secret.VsoTokenScope;
 
 import java.io.BufferedReader;

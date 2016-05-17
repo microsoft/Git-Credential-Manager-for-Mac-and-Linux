@@ -4,6 +4,7 @@
 package com.microsoft.alm.authentication;
 
 import com.microsoft.alm.helpers.Trace;
+import com.microsoft.alm.secret.Credential;
 
 import java.net.URI;
 

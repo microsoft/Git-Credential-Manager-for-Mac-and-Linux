@@ -3,12 +3,12 @@
 
 package com.microsoft.alm.gitcredentialmanager;
 
-import com.microsoft.alm.authentication.Credential;
 import com.microsoft.alm.authentication.ISecureStore;
 import com.microsoft.alm.authentication.Token;
 import com.microsoft.alm.helpers.IOHelper;
 import com.microsoft.alm.helpers.Trace;
 import com.microsoft.alm.helpers.XmlHelper;
+import com.microsoft.alm.secret.Credential;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
