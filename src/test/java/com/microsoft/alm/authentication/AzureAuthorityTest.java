@@ -7,6 +7,7 @@ import com.microsoft.alm.helpers.Action;
 import com.microsoft.alm.helpers.NullUserAgent;
 import com.microsoft.alm.helpers.StringContent;
 import com.microsoft.alm.oauth2.useragent.AuthorizationException;
+import com.microsoft.alm.secret.TokenPair;
 import org.junit.Assert;
 import org.junit.Test;
 

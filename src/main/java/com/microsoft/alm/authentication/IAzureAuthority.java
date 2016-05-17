@@ -6,6 +6,7 @@ package com.microsoft.alm.authentication;
 import com.microsoft.alm.helpers.Action;
 import com.microsoft.alm.secret.Credential;
 import com.microsoft.alm.secret.Token;
+import com.microsoft.alm.secret.TokenPair;
 
 import java.net.URI;
 
