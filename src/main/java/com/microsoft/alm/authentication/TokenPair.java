@@ -8,6 +8,7 @@ import com.microsoft.alm.helpers.NotImplementedException;
 import com.microsoft.alm.helpers.PropertyBag;
 import com.microsoft.alm.helpers.SimpleJson;
 import com.microsoft.alm.helpers.StringHelper;
+import com.microsoft.alm.secret.TokenType;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;

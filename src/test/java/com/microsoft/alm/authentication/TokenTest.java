@@ -7,6 +7,7 @@ import com.microsoft.alm.helpers.BitConverter;
 import com.microsoft.alm.helpers.Guid;
 import com.microsoft.alm.helpers.StringHelperTest;
 import com.microsoft.alm.helpers.XmlHelper;
+import com.microsoft.alm.secret.TokenType;
 import org.junit.Assert;
 import org.junit.Test;
 import org.w3c.dom.Document;

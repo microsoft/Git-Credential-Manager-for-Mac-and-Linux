@@ -3,6 +3,7 @@
 
 package com.microsoft.alm.authentication
 
+import com.microsoft.alm.secret.TokenType
 import groovy.transform.CompileStatic
 import org.junit.Assert
 import org.junit.Ignore
