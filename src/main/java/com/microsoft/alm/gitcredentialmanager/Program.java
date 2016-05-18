@@ -12,8 +12,8 @@ import com.microsoft.alm.authentication.ISecureStore;
 import com.microsoft.alm.authentication.ITokenStore;
 import com.microsoft.alm.authentication.IVsoAadAuthentication;
 import com.microsoft.alm.authentication.IVsoMsaAuthentication;
-import com.microsoft.alm.authentication.KeychainSecurityCliStore;
 import com.microsoft.alm.authentication.SecretStore;
+import com.microsoft.alm.authentication.SecretStoreAdapter;
 import com.microsoft.alm.authentication.VsoAadAuthentication;
 import com.microsoft.alm.authentication.VsoMsaAuthentication;
 import com.microsoft.alm.authentication.Where;
@@ -35,7 +35,9 @@ import com.microsoft.alm.oauth2.useragent.subprocess.ProcessCoordinator;
 import com.microsoft.alm.oauth2.useragent.subprocess.TestableProcess;
 import com.microsoft.alm.oauth2.useragent.subprocess.TestableProcessFactory;
 import com.microsoft.alm.secret.Credential;
+import com.microsoft.alm.secret.Token;
 import com.microsoft.alm.secret.VsoTokenScope;
+import com.microsoft.alm.storage.StorageProvider;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -1168,54 +1170,24 @@ public class Program
         @Override public ISecureStore createSecureStore(final OperationArguments operationArguments)
         {
             Trace.writeLine("Program::ComponentFactory::createSecureStore");
-            ISecureStore secureStore = null;
+            final boolean canFallbackToInsecureStore = operationArguments.CanFallbackToInsecureStore;
+            final StorageProvider.SecureOption secureOption =
+                canFallbackToInsecureStore
+                    ? StorageProvider.SecureOption.PREFER
+                    : StorageProvider.SecureOption.MUST;
+            final com.microsoft.alm.storage.SecretStore<Token> tokenSecretStore = StorageProvider.getTokenStorage(true, secureOption);
+            final com.microsoft.alm.storage.SecretStore<Credential> credentialSecretStore = StorageProvider.getCredentialStorage(true, secureOption);
+            final ISecureStore secureStore = new SecretStoreAdapter(tokenSecretStore, credentialSecretStore);
             final File parentFolder = determineParentFolder();
             final File programFolder = new File(parentFolder, ProgramFolderName);
             final File insecureFile = new File(programFolder, "insecureStore.xml");
 
-            final String osName = System.getProperty("os.name");
-            if (Provider.isMac(osName))
+            if (insecureFile.isFile())
             {
-                Trace.writeLine("   Mac OS X detected");
-                final KeychainSecurityCliStore keychainSecurityCliStore = new KeychainSecurityCliStore();
-                boolean ableToUseKeychain = keychainSecurityCliStore.isKeychainAvailable();
-                boolean canFallbackToInsecureStore = operationArguments.CanFallbackToInsecureStore;
-                if (ableToUseKeychain)
-                {
-                    Trace.writeLine("     Keychain is available");
-                    secureStore = keychainSecurityCliStore;
-                    if (insecureFile.isFile())
-                    {
-                        Trace.writeLine("       InsecureStore file found");
-                        if (!canFallbackToInsecureStore /* in other words, we won't use it again */)
-                        {
-                            Trace.writeLine("         No fallback requested, migrating...");
-                            final InsecureStore insecureStore = new InsecureStore(insecureFile);
-                            insecureStore.migrateAndDisable(secureStore);
-                            Trace.writeLine("         Migrated and disabled.");
-                        }
-                        else
-                        {
-                            Trace.writeLine("         Fallback requested, skipping migration.");
-                        }
-                    }
-                }
-                else
-                {
-                    Trace.writeLine("     Keychain is NOT available");
-                    if (!canFallbackToInsecureStore)
-                    {
-                        throw new SecurityException("The Keychain is not available. If you would like to use the InsecureStore instead, run `git config credential.canfallbacktoinsecurestore true`");
-                    }
-                }
-            }
-
-            if (secureStore == null)
-            {
-                Trace.writeLine("   Using the InsecureStore");
-                //noinspection ResultOfMethodCallIgnored
-                programFolder.mkdirs();
-                secureStore = new InsecureStore(insecureFile);
+                Trace.writeLine("  InsecureStore file found, migrating...");
+                final InsecureStore insecureStore = new InsecureStore(insecureFile);
+                insecureStore.migrateAndDisable(secureStore);
+                Trace.writeLine("  InsecureStore file migrated and disabled.");
             }
             return secureStore;
         }
