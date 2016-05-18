@@ -92,40 +92,6 @@ public class InsecureStore implements ISecureStore
         }
     }
 
-    void save()
-    {
-        if (backingFile != null)
-        {
-            // TODO: 449510: consider creating a backup of the file, if it exists, before overwriting it
-            FileOutputStream fos = null;
-            try
-            {
-                fos = new FileOutputStream(backingFile);
-                toXml(fos);
-            }
-            catch (final FileNotFoundException e)
-            {
-                throw new Error("Error during save()", e);
-            }
-            finally
-            {
-                IOHelper.closeQuietly(fos);
-            }
-            if (!backingFile.setReadable(false, false)
-                || !backingFile.setWritable(false, false)
-                || !backingFile.setExecutable(false, false))
-            {
-                Trace.writeLine("Unable to remove file permissions for everybody: " + backingFile);
-            }
-            if (!backingFile.setReadable(true, true)
-                || !backingFile.setWritable(true, true)
-                || !backingFile.setExecutable(false, true))
-            {
-                Trace.writeLine("Unable to set file permissions for owner: " + backingFile);
-            }
-        }
-    }
-
     static InsecureStore fromXml(final InputStream source)
     {
         try
@@ -312,12 +278,10 @@ public class InsecureStore implements ISecureStore
         if (Tokens.containsKey(targetName))
         {
             Tokens.remove(targetName);
-            save();
         }
         else if (Credentials.containsKey(targetName))
         {
             Credentials.remove(targetName);
-            save();
         }
     }
 
@@ -343,7 +307,6 @@ public class InsecureStore implements ISecureStore
         ensureEnabled();
 
         Credentials.put(targetName, credentials);
-        save();
     }
 
     @Override
@@ -352,7 +315,6 @@ public class InsecureStore implements ISecureStore
         ensureEnabled();
 
         Tokens.put(targetName, token);
-        save();
     }
 
     /**
