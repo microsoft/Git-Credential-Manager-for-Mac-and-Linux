@@ -1,5 +1,5 @@
 # Installation Instructions
-This document explains how to obtain the Git Credential Manager for Mac and Linux (GCM) and how to configure Git to use the GCM as its credential helper.
+This document explains how to obtain the Git Credential Manager for Mac and Linux (${project.shortname}) and how to configure Git to use the ${project.shortname} as its credential helper.
 
 
 ## System Requirements
@@ -25,12 +25,12 @@ If you can't use any of the package managers, you can also download [${project.a
     ```
     brew update
     ```
-2. Install the GCM formula:
+2. Install the ${project.shortname} formula:
 
     ```
     brew install ${project.artifactId}
     ```
-3. Run the GCM in `install` mode, which will check its requirements and then update the "global" Git configuration file (the one in your home folder):
+3. Run the ${project.shortname} in `install` mode, which will check its requirements and then update the "global" Git configuration file (the one in your home folder):
 
     ```
     ${project.artifactId} install
@@ -46,7 +46,7 @@ If you can't use any of the package managers, you can also download [${project.a
     ```
     sudo rpm --import RPM-GPG-KEY-olivida.txt
     ```
-4. Verify the GCM RPM:
+4. Verify the ${project.shortname} RPM:
 
     ```
     rpm --checksig --verbose ${project.artifactId}-${project.version}-1.noarch.rpm
@@ -61,7 +61,7 @@ If you can't use any of the package managers, you can also download [${project.a
     ```
     sudo rpm --install ${project.artifactId}-${project.version}-1.noarch.rpm
     ```
-6. Run the GCM in `install` mode, which will check its requirements and then update the "global" Git configuration file (the one in your home folder):
+6. Run the ${project.shortname} in `install` mode, which will check its requirements and then update the "global" Git configuration file (the one in your home folder):
 
     ```
     ${project.artifactId} install
@@ -72,7 +72,7 @@ If you can't use any of the package managers, you can also download [${project.a
 Download [${project.artifactId}-${project.version}.jar](https://github.com/Microsoft/Git-Credential-Manager-for-Mac-and-Linux/releases/download/${project.artifactId}-${project.version}/${project.artifactId}-${project.version}.jar) somewhere safe and stable, such as `~/${project.artifactId}/`
 
 #### Automatic configuration (recommended)
-1. Run the GCM in `install` mode, which will check its requirements and then update the "global" Git configuration file (the one in your home folder):
+1. Run the ${project.shortname} in `install` mode, which will check its requirements and then update the "global" Git configuration file (the one in your home folder):
 
     ```
     java -jar /home/example/${project.artifactId}/${project.artifactId}-${project.version}.jar install
@@ -92,7 +92,7 @@ Debug mode will turn on tracing and assertions, producing a lot of output to `st
 
 
 ### Automatic configuration (recommended)
-1. Run the GCM in `install` mode with the `debug` property set to `true` (or `false` to disable):
+1. Run the ${project.shortname} in `install` mode with the `debug` property set to `true` (or `false` to disable):
 
     ```
     java -Ddebug=true -jar /home/example/${project.artifactId}/${project.artifactId}-${project.version}.jar install
@@ -113,10 +113,10 @@ Debug mode will turn on tracing and assertions, producing a lot of output to `st
 
 
 ## How to configure the proxy server
-If your network does not allow a direct connection to remote hosts, you can configure the GCM to perform requests through a web proxy.
+If your network does not allow a direct connection to remote hosts, you can configure the ${project.shortname} to perform requests through a web proxy.
 
 ### Automatic configuration (recommended)
-If you are running Gnome 2.x or greater, you can configure the proxy settings using the GUI and the GCM will use those settings thanks to a JVM feature that's activated by setting the `java.net.useSystemProxies` system property to `true` (this is now done automatically when running the GCM in `install` mode).
+If you are running Gnome 2.x or greater, you can configure the proxy settings using the GUI and the ${project.shortname} will use those settings thanks to a JVM feature that's activated by setting the `java.net.useSystemProxies` system property to `true` (this is now done automatically when running the ${project.shortname} in `install` mode).
 
 ### Manual configuration
 
@@ -145,7 +145,7 @@ We are sad to see you go!  Please give us some feedback on how we could do bette
 
 ### Uninstall from Mac using Homebrew or Linux using Linuxbrew
 
-1. Run the GCM in `uninstall` mode, which will update the "global" Git configuration file (the one in your home folder):
+1. Run the ${project.shortname} in `uninstall` mode, which will update the "global" Git configuration file (the one in your home folder):
 
     ```
     ${project.artifactId} uninstall
@@ -160,7 +160,7 @@ We are sad to see you go!  Please give us some feedback on how we could do bette
 
 ### Uninstall from Linux using RPM
 
-1. Run the GCM in `uninstall` mode, which will update the "global" Git configuration file (the one in your home folder):
+1. Run the ${project.shortname} in `uninstall` mode, which will update the "global" Git configuration file (the one in your home folder):
 
     ```
     ${project.artifactId} uninstall
@@ -179,7 +179,7 @@ We are sad to see you go!  Please give us some feedback on how we could do bette
     ```
     git config --global --get credential.helper ${project.artifactId}
     ```
-2. Run the GCM in `uninstall` mode, which will update the "global" Git configuration file (the one in your home folder):
+2. Run the ${project.shortname} in `uninstall` mode, which will update the "global" Git configuration file (the one in your home folder):
 
     ```
     java -jar /home/example/${project.artifactId}/${project.artifactId}-${project.version}.jar uninstall

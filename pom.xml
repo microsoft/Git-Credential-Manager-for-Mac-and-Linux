@@ -62,6 +62,7 @@ Licensed under the MIT license. See License.txt in the project root. -->
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.shortname>GCM4ML</project.shortname>
     <project.license.name>MIT License</project.license.name>
     <project.license.url>http://www.opensource.org/licenses/mit-license.php</project.license.url>
   </properties>
