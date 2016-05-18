@@ -35,6 +35,7 @@ import com.microsoft.alm.oauth2.useragent.subprocess.ProcessCoordinator;
 import com.microsoft.alm.oauth2.useragent.subprocess.TestableProcess;
 import com.microsoft.alm.oauth2.useragent.subprocess.TestableProcessFactory;
 import com.microsoft.alm.secret.Credential;
+import com.microsoft.alm.secret.Secret;
 import com.microsoft.alm.secret.Token;
 import com.microsoft.alm.secret.VsoTokenScope;
 import com.microsoft.alm.storage.StorageProvider;
@@ -891,7 +892,18 @@ public class Program
 
         Trace.writeLine("Program::createAuthentication");
 
-        final SecretStore secrets = new SecretStore(secureStore, SecretsNamespace);
+        final String osName = System.getProperty("os.name");
+        final Secret.IUriNameConversion iUriNameConversion =
+                Provider.isMac(osName)
+                /*
+                 * Adds a prefix to the target name to avoid a collision
+                 * with the built-in git-credential-osxkeychain.
+                 * This is because the built-in helper will not validate the credentials first,
+                 * leading to a poor user experience if the token is no longer valid.
+                 */
+                ? new Secret.PrefixedUriNameConversion("gcm4ml:")
+                : Secret.DefaultUriNameConversion;
+        final SecretStore secrets = new SecretStore(secureStore, SecretsNamespace, null, null, iUriNameConversion);
         final AtomicReference<IAuthentication> authorityRef = new AtomicReference<IAuthentication>();
         final ITokenStore adaRefreshTokenStore = null;
 
