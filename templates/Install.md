@@ -1,5 +1,5 @@
 # Installation Instructions
-This document explains how to obtain the Git Credential Manager for Mac and Linux (${project.shortname}) and how to configure Git to use the ${project.shortname} as its credential helper.
+This document explains how to obtain the ${project.name} (${project.shortname}) and how to configure Git to use the ${project.shortname} as its credential helper.
 
 
 ## System Requirements
