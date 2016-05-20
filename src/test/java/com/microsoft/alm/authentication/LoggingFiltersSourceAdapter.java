@@ -43,12 +43,16 @@ public class LoggingFiltersSourceAdapter extends HttpFiltersSourceAdapter {
     @Override public HttpFilters filterRequest(final HttpRequest originalRequest, final ChannelHandlerContext ctx) {
         return new HttpFiltersAdapter(originalRequest, ctx) {
             @Override public HttpResponse clientToProxyRequest(final HttpObject httpObject) {
-                requests.add((FullHttpRequest) httpObject);
+                final FullHttpRequest fullHttpRequest = (FullHttpRequest) httpObject;
+                fullHttpRequest.retain();
+                requests.add(fullHttpRequest);
                 return /* "[return] null to continue processing as usual" */ null;
             }
 
             @Override public HttpObject serverToProxyResponse(final HttpObject httpObject) {
-                responses.add((FullHttpResponse) httpObject);
+                final FullHttpResponse fullHttpResponse = (FullHttpResponse) httpObject;
+                fullHttpResponse.retain();
+                responses.add(fullHttpResponse);
                 return /* [return] the unmodified HttpObject */ httpObject;
             }
         };

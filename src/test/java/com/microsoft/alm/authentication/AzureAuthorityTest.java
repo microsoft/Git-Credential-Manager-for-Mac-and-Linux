@@ -4,6 +4,7 @@
 package com.microsoft.alm.authentication;
 
 import com.microsoft.alm.helpers.Action;
+import com.microsoft.alm.helpers.NullUserAgent;
 import com.microsoft.alm.helpers.StringContent;
 import com.microsoft.alm.oauth2.useragent.AuthorizationException;
 import org.junit.Assert;
@@ -59,7 +60,7 @@ public class AzureAuthorityTest
                 Assert.assertEquals(azureDeviceFlowResponse, deviceFlowResponse);
             }
         };
-        final AzureAuthority cut = new AzureAuthority(authorityHostUrl, null, testDeviceFlow);
+        final AzureAuthority cut = new AzureAuthority(authorityHostUrl, NullUserAgent.INSTANCE, testDeviceFlow);
 
         final TokenPair actualTokenPair = cut.acquireToken(targetUri, TEST_CLIENT_ID, TEST_RESOURCE, callback);
 
@@ -104,7 +105,7 @@ public class AzureAuthorityTest
                 Assert.assertEquals(azureDeviceFlowResponse, deviceFlowResponse);
             }
         };
-        final AzureAuthority cut = new AzureAuthority(authorityHostUrl, null, testDeviceFlow);
+        final AzureAuthority cut = new AzureAuthority(authorityHostUrl, NullUserAgent.INSTANCE, testDeviceFlow);
 
         final TokenPair actualTokenPair = cut.acquireToken(targetUri, TEST_CLIENT_ID, TEST_RESOURCE, callback);
 
