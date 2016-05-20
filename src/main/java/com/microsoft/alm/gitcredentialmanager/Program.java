@@ -221,7 +221,7 @@ public class Program
         standardOut.println("                      The workaround is to preemptively erase from osxkeychain");
         standardOut.println("                      any Git credentials that can be refreshed or re-acquired");
         standardOut.println("                      by this credential helper.");
-        standardOut.println("                      Defaults to FALSE. Ignored by Basic authority.");
+        standardOut.println("                      Defaults to TRUE. Ignored by Basic authority.");
         standardOut.println("                      Does nothing if Apple Git on Mac OS X isn't detected.");
         standardOut.println();
         standardOut.println("      `git config --global credential.microsoft.visualstudio.com.eraseosxkeychain false`");
