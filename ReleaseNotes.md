@@ -4,3 +4,6 @@ Other releases and their notes can be found at the [Git-Credential-Manager-for-M
 * Major:
     * Implement OAuth 2.0 Device Flow according to [draft-ietf-oauth-device-flow-01](https://tools.ietf.org/html/draft-ietf-oauth-device-flow-01).  Made possible via pull requests #38, #39 and #40.
     * Relax system requirements such that Java 1.6+ is supported.  Made possible via pull request #41.
+* Minor:
+    * Minor documentation improvements via pull request #43.
+    * Minor unit test improvements via pull request #44.
