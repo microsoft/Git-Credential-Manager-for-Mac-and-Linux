@@ -16,6 +16,8 @@ import com.microsoft.alm.helpers.Trace;
 import com.microsoft.alm.helpers.UriHelper;
 import com.microsoft.alm.oauth2.useragent.AuthorizationException;
 import com.microsoft.alm.oauth2.useragent.AuthorizationResponse;
+import com.microsoft.alm.oauth2.useragent.Provider;
+import com.microsoft.alm.oauth2.useragent.ProviderScanner;
 import com.microsoft.alm.oauth2.useragent.UserAgent;
 import com.microsoft.alm.oauth2.useragent.UserAgentImpl;
 
@@ -23,6 +25,8 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -206,6 +210,15 @@ class AzureAuthority implements IAzureAuthority
         try
         {
             final URI authorizationEndpoint = createAuthorizationEndpointUri(authorityHostUrl, resource, clientId, redirectUri, UserIdentifier.ANY_USER, expectedState, PromptBehavior.ALWAYS, queryParameters);
+            final ProviderScanner providerScanner = (ProviderScanner) _userAgent;
+            if (!providerScanner.hasCompatibleProvider())
+            {
+                final Map<Provider, List<String>> unmetRequirements = providerScanner.getUnmetProviderRequirements();
+                final StringBuilder sb = new StringBuilder();
+                UserAgentImpl.describeUnmetRequirements(unmetRequirements, sb);
+                Trace.writeLine(sb.toString());
+                return null;
+            }
             final AuthorizationResponse response = _userAgent.requestAuthorizationCode(authorizationEndpoint, redirectUri);
             authorizationCode = response.getCode();
             // verify that the authorization response gave us the state we sent in the authz endpoint URI
@@ -217,10 +230,6 @@ class AzureAuthority implements IAzureAuthority
             }
         }
         catch (final AuthorizationException e)
-        {
-            Trace.writeLine(errorMessage, e);
-        }
-        catch (final IllegalStateException e)
         {
             Trace.writeLine(errorMessage, e);
         }
