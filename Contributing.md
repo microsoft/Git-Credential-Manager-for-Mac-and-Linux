@@ -34,3 +34,8 @@ The CLA process is automated on this GitHub repository.  Here is what happens wh
 4. Once you have signed a CLA, the pull request is labeled as **cla-signed** and you are done.
 
 Only pull requests that are labeled as **cla-not-required**, **cla-signed**, or **cla-already-signed** can be accepted.
+
+
+Code of Conduct
+---------------
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
