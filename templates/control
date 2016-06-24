@@ -4,5 +4,5 @@ Section: contrib/utils
 Priority: optional
 Architecture: all
 Depends: java-runtime-headless (>= 1.6), git (>=1.9)
-Maintainer: Microsoft http://www.microsoft.com/
+Maintainer: Microsoft https://www.microsoft.com/
 Description: [[description]]

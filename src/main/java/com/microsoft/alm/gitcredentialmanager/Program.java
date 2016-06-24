@@ -87,7 +87,7 @@ public class Program
         }
     };
 
-    // http://stackoverflow.com/a/6773868/
+    // https://stackoverflow.com/a/6773868/
     static String getVersion()
     {
         if (_version == null)

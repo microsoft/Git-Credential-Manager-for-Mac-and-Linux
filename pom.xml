@@ -10,7 +10,7 @@ Licensed under the MIT license. See License.txt in the project root. -->
 
   <name>Git Credential Manager for Mac and Linux</name>
   <description>Stores credentials for Git version control securely.
-    Provides secure logon for Visual Studio Team Services (visualstudio.com).</description>
+    Provides secure logon for Visual Studio Team Services (https://visualstudio.com).</description>
   <url>https://java.visualstudio.com/Docs/tools/gitcredentialmanager</url>
 
   <licenses>
@@ -25,13 +25,13 @@ Licensed under the MIT license. See License.txt in the project root. -->
       <name>Oli Dagenais</name>
       <email>olivida@microsoft.com</email>
       <organization>Microsoft</organization>
-      <organizationUrl>http://www.microsoft.com/</organizationUrl>
+      <organizationUrl>https://www.microsoft.com/</organizationUrl>
     </developer>
     <developer>
       <name>Leah Antkiewicz</name>
       <email>leantk@microsoft.com</email>
       <organization>Microsoft</organization>
-      <organizationUrl>http://www.microsoft.com/</organizationUrl>
+      <organizationUrl>https://www.microsoft.com/</organizationUrl>
     </developer>
   </developers>
 
@@ -64,7 +64,7 @@ Licensed under the MIT license. See License.txt in the project root. -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.shortname>GCM4ML</project.shortname>
     <project.license.name>MIT License</project.license.name>
-    <project.license.url>http://www.opensource.org/licenses/mit-license.php</project.license.url>
+    <project.license.url>https://opensource.org/licenses/mit-license.php</project.license.url>
   </properties>
 
   <build>
@@ -204,7 +204,7 @@ Licensed under the MIT license. See License.txt in the project root. -->
         <configuration>
           <archive>
             <manifest>
-              <!-- http://stackoverflow.com/a/6773868/ -->
+              <!-- https://stackoverflow.com/a/6773868/ -->
               <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
             </manifest>
           </archive>
@@ -285,7 +285,7 @@ Licensed under the MIT license. See License.txt in the project root. -->
               <goal>execute</goal>
             </goals>
             <configuration>
-              <!-- http://stackoverflow.com/a/9339405 -->
+              <!-- https://stackoverflow.com/a/9339405 -->
               <properties>
                 <shaded_jar_checksum_file>${project.artifactId}-${project.version}.jar.sha256</shaded_jar_checksum_file>
               </properties>

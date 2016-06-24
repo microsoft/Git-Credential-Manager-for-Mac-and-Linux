@@ -27,12 +27,12 @@ public class TokenTest
     @Test
     public void tokenStoreUrl() throws URISyntaxException
     {
-        tokenStoreTest(new SecretCache("test-token"), "http://dummy.url/for/testing", TokenString);
+        tokenStoreTest(new SecretCache("test-token"), "https://dummy.url/for/testing", TokenString);
     }
     @Test
     public void tokenStoreUrlWithParams() throws URISyntaxException
     {
-        tokenStoreTest(new SecretCache("test-token"), "http://dummy.url/for/testing?with=params", TokenString);
+        tokenStoreTest(new SecretCache("test-token"), "https://dummy.url/for/testing?with=params", TokenString);
     }
     @Test
     public void tokenStoreUnc() throws URISyntaxException
@@ -42,12 +42,12 @@ public class TokenTest
     @Test
     public void tokenCacheUrl() throws URISyntaxException
     {
-        tokenStoreTest(new SecretCache("test-token"), "http://dummy.url/for/testing", TokenString);
+        tokenStoreTest(new SecretCache("test-token"), "https://dummy.url/for/testing", TokenString);
     }
     @Test
     public void tokenCacheUrlWithParams() throws URISyntaxException
     {
-        tokenStoreTest(new SecretCache("test-token"), "http://dummy.url/for/testing?with=params", TokenString);
+        tokenStoreTest(new SecretCache("test-token"), "https://dummy.url/for/testing?with=params", TokenString);
     }
     @Test
     public void tokenCacheUnc() throws URISyntaxException

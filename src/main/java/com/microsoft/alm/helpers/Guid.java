@@ -12,7 +12,7 @@ public class Guid
 {
     public static final UUID Empty = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
-    // http://stackoverflow.com/a/28628209/
+    // https://stackoverflow.com/a/28628209/
     public static UUID fromBytes(final byte[] b)
     {
         ByteBuffer source = ByteBuffer.wrap(b);
@@ -27,7 +27,7 @@ public class Guid
         return new UUID(target.getLong(), target.getLong());
     }
 
-    // Inspired by: http://stackoverflow.com/a/1055668/
+    // Inspired by: https://stackoverflow.com/a/1055668/
     public static byte[] toBytes(final UUID value)
     {
         final ByteBuffer bytes = ByteBuffer.allocate(16);

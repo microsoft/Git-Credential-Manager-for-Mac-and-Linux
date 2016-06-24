@@ -237,7 +237,7 @@ public class InsecureStore implements ISecureStore
             final Transformer transformer = tf.newTransformer();
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.setOutputProperty(OutputKeys.STANDALONE, "yes");
-            //http://johnsonsolutions.blogspot.ca/2007/08/xml-transformer-indent-doesnt-work-with.html
+            //https://johnsonsolutions.blogspot.ca/2007/08/xml-transformer-indent-doesnt-work-with.html
             transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
             transformer.transform(new DOMSource(document), new StreamResult(destination));
         }

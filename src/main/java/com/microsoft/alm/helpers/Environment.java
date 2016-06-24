@@ -14,7 +14,7 @@ public class Environment
 {
     public static String getCurrentDirectory()
     {
-        // http://stackoverflow.com/a/16802976/
+        // https://stackoverflow.com/a/16802976/
         final File currentDir = new File("");
         final String result = currentDir.getAbsolutePath();
         return result;

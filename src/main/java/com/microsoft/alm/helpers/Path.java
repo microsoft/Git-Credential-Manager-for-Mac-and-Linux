@@ -55,7 +55,7 @@ public class Path
         return file.getParent();
     }
 
-    // Inspired by http://stackoverflow.com/a/4094034
+    // Inspired by https://stackoverflow.com/a/4094034
     public static String getFileNameWithoutExtension(final String path)
     {
         final String result = path.replaceAll("^(.*[/\\\\]?[^/\\\\]*)(\\.[^./\\\\]+)$", "$1");

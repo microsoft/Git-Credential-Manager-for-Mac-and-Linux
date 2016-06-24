@@ -120,7 +120,7 @@ If you are running Gnome 2.x or greater, you can configure the proxy settings us
 
 ### Manual configuration
 
-If it's not possible to use the automatic proxy server configuration, you must set the appropriate [networking properties](http://docs.oracle.com/javase/7/docs/api/java/net/doc-files/net-properties.html). Aside from SOCKS proxy servers, which can have their credentials specified through specific properties, authenticated proxy servers are currently not supported.
+If it's not possible to use the automatic proxy server configuration, you must set the appropriate [networking properties](https://docs.oracle.com/javase/7/docs/api/java/net/doc-files/net-properties.html). Aside from SOCKS proxy servers, which can have their credentials specified through specific properties, authenticated proxy servers are currently not supported.
 
 1. Retrieve the value of the `credential.helper` configuration:
 

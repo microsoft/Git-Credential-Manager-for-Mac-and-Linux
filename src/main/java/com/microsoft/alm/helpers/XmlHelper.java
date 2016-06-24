@@ -17,7 +17,7 @@ import java.io.ByteArrayOutputStream;
 
 public class XmlHelper
 {
-    // Adapted from http://docs.oracle.com/javase/tutorial/jaxp/dom/readingXML.html
+    // Adapted from https://docs.oracle.com/javase/tutorial/jaxp/dom/readingXML.html
     public static String getText(final Node node) {
         final StringBuilder result = new StringBuilder();
         if (! node.hasChildNodes()) return "";
@@ -51,7 +51,7 @@ public class XmlHelper
             final Transformer transformer = tf.newTransformer();
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.setOutputProperty(OutputKeys.STANDALONE, "yes");
-            //http://johnsonsolutions.blogspot.ca/2007/08/xml-transformer-indent-doesnt-work-with.html
+            //https://johnsonsolutions.blogspot.ca/2007/08/xml-transformer-indent-doesnt-work-with.html
             transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
             transformer.transform(new DOMSource(document), new StreamResult(baos));
 

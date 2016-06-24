@@ -22,7 +22,7 @@ public class Debug
         {
             if (!condition)
             {
-                // http://stackoverflow.com/a/1069150/
+                // https://stackoverflow.com/a/1069150/
                 final Throwable throwable = new Throwable();
                 final StackTraceElement[] stackTraceElements = throwable.getStackTrace();
                 final StringBuilder sb = new StringBuilder();
@@ -44,7 +44,7 @@ public class Debug
                 }
                 final String fullMessage = sb.toString();
 
-                // http://stackoverflow.com/a/543012/
+                // https://stackoverflow.com/a/543012/
                 final JFrame frame = new JFrame(ASSERTION_FAILED_TITLE);
                 final int result;
                 try

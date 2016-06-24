@@ -23,7 +23,7 @@ final class Global
     {
         if (userAgent == null)
         {
-            // http://stackoverflow.com/a/6773868/
+            // https://stackoverflow.com/a/6773868/
             final String version = Global.class.getPackage().getImplementationVersion();
             userAgent = String.format("git-credential-manager (%1$s; %2$s; %3$s) %4$s/%5$s git-tools/%6$s",
                     System.getProperty("os.name"), // "Windows Server 2012 R2", "Mac OS X", "Linux"

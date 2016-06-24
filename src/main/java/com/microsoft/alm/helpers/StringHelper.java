@@ -30,7 +30,7 @@ public class StringHelper
             return false;
         }
 
-        // Inspired by http://stackoverflow.com/a/19154150/
+        // Inspired by https://stackoverflow.com/a/19154150/
         final int toffset = hl - nl;
         return haystack.regionMatches(true, toffset, needle, 0, nl);
     }

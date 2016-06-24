@@ -96,14 +96,14 @@ public class SimpleJsonTest {
   {
     "device_code":"74tq5miHKB",
     "user_code":"94248",
-    "verification_uri":"http://www.example.com/device",
+    "verification_uri":"https://www.example.com/device",
     "interval":5
   }
 """
         final def expected = [
             "device_code":"74tq5miHKB",
             "user_code":"94248",
-            "verification_uri":"http://www.example.com/device",
+            "verification_uri":"https://www.example.com/device",
             "interval":5
         ]
 

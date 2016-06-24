@@ -32,7 +32,7 @@ public class DeviceFlowImplTest {
     private static final String USER_CODE = "A1B2B4C1C5D1D3E3E5";
     private static final String ACCESS_TOKEN = "d15281b1-03f1-4581-90d3-4527d9cf4147";
     private static final String REFRESH_TOKEN = "08897313-7270-46d3-ac48-5577fa70e79f";
-    private static final URI VERIFICATION_URI = new URI("http://verification.example.com");
+    private static final URI VERIFICATION_URI = new URI("https://verification.example.com");
     private static final int EXPIRY_SECONDS = 600;
     private static final int ATTEMPT_INTERVAL = 1;
     private static final String DEVICE_ENDPOINT_PATH = "/device";

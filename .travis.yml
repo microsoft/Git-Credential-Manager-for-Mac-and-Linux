@@ -1,6 +1,6 @@
 ---
 language: java
-# http://stackoverflow.com/questions/14694139/how-to-resolve-dependencies-between-modules-within-multi-module-project
+# https://stackoverflow.com/questions/14694139/how-to-resolve-dependencies-between-modules-within-multi-module-project
 install: mvn compile org.apache.maven.plugins:maven-dependency-plugin:2.10:go-offline --batch-mode --show-version
 script:
   # add our bin folder to the PATH so our fake ping will be picked up when running under Travis CI

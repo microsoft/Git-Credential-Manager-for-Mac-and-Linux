@@ -18,7 +18,7 @@ public class DeviceFlowResponseTest {
 {
     "device_code":"74tq5miHKB",
     "user_code":"94248",
-    "verification_uri":"http://www.example.com/device",
+    "verification_uri":"https://www.example.com/device",
     "interval":5
 }
 """
@@ -27,7 +27,7 @@ public class DeviceFlowResponseTest {
 
         assert "74tq5miHKB" == actual.deviceCode
         assert "94248" == actual.userCode
-        assert URI.create("http://www.example.com/device") == actual.verificationUri
+        assert URI.create("https://www.example.com/device") == actual.verificationUri
         assert 5 == actual.interval
         assert 600 == actual.expiresIn
         assert actual.expiresAt.timeInMillis - now.timeInMillis >= 600
