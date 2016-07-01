@@ -78,7 +78,7 @@ public final class VsoMsaAuthentication extends BaseVsoAuthentication implements
         Trace.writeLine("VsoMsaAuthentication::deviceLogon");
 
         TokenPair tokens;
-        if ((tokens = this.VsoAuthority.acquireToken(targetUri, this.ClientId, this.Resource, callback)) != null)
+        if ((tokens = this.VsoAuthority.acquireToken(targetUri, this.ClientId, this.Resource, RedirectUri, callback)) != null)
         {
             Trace.writeLine("   token successfully acquired.");
 

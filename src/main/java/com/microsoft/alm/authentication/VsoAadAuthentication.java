@@ -89,7 +89,7 @@ public final class VsoAadAuthentication extends BaseVsoAuthentication implements
         Trace.writeLine("VsoAadAuthentication::interactiveLogon");
 
         TokenPair tokens;
-        if ((tokens = this.VsoAuthority.acquireToken(targetUri, this.ClientId, this.Resource, RedirectUri, null)) != null)
+        if ((tokens = this.VsoAuthority.acquireToken(targetUri, this.ClientId, this.Resource, RedirectUri, (String) null)) != null)
         {
             Trace.writeLine("   token acquisition succeeded.");
 
@@ -150,7 +150,7 @@ public final class VsoAadAuthentication extends BaseVsoAuthentication implements
         Trace.writeLine("VsoAadAuthentication::deviceLogon");
 
         TokenPair tokens;
-        if ((tokens = this.VsoAuthority.acquireToken(targetUri, this.ClientId, this.Resource, callback)) != null)
+        if ((tokens = this.VsoAuthority.acquireToken(targetUri, this.ClientId, this.Resource, RedirectUri, callback)) != null)
         {
             Trace.writeLine("   token successfully acquired.");
 

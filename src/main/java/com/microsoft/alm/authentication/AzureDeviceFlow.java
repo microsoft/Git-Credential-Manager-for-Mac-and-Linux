@@ -5,9 +5,12 @@ package com.microsoft.alm.authentication;
 
 import com.microsoft.alm.helpers.QueryString;
 
+import java.net.URI;
+
 public class AzureDeviceFlow extends DeviceFlowImpl
 {
     private String resource;
+    private URI redirectUri;
 
     public String getResource()
     {
@@ -19,12 +22,27 @@ public class AzureDeviceFlow extends DeviceFlowImpl
         this.resource = resource;
     }
 
+    public URI getRedirectUri()
+    {
+        return redirectUri;
+    }
+
+    public void setRedirectUri(final URI redirectUri)
+    {
+        this.redirectUri = redirectUri;
+    }
+
     @Override
     protected void contributeAuthorizationRequestParameters(final QueryString bodyParameters)
     {
         if (resource != null)
         {
             bodyParameters.put("resource", resource);
+        }
+
+        if (redirectUri != null)
+        {
+            bodyParameters.put(OAuthParameter.REDIRECT_URI, redirectUri.toString());
         }
     }
 
