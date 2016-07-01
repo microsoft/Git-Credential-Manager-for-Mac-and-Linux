@@ -214,7 +214,7 @@ public class Program
         standardOut.println("      `git config --global credential.microsoft.visualstudio.com.authority AAD`");
         standardOut.println();
         standardOut.println("   eraseosxkeychain   Enables a workaround when running on Mac OS X");
-        standardOut.println("                      and using 'Apple Git' (which includes the osxkeychain");
+        standardOut.println("                      and using a version of Git which includes the osxkeychain");
         standardOut.println("                      credential helper, hardcoded before all other helpers).");
         standardOut.println("                      The problem is osxkeychain may return expired or");
         standardOut.println("                      revoked credentials, aborting the Git operation.");
@@ -222,7 +222,7 @@ public class Program
         standardOut.println("                      any Git credentials that can be refreshed or re-acquired");
         standardOut.println("                      by this credential helper.");
         standardOut.println("                      Defaults to TRUE. Ignored by Basic authority.");
-        standardOut.println("                      Does nothing if Apple Git on Mac OS X isn't detected.");
+        standardOut.println("                      Does nothing if osxkeychain on Mac OS X isn't detected.");
         standardOut.println();
         standardOut.println("      `git config --global credential.microsoft.visualstudio.com.eraseosxkeychain false`");
         standardOut.println();
@@ -437,30 +437,26 @@ public class Program
         {
             if (operationArguments.EraseOsxKeyChain && Provider.isMac(osName))
             {
-                final String gitResponse = fetchGitVersion(processFactory);
-                if (gitResponse.contains("Apple Git-"))
+                // check for the presence of git-credential-osxkeychain by scanning PATH
+                final File osxkeychainFile = findProgram(pathString, pathSeparator, "git-credential-osxkeychain", fileChecker);
+                if (osxkeychainFile != null)
                 {
-                    // check for the presence of git-credential-osxkeychain by scanning PATH
-                    final File osxkeychainFile = findProgram(pathString, pathSeparator, "git-credential-osxkeychain", fileChecker);
-                    if (osxkeychainFile != null)
+                    // erase these credentials from osxkeychain
+                    try
                     {
-                        // erase these credentials from osxkeychain
-                        try
-                        {
-                            final String program = osxkeychainFile.getAbsolutePath();
-                            final TestableProcess process = processFactory.create(program, "erase");
-                            final ProcessCoordinator coordinator = new ProcessCoordinator(process);
-                            coordinator.print(operationArguments.toString());
-                            coordinator.waitFor();
-                        }
-                        catch (final IOException e)
-                        {
-                            throw new Error(e);
-                        }
-                        catch (final InterruptedException e)
-                        {
-                            throw new Error(e);
-                        }
+                        final String program = osxkeychainFile.getAbsolutePath();
+                        final TestableProcess process = processFactory.create(program, "erase");
+                        final ProcessCoordinator coordinator = new ProcessCoordinator(process);
+                        coordinator.print(operationArguments.toString());
+                        coordinator.waitFor();
+                    }
+                    catch (final IOException e)
+                    {
+                        throw new Error(e);
+                    }
+                    catch (final InterruptedException e)
+                    {
+                        throw new Error(e);
                     }
                 }
             }
