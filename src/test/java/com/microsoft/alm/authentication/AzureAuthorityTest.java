@@ -20,6 +20,7 @@ public class AzureAuthorityTest
     static final String TEST_CLIENT_ID = "d30feefe-9ee4-4b00-ac77-08dbd1199811";
     static final String TEST_DEVICE_CODE = "03d5f4b1-c8ab-4ce2-85c0-158d2075ff5f";
     static final String TEST_USER_CODE = "DEADBEEF";
+    static final URI TEST_REDIRECT_URI = URI.create("https://terminus.example.com");
     static final int TEST_EXPIRATION = 600;
     static final int TEST_INTERVAL = 5;
     static final String TEST_ACCESS_TOKEN = "bacf8b5f-63f2-4998-9170-d32cf7db4a78";
@@ -62,11 +63,12 @@ public class AzureAuthorityTest
         };
         final AzureAuthority cut = new AzureAuthority(authorityHostUrl, NullUserAgent.INSTANCE, testDeviceFlow);
 
-        final TokenPair actualTokenPair = cut.acquireToken(targetUri, TEST_CLIENT_ID, TEST_RESOURCE, callback);
+        final TokenPair actualTokenPair = cut.acquireToken(targetUri, TEST_CLIENT_ID, TEST_RESOURCE, TEST_REDIRECT_URI, callback);
 
         Assert.assertEquals(TEST_ACCESS_TOKEN, actualTokenPair.AccessToken.Value);
         Assert.assertEquals(TEST_REFRESH_TOKEN, actualTokenPair.RefreshToken.Value);
         Assert.assertEquals(TEST_RESOURCE, testDeviceFlow.getResource());
+        Assert.assertEquals(TEST_REDIRECT_URI, testDeviceFlow.getRedirectUri());
         Assert.assertEquals(1, requestAuthorizationCalls.get());
         Assert.assertEquals(1, requestTokenCalls.get());
         Assert.assertEquals(1, callbackCalls.get());
@@ -107,10 +109,11 @@ public class AzureAuthorityTest
         };
         final AzureAuthority cut = new AzureAuthority(authorityHostUrl, NullUserAgent.INSTANCE, testDeviceFlow);
 
-        final TokenPair actualTokenPair = cut.acquireToken(targetUri, TEST_CLIENT_ID, TEST_RESOURCE, callback);
+        final TokenPair actualTokenPair = cut.acquireToken(targetUri, TEST_CLIENT_ID, TEST_RESOURCE, TEST_REDIRECT_URI, callback);
 
         Assert.assertEquals(null, actualTokenPair);
         Assert.assertEquals(TEST_RESOURCE, testDeviceFlow.getResource());
+        Assert.assertEquals(TEST_REDIRECT_URI, testDeviceFlow.getRedirectUri());
         Assert.assertEquals(1, requestAuthorizationCalls.get());
         Assert.assertEquals(1, requestTokenCalls.get());
         Assert.assertEquals(1, callbackCalls.get());

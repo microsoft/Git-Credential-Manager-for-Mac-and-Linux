@@ -22,9 +22,8 @@ import java.util.concurrent.atomic.AtomicReference;
 public abstract class BaseVsoAuthentication extends BaseAuthentication
 {
     public static final String DefaultResource = "499b84ac-1321-427f-aa17-267ca6975798";
-    // TODO: 449327: request a client_id and redirect URI, these are MSOpenTech's
-    public static final String DefaultClientId = "61d65f5a-6e3b-468b-af73-a033f5098c5c";
-    public static final URI RedirectUri = URI.create("https://msopentech.com");
+    public static final String DefaultClientId = "97877f11-0fc6-4aee-b1ff-febb0519dd00";
+    public static final URI RedirectUri = URI.create("https://java.visualstudio.com");
 
     protected static final String AdalRefreshPrefix = "ada";
 
