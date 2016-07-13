@@ -78,11 +78,11 @@ Licensed under the MIT license. See License.txt in the project root. -->
     </extensions>
     <resources>
       <resource>
-        <directory>${basedir}</directory>
-        <targetPath>./</targetPath>
+        <directory>${project.basedir}/src/main/resources</directory>
         <filtering>false</filtering>
         <includes>
-          <include>License.txt</include>
+          <include>EULA.txt</include>
+          <include>ThirdPartyNotices.txt</include>
         </includes>
       </resource>
       <resource>
@@ -229,6 +229,14 @@ Licensed under the MIT license. See License.txt in the project root. -->
                   <mainClass>com.microsoft.alm.gitcredentialmanager.Program</mainClass>
                 </transformer>
               </transformers>
+              <filters>
+                <filter>
+                  <artifact>com.microsoft.alm:oauth2-useragent</artifact>
+                  <excludes>
+                    <exclude>License.txt</exclude>
+                  </excludes>
+                </filter>
+              </filters>
             </configuration>
           </execution>
         </executions>
@@ -513,6 +521,11 @@ Licensed under the MIT license. See License.txt in the project root. -->
       <groupId>com.microsoft.alm</groupId>
       <artifactId>oauth2-useragent</artifactId>
       <version>0.9.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.microsoft.alm</groupId>
+      <artifactId>auth-secure-storage</artifactId>
+      <version>0.2.0</version>
     </dependency>
 
     <dependency>

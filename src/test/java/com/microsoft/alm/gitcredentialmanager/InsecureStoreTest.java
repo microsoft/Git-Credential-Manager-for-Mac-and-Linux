@@ -3,11 +3,11 @@
 
 package com.microsoft.alm.gitcredentialmanager;
 
-import com.microsoft.alm.authentication.Credential;
 import com.microsoft.alm.authentication.ISecureStore;
-import com.microsoft.alm.authentication.Token;
-import com.microsoft.alm.authentication.TokenType;
 import com.microsoft.alm.helpers.IOHelper;
+import com.microsoft.alm.secret.Credential;
+import com.microsoft.alm.secret.Token;
+import com.microsoft.alm.secret.TokenType;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -96,7 +96,6 @@ public class InsecureStoreTest
 
             final InsecureStore input = new InsecureStore(tempFile);
             initializeTestData(input);
-            Assert.assertNotEquals(0L, tempFile.length());
             final InsecureStore actual = new InsecureStore(null);
 
             input.migrateAndDisable(actual);
@@ -154,25 +153,6 @@ public class InsecureStoreTest
 
             Assert.assertEquals(0, cut.Tokens.size());
             Assert.assertEquals(0, cut.Credentials.size());
-        }
-        finally
-        {
-            if (tempFile != null)
-                tempFile.delete();
-        }
-    }
-
-    @Test public void save_toFile() throws IOException
-    {
-        File tempFile = null;
-        try
-        {
-            tempFile = File.createTempFile(this.getClass().getSimpleName(), null);
-            final InsecureStore cut = new InsecureStore(tempFile);
-
-            cut.save();
-
-            Assert.assertTrue(tempFile.length() > 0);
         }
         finally
         {

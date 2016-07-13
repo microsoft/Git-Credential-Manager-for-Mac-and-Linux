@@ -3,6 +3,8 @@
 
 package com.microsoft.alm.authentication;
 
+import com.microsoft.alm.secret.Credential;
+
 import java.net.URI;
 import java.util.concurrent.atomic.AtomicReference;
 

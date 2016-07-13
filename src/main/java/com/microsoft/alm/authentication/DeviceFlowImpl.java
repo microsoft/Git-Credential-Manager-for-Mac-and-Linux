@@ -9,6 +9,7 @@ import com.microsoft.alm.helpers.QueryString;
 import com.microsoft.alm.helpers.StringContent;
 import com.microsoft.alm.helpers.StringHelper;
 import com.microsoft.alm.oauth2.useragent.AuthorizationException;
+import com.microsoft.alm.secret.TokenPair;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;

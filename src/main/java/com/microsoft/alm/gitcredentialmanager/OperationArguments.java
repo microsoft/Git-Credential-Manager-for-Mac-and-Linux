@@ -3,10 +3,10 @@
 
 package com.microsoft.alm.gitcredentialmanager;
 
-import com.microsoft.alm.authentication.Credential;
 import com.microsoft.alm.helpers.Debug;
 import com.microsoft.alm.helpers.ObjectExtensions;
 import com.microsoft.alm.helpers.StringHelper;
+import com.microsoft.alm.secret.Credential;
 
 import java.io.BufferedReader;
 import java.io.IOException;

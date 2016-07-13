@@ -20,6 +20,10 @@ import com.microsoft.alm.oauth2.useragent.Provider;
 import com.microsoft.alm.oauth2.useragent.ProviderScanner;
 import com.microsoft.alm.oauth2.useragent.UserAgent;
 import com.microsoft.alm.oauth2.useragent.UserAgentImpl;
+import com.microsoft.alm.secret.Credential;
+import com.microsoft.alm.secret.Token;
+import com.microsoft.alm.secret.TokenPair;
+import com.microsoft.alm.secret.TokenType;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
