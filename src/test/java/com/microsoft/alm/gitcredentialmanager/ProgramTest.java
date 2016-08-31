@@ -111,7 +111,11 @@ public class ProgramTest
 
         Assert.assertEquals(0, Program.checkOsRequirements("Mac OS X", "10.10.6").size());
 
+        Assert.assertEquals(0, Program.checkOsRequirements("Mac OS X", "10.11").size());
+
         Assert.assertEquals(0, Program.checkOsRequirements("Mac OS X", "10.11.0").size());
+
+        Assert.assertEquals(0, Program.checkOsRequirements("Mac OS X", "10.12").size());
 
         Assert.assertEquals(0, Program.checkOsRequirements("Mac OS X", "11.1.1").size());
     }
