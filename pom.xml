@@ -520,7 +520,7 @@ Licensed under the MIT license. See License.txt in the project root. -->
     <dependency>
       <groupId>com.microsoft.alm</groupId>
       <artifactId>oauth2-useragent</artifactId>
-      <version>0.11.1</version>
+      <version>0.11.2</version>
     </dependency>
     <dependency>
       <groupId>com.microsoft.alm</groupId>
