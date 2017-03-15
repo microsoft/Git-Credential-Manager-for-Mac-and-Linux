@@ -1188,6 +1188,11 @@ public class Program
                     ? StorageProvider.SecureOption.PREFER
                     : StorageProvider.SecureOption.MUST;
             final com.microsoft.alm.storage.SecretStore<Token> tokenSecretStore = StorageProvider.getTokenStorage(true, secureOption);
+            if (tokenSecretStore == null) {
+                throw new RuntimeException("Secure credential storage is not available on this operating system. " +
+                        "You may opt-in to store credentials in an unencrypted file under your user home directory by running " +
+                        "'git config --global credential.canFallBackToInsecureStore true'.");
+            }
             final com.microsoft.alm.storage.SecretStore<Credential> credentialSecretStore = StorageProvider.getCredentialStorage(true, secureOption);
             final ISecureStore secureStore = new SecretStoreAdapter(tokenSecretStore, credentialSecretStore);
             final File parentFolder = determineParentFolder();
