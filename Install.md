@@ -86,6 +86,19 @@ Download [git-credential-manager-2.0.3.jar](https://github.com/Microsoft/Git-Cre
     ```
 
 
+## How to enable alternate credential storage
+
+On Linux, the GCM4ML stores credentials in the GNOME Keyring. If GNOME Keyring is unavailable for your Linux distribution, a Git setting can be used to opt into storing credentials **unencrypted** in a file under your home directory where presumably only you and _root_ have read access.
+
+To enable fallback storage of credentials in this file, run this Git configuration command:
+
+`git config --global credential.canFallBackToInsecureStore true`
+
+With this setting, the GCM4ML will fallback to storing your credentials in this file:
+
+`~/.VSTeamServicesAuthPlugin/insecureStore.xml`
+
+
 ## How to enable (or disable) debug mode
 
 Debug mode will turn on tracing and assertions, producing a lot of output to `stderr`.  Only turn this on temporarily, when trying to isolate a defect.
