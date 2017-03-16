@@ -88,7 +88,7 @@ Download [git-credential-manager-2.0.3.jar](https://github.com/Microsoft/Git-Cre
 
 ## How to enable alternate credential storage
 
-On Linux, the GCM4ML stores credentials in the GNOME Keyring. If GNOME Keyring is unavailable for your Linux distribution, a Git setting can be used to opt into storing credentials **unencrypted** in a file under your home directory where presumably only you and _root_ have read access.
+On Linux, the GCM4ML stores credentials in the GNOME Keyring. If GNOME Keyring is unavailable for your Linux distribution, or you are running the GCM4ML via a secure shell (SSH) session, a Git setting can be used to opt into storing credentials **unencrypted** in a file under your home directory where presumably only you and _root_ have read access.
 
 To enable fallback storage of credentials in this file, run this Git configuration command:
 
