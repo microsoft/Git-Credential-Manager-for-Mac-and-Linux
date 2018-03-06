@@ -40,7 +40,7 @@ If you can't use any of the package managers, you can also download [${project.a
 ### Installing on Linux using RPM (recommended)
 
 1. Download [${project.artifactId}-${project.version}-1.noarch.rpm](https://github.com/Microsoft/Git-Credential-Manager-for-Mac-and-Linux/releases/download/${project.artifactId}-${project.version}/${project.artifactId}-${project.version}-1.noarch.rpm) and copy the file somewhere locally.
-2. Download the [PGP key used to sign the RPM](https://github.com/Microsoft/Git-Credential-Manager-for-Mac-and-Linux/blob/users/leantk/importK/RPM-GPG-KEY.txt).
+2. Download the [PGP key used to sign the RPM](https://github.com/Microsoft/Git-Credential-Manager-for-Mac-and-Linux/blob/master/RPM-GPG-KEY.txt).
 3. Import the signing key into RPM's database:
 
     ```
