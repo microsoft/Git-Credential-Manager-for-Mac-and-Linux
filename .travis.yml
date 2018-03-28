@@ -1,18 +1,7 @@
 ---
 language: java
-addons:
-  apt:
-    packages:
-      - openjdk-6-jdk
-
 # https://stackoverflow.com/questions/14694139/how-to-resolve-dependencies-between-modules-within-multi-module-project
-install:
-  - echo "Downloading Maven 3.2.2";
-  - wget https://archive.apache.org/dist/maven/binaries/apache-maven-3.2.2-bin.zip || travis_terminate 1
-  - unzip -qq apache-maven-3.2.2-bin.zip || travis_terminate 1
-  - export M2_HOME=$PWD/apache-maven-3.2.2
-  - export PATH=$M2_HOME/bin:$PATH 
-  - mvn compile org.apache.maven.plugins:maven-dependency-plugin:2.10:go-offline --batch-mode --show-version
+install: mvn compile org.apache.maven.plugins:maven-dependency-plugin:2.10:go-offline --batch-mode --show-version
 script:
   # add our bin folder to the PATH so our fake ping will be picked up when running under Travis CI
   # Inspiration: https://github.com/nono/cozy-desktop/commit/26ab9df277d1cbf781e9e476d022988ab0113154
@@ -22,4 +11,4 @@ script:
 # https://docs.travis-ci.com/user/migrating-from-legacy/
 sudo: false
 jdk:
-  - openjdk6
+  - openjdk7
