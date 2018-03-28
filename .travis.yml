@@ -1,5 +1,10 @@
 ---
 language: java
+addons:
+  apt:
+    packages:
+      - openjdk-6-jdk
+
 # https://stackoverflow.com/questions/14694139/how-to-resolve-dependencies-between-modules-within-multi-module-project
 install: mvn compile org.apache.maven.plugins:maven-dependency-plugin:2.10:go-offline --batch-mode --show-version
 script:
