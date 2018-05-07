@@ -11,4 +11,4 @@ script:
 # https://docs.travis-ci.com/user/migrating-from-legacy/
 sudo: false
 jdk:
-  - openjdk6
+  - openjdk7
