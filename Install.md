@@ -46,6 +46,7 @@ If you can't use any of the package managers, you can also download [git-credent
     ```
     sudo rpm --import RPM-GPG-KEY.txt
     ```
+    This step did not work.
 4. Verify the GCM4ML RPM:
 
     ```
@@ -56,17 +57,17 @@ If you can't use any of the package managers, you can also download [git-credent
     ```
     V4 RSA/SHA256 Signature, key ID ba34dbc2: OK
     ```
-5. Install the RPM:
+5. Install the RPM on Ubuntu:
 
     ```
-    sudo rpm --install git-credential-manager-2.0.3-1.noarch.rpm
+    sudo alien --install git-credential-manager-2.0.3-1.noarch.rpm
     ```
 6. Run the GCM4ML in `install` mode, which will check its requirements and then update the "global" Git configuration file (the one in your home folder):
 
     ```
     git-credential-manager install
     ```
-
+One may have to configure JAVA_HOME before running this.  For example, if java is in /usr/bin, then JAVA_HOME should be /usr.
 
 ### Installing on Mac or Linux without a package manager
 Download [git-credential-manager-2.0.3.jar](https://github.com/Microsoft/Git-Credential-Manager-for-Mac-and-Linux/releases/download/git-credential-manager-2.0.3/git-credential-manager-2.0.3.jar) somewhere safe and stable, such as `~/git-credential-manager/`
