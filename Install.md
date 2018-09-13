@@ -15,7 +15,7 @@ Great care was taken to avoid using any features of Java that would impact compa
 On Mac OS X, installing via Homebrew is highly recommended.
 On Linux, it is recommended to use Linuxbrew or an RPM-based package manager if you can.
 
-If you can't use any of the package managers, you can also download [git-credential-manager-2.0.3.jar](https://github.com/Microsoft/Git-Credential-Manager-for-Mac-and-Linux/releases/download/git-credential-manager-2.0.3/git-credential-manager-2.0.3.jar) somewhere safe and stable, such as `~/git-credential-manager/`, and then follow the instructions for automatic or manual configuration.
+If you can't use any of the package managers, you can also download [git-credential-manager-2.0.4.jar](https://github.com/Microsoft/Git-Credential-Manager-for-Mac-and-Linux/releases/download/git-credential-manager-2.0.4/git-credential-manager-2.0.4.jar) somewhere safe and stable, such as `~/git-credential-manager/`, and then follow the instructions for automatic or manual configuration.
 
 
 ### Installing on Mac using Homebrew or on Linux using Linuxbrew (recommended)
@@ -39,8 +39,8 @@ If you can't use any of the package managers, you can also download [git-credent
     
 ### Installing on Linux using RPM (recommended)
 
-1. Download [git-credential-manager-2.0.3-1.noarch.rpm](https://github.com/Microsoft/Git-Credential-Manager-for-Mac-and-Linux/releases/download/git-credential-manager-2.0.3/git-credential-manager-2.0.3-1.noarch.rpm) and copy the file somewhere locally.
-2. Download the [PGP key used to sign the RPM](RPM-GPG-KEY.txt).
+1. Download [git-credential-manager-2.0.4-1.noarch.rpm](https://github.com/Microsoft/Git-Credential-Manager-for-Mac-and-Linux/releases/download/git-credential-manager-2.0.4/git-credential-manager-2.0.4-1.noarch.rpm) and copy the file somewhere locally.
+2. Download the [PGP key used to sign the RPM](https://github.com/Microsoft/Git-Credential-Manager-for-Mac-and-Linux/blob/master/RPM-GPG-KEY.txt).
 3. Import the signing key into RPM's database:
 
     ```
@@ -49,7 +49,7 @@ If you can't use any of the package managers, you can also download [git-credent
 4. Verify the GCM4ML RPM:
 
     ```
-    rpm --checksig --verbose git-credential-manager-2.0.3-1.noarch.rpm
+    rpm --checksig --verbose git-credential-manager-2.0.4-1.noarch.rpm
     ```
     ...you should see a line (among those there) that is equal to the following:
     
@@ -59,7 +59,7 @@ If you can't use any of the package managers, you can also download [git-credent
 5. Install the RPM:
 
     ```
-    sudo rpm --install git-credential-manager-2.0.3-1.noarch.rpm
+    sudo rpm --install git-credential-manager-2.0.4-1.noarch.rpm
     ```
 6. Run the GCM4ML in `install` mode, which will check its requirements and then update the "global" Git configuration file (the one in your home folder):
 
@@ -69,34 +69,21 @@ If you can't use any of the package managers, you can also download [git-credent
 
 
 ### Installing on Mac or Linux without a package manager
-Download [git-credential-manager-2.0.3.jar](https://github.com/Microsoft/Git-Credential-Manager-for-Mac-and-Linux/releases/download/git-credential-manager-2.0.3/git-credential-manager-2.0.3.jar) somewhere safe and stable, such as `~/git-credential-manager/`
+Download [git-credential-manager-2.0.4.jar](https://github.com/Microsoft/Git-Credential-Manager-for-Mac-and-Linux/releases/download/git-credential-manager-2.0.4/git-credential-manager-2.0.4.jar) somewhere safe and stable, such as `~/git-credential-manager/`
 
 #### Automatic configuration (recommended)
 1. Run the GCM4ML in `install` mode, which will check its requirements and then update the "global" Git configuration file (the one in your home folder):
 
     ```
-    java -jar /home/example/git-credential-manager/git-credential-manager-2.0.3.jar install
+    java -jar /home/example/git-credential-manager/git-credential-manager-2.0.4.jar install
     ```
 
 #### Manual configuration
 1. Configure the `credential.helper` setting to launch Java with the absolute path to the JAR (make sure you surround the whole value with 'single quotes'):
 
     ```
-    git config --global credential.helper '!java -Ddebug=false -Djava.net.useSystemProxies=true -jar /home/example/git-credential-manager/git-credential-manager-2.0.3.jar'
+    git config --global credential.helper '!java -Ddebug=false -Djava.net.useSystemProxies=true -jar /home/example/git-credential-manager/git-credential-manager-2.0.4.jar'
     ```
-
-
-## How to enable alternate credential storage
-
-On Linux, the GCM4ML stores credentials in the GNOME Keyring. If GNOME Keyring is unavailable for your Linux distribution, or you are running the GCM4ML via a secure shell (SSH) session, a Git setting can be used to opt into storing credentials **unencrypted** in a file under your home directory where presumably only you and _root_ have read access.
-
-To enable fallback storage of credentials in this file, run this Git configuration command:
-
-`git config --global credential.canFallBackToInsecureStore true`
-
-With this setting, the GCM4ML will fallback to storing your credentials in this file:
-
-`~/.VSTeamServicesAuthPlugin/insecureStore.xml`
 
 
 ## How to enable (or disable) debug mode
@@ -108,7 +95,7 @@ Debug mode will turn on tracing and assertions, producing a lot of output to `st
 1. Run the GCM4ML in `install` mode with the `debug` property set to `true` (or `false` to disable):
 
     ```
-    java -Ddebug=true -jar /home/example/git-credential-manager/git-credential-manager-2.0.3.jar install
+    java -Ddebug=true -jar /home/example/git-credential-manager/git-credential-manager-2.0.4.jar install
     ```
 
 ### Manual configuration
@@ -120,7 +107,7 @@ Debug mode will turn on tracing and assertions, producing a lot of output to `st
     ...it should look like this:
 
     ```
-    !java -Ddebug=false -Djava.net.useSystemProxies=true -jar /home/example/git-credential-manager/git-credential-manager-2.0.3.jar
+    !java -Ddebug=false -Djava.net.useSystemProxies=true -jar /home/example/git-credential-manager/git-credential-manager-2.0.4.jar
     ```
 2. Set a new value for the `credential.helper` configuration (essentially repeating the _manual configuration_ installation step, being careful with quoting and spaces), changing the value of the `debug` property to `true` (or `false` to disable).
 
@@ -143,13 +130,13 @@ If it's not possible to use the automatic proxy server configuration, you must s
     ...it should look like this:
 
     ```
-    !java -Ddebug=false -Djava.net.useSystemProxies=true -jar /home/example/git-credential-manager/git-credential-manager-2.0.3.jar
+    !java -Ddebug=false -Djava.net.useSystemProxies=true -jar /home/example/git-credential-manager/git-credential-manager-2.0.4.jar
     ```
 2. Set a new value for the `credential.helper` configuration (essentially repeating the _manual configuration_ installation step, being careful with quoting and spaces), adding the appropriate properties.  For example, if you have a proxy server that can do HTTP and HTTPS, running on the host `192.168.0.117`, listening on port `8123`, then you would run the following (notice there's a pair of properties for http and one for https).
 
 
     ```
-    git config --global credential.helper '!java -Ddebug=false -Dhttp.proxyHost=192.168.0.117 -Dhttp.proxyPort=8123 -Dhttps.proxyHost=192.168.0.117 -Dhttps.proxyPort=8123 -jar /home/example/git-credential-manager/git-credential-manager-2.0.3.jar'
+    git config --global credential.helper '!java -Ddebug=false -Dhttp.proxyHost=192.168.0.117 -Dhttp.proxyPort=8123 -Dhttps.proxyHost=192.168.0.117 -Dhttps.proxyPort=8123 -jar /home/example/git-credential-manager/git-credential-manager-2.0.4.jar'
     ```
 
 
@@ -181,7 +168,7 @@ We are sad to see you go!  Please give us some feedback on how we could do bette
 2. Uninstall the git-credential-manager package with RPM:
 
     ```
-    sudo rpm --erase git-credential-manager-2.0.3-1.noarch
+    sudo rpm --erase git-credential-manager-2.0.4-1.noarch
     ```
 3. Archive the `insecureStore.xml` file from the `git-credential-manager` sub-folder under your HOME folder.
 
@@ -195,7 +182,7 @@ We are sad to see you go!  Please give us some feedback on how we could do bette
 2. Run the GCM4ML in `uninstall` mode, which will update the "global" Git configuration file (the one in your home folder):
 
     ```
-    java -jar /home/example/git-credential-manager/git-credential-manager-2.0.3.jar uninstall
+    java -jar /home/example/git-credential-manager/git-credential-manager-2.0.4.jar uninstall
     ```
 3. The value retrieved in _step 1_ contained the path to the JAR.  You can go delete that JAR.
 4. Archive the `insecureStore.xml` file from the `git-credential-manager` sub-folder under your HOME folder.

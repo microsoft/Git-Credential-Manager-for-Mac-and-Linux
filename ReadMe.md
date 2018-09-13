@@ -7,7 +7,7 @@ Stores credentials for Git version control securely.
 License
 -------
 This source code and artifacts are released under the terms of the [MIT License](https://opensource.org/licenses/mit-license.php). 
-The binary distribution is released under the terms of the Git Credential Manager for Mac and Linux software license.
+The binary distribution (`git-credential-manager-2.0.4.jar`) is released under the terms of the Git Credential Manager for Mac and Linux software license.
 
 
 Build status
@@ -38,7 +38,7 @@ There are no telemetry nor crash-reporting features in the GCM4ML.  Aside from t
 
 For example:
 
-`git-credential-manager (Mac OS X; 10.10.5; x86_64) Java HotSpot(TM) 64-Bit Server VM/1.8.0_92-b14 git-tools/2.0.3`
+`git-credential-manager (Mac OS X; 10.10.5; x86_64) Java HotSpot(TM) 64-Bit Server VM/1.8.0_92-b14 git-tools/2.0.4`
 
 The collection of this data is strictly for statistical purposes and is governed by the [Microsoft Visual Studio Product Family Privacy Statement](https://go.microsoft.com/fwlink/?LinkId=528096&clcid=0x409).
 
@@ -73,4 +73,4 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 
 How can I find out more?
 ------------------------
-Visit the [Git Credential Manager](https://docs.microsoft.com/en-us/vsts/git/set-up-credential-managers) page or browse the [source code on GitHub](https://github.com/Microsoft/Git-Credential-Manager-for-Mac-and-Linux).
+Visit the [Git Credential Manager](https://java.visualstudio.com/Docs/tools/gitcredentialmanager) page or browse the [source code on GitHub](https://github.com/Microsoft/Git-Credential-Manager-for-Mac-and-Linux).
