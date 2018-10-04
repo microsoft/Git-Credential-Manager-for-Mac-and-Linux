@@ -73,4 +73,4 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 
 How can I find out more?
 ------------------------
-Visit the [Git Credential Manager](https://java.visualstudio.com/Docs/tools/gitcredentialmanager) page or browse the [source code on GitHub](https://github.com/Microsoft/Git-Credential-Manager-for-Mac-and-Linux).
+Visit the [Git Credential Manager](https://docs.microsoft.com/en-us/azure/devops/repos/git/set-up-credential-managers) page or browse the [source code on GitHub](https://github.com/Microsoft/Git-Credential-Manager-for-Mac-and-Linux).
