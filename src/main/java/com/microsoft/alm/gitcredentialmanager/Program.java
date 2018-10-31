@@ -325,11 +325,6 @@ public class Program
                         && aadAuth.getCredentials(operationArguments.TargetUri, credentials)
                         && (!operationArguments.ValidateCredentials
                             || aadAuth.validateCredentials(operationArguments.TargetUri, credentials.get())))
-//                        || (operationArguments.Interactivity != Interactivity.Always
-//                            && aadAuth.noninteractiveLogon(operationArguments.TargetUri, true)
-//                            && aadAuth.getCredentials(operationArguments.TargetUri, credentials)
-//                            && (!operationArguments.ValidateCredentials
-//                                || aadAuth.validateCredentials(operationArguments.TargetUri, credentials.get())))
                     || (operationArguments.Interactivity != Interactivity.Never
                         && aadAuth.interactiveLogon(operationArguments.TargetUri, true)
                         && aadAuth.getCredentials(operationArguments.TargetUri, credentials)
@@ -1092,22 +1087,7 @@ public class Program
 
     private static void logEvent(final String message, final Object eventType)
     {
-        final String eventSource = "Git Credential Manager";
-
-        /*** commented out due to UAC issues which require a proper installer to work around ***/
-
-        //Trace.WriteLine("Program::LogEvent");
-
-        //if (!EventLog.SourceExists(EventSource))
-        //{
-        //    EventLog.CreateEventSource(EventSource, "Application");
-
-        //    Trace.WriteLine("   event source created");
-        //}
-
-        //EventLog.WriteEntry(EventSource, message, eventType);
-
-        //Trace.WriteLine("   " + eventType + "event written");
+        System.out.println(message);
     }
 
     private static void enableTraceLogging(final OperationArguments operationArguments) throws IOException
