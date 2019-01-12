@@ -66,7 +66,12 @@ If you can't use any of the package managers, you can also download [git-credent
     ```
     git-credential-manager install
     ```
-
+7. If the last command failed because Java couldn't be found make sure you have the `JAVA_HOME` variable set correctly in your environment.
+    1. Run `which java` to find out where Java is installed, this will show e.g. `/usr/bin/java`.
+    2. Run `echo $JAVA_HOME` to find out if JAVA_HOME is set, in our example case this should be `/ùsr`.
+    3. Edit your environment variables by running `sudo -H gedit /etc/environment` and adding (or replacing) the line `JAVA_HOME=/usr`.
+    4. Log out and log in to refresh environment variables.
+    5. Try the install command again.
 
 ### Installing on Mac or Linux without a package manager
 Download [git-credential-manager-2.0.4.jar](https://github.com/Microsoft/Git-Credential-Manager-for-Mac-and-Linux/releases/download/git-credential-manager-2.0.4/git-credential-manager-2.0.4.jar) somewhere safe and stable, such as `~/git-credential-manager/`
