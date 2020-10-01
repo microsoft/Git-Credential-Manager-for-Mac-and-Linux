@@ -1,5 +1,11 @@
 Git Credential Manager for Mac and Linux
 ========================================
+
+This project has been superceded by [Git Credential Manager Core](https://github.com/microsoft/Git-Credential-Manager-Core).
+GCM Core can speak to Azure Repos, GitHub, and more from a single cross-platform codebase.
+As a result, we're no longer actively working on GCM for Mac and Linux.
+
+<!--
 Stores credentials for Git version control securely.
     Provides secure logon for Visual Studio Team Services (https://visualstudio.com).
 
@@ -74,3 +80,4 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 How can I find out more?
 ------------------------
 Visit the [Git Credential Manager](https://docs.microsoft.com/en-us/azure/devops/repos/git/set-up-credential-managers) page or browse the [source code on GitHub](https://github.com/Microsoft/Git-Credential-Manager-for-Mac-and-Linux).
+-->
