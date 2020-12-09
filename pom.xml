@@ -561,7 +561,7 @@ Licensed under the MIT license. See License.txt in the project root. -->
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy</artifactId>
-      <version>2.4.5</version>
+      <version>2.4.21</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
